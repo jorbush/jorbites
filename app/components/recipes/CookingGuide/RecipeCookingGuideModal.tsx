@@ -142,20 +142,22 @@ const ActiveCookingGuideDialog: React.FC<ActiveCookingGuideDialogProps> = ({
                 onClose={onClose}
             />
 
-            <main className="relative z-10 flex flex-1 flex-col items-center justify-center overflow-y-auto px-4 py-6 sm:px-8">
+            <main className="relative z-10 flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-3 py-4 md:px-8 md:py-6">
                 {isCelebration ? (
-                    <CookingGuideCelebration
-                        recipeId={recipeId}
-                        recipeTitle={recipeTitle}
-                        totalSteps={steps.length}
-                        completedCount={completedStepsCount}
-                        onRestart={handleRestart}
-                        onClose={onClose}
-                    />
+                    <div className="my-auto w-full">
+                        <CookingGuideCelebration
+                            recipeId={recipeId}
+                            recipeTitle={recipeTitle}
+                            totalSteps={steps.length}
+                            completedCount={completedStepsCount}
+                            onRestart={handleRestart}
+                            onClose={onClose}
+                        />
+                    </div>
                 ) : (
                     <div
                         key={currentIndex}
-                        className="animate-search-fade-in mx-auto flex w-full max-w-2xl flex-col items-center rounded-3xl border border-neutral-200/80 bg-white/90 p-6 text-center shadow-lg backdrop-blur-md sm:p-10 dark:border-neutral-800/80 dark:bg-neutral-900/85"
+                        className="animate-search-fade-in mx-auto my-auto flex w-full max-w-2xl flex-col items-center rounded-2xl border border-neutral-200/80 bg-white/90 p-5 text-center shadow-lg backdrop-blur-md md:rounded-3xl md:p-10 dark:border-neutral-800/80 dark:bg-neutral-900/85"
                         data-testid="guide-active-step-card"
                     >
                         <CulinaryActionVisualizer
@@ -165,7 +167,7 @@ const ActiveCookingGuideDialog: React.FC<ActiveCookingGuideDialogProps> = ({
                         />
 
                         <div
-                            className="mt-6 max-h-[38vh] overflow-y-auto px-2 text-lg leading-relaxed font-medium text-neutral-800 sm:text-2xl sm:leading-relaxed dark:text-neutral-100"
+                            className="mt-4 max-h-[34vh] overflow-y-auto px-1 text-base leading-relaxed font-medium text-neutral-800 md:mt-6 md:max-h-[38vh] md:px-2 md:text-2xl md:leading-relaxed dark:text-neutral-100"
                             data-testid="guide-step-text"
                             data-cy="guide-step-text"
                         >
@@ -177,11 +179,11 @@ const ActiveCookingGuideDialog: React.FC<ActiveCookingGuideDialogProps> = ({
                             onTimerComplete={handleTimerComplete}
                         />
 
-                        <div className="mt-6">
+                        <div className="mt-4 md:mt-6">
                             <button
                                 type="button"
                                 onClick={handleToggleCurrentStep}
-                                className={`inline-flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold transition-colors duration-200 ${
+                                className={`inline-flex cursor-pointer items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors duration-200 md:px-4 md:py-2 ${
                                     currentStepDone
                                         ? 'border-green-450/50 bg-green-450 text-neutral-950 shadow-2xs'
                                         : 'border-neutral-200/80 bg-neutral-50/80 text-neutral-600 hover:border-neutral-300 hover:bg-neutral-100 dark:border-neutral-700/60 dark:bg-neutral-800/60 dark:text-neutral-300 dark:hover:bg-neutral-800'

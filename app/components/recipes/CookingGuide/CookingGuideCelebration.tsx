@@ -50,13 +50,13 @@ export const CookingGuideCelebration: React.FC<
 
     return (
         <div
-            className="mx-auto flex w-full max-w-xl flex-col items-center rounded-3xl border border-neutral-200/80 bg-white/95 p-6 text-center shadow-xl backdrop-blur-md sm:p-10 dark:border-neutral-800/80 dark:bg-neutral-900/95"
+            className="mx-auto flex w-full max-w-xl flex-col items-center rounded-2xl border border-neutral-200/80 bg-white/95 p-5 text-center shadow-xl backdrop-blur-md md:rounded-3xl md:p-10 dark:border-neutral-800/80 dark:bg-neutral-900/95"
             data-testid="cooking-guide-celebration"
         >
-            <div className="relative mb-6 flex items-center justify-center">
+            <div className="relative mb-5 flex items-center justify-center md:mb-6">
                 <div className="border-green-450/40 bg-green-450/20 absolute -inset-4 animate-ping rounded-full border opacity-60" />
-                <div className="border-green-450 bg-green-450 relative z-10 flex size-20 items-center justify-center rounded-2xl border text-neutral-950 shadow-lg">
-                    <FiAward size={40} />
+                <div className="border-green-450 bg-green-450 relative z-10 flex size-16 items-center justify-center rounded-2xl border text-neutral-950 shadow-lg md:size-20">
+                    <FiAward className="size-8 md:size-10" />
                 </div>
             </div>
 
@@ -65,7 +65,7 @@ export const CookingGuideCelebration: React.FC<
                 {String(t('steps', { defaultValue: 'steps' }))}
             </span>
 
-            <h2 className="mt-1 text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl dark:text-white">
+            <h2 className="mt-1 text-xl font-bold tracking-tight text-neutral-900 md:text-3xl dark:text-white">
                 {String(
                     t('guide_celebration_title', {
                         defaultValue: 'Bon Appétit! Recipe Complete!',
@@ -74,12 +74,12 @@ export const CookingGuideCelebration: React.FC<
             </h2>
 
             {recipeTitle && (
-                <p className="mt-1 text-base font-semibold text-neutral-700 dark:text-neutral-300">
+                <p className="mt-1 text-sm font-semibold text-neutral-700 md:text-base dark:text-neutral-300">
                     {recipeTitle}
                 </p>
             )}
 
-            <p className="mt-2 max-w-md text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
+            <p className="mt-2 max-w-md text-xs leading-relaxed text-neutral-500 md:text-sm dark:text-neutral-400">
                 {String(
                     t('guide_celebration_subtitle', {
                         defaultValue:
@@ -88,12 +88,12 @@ export const CookingGuideCelebration: React.FC<
                 )}
             </p>
 
-            <div className="mt-8 flex w-full flex-col items-center justify-center gap-3 sm:flex-row">
+            <div className="mt-6 flex w-full flex-col items-center justify-center gap-2.5 md:mt-8 md:flex-row md:gap-3">
                 {recipeId && (
                     <button
                         type="button"
                         onClick={handleShareCooksnap}
-                        className="border-green-450/50 bg-green-450 flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border px-6 py-3 text-sm font-semibold text-neutral-950 shadow-sm transition-transform duration-200 hover:scale-102 sm:w-auto"
+                        className="border-green-450/50 bg-green-450 flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border px-6 py-2.5 text-sm font-semibold text-neutral-950 shadow-sm transition-transform duration-200 hover:scale-102 md:w-auto md:py-3"
                         data-testid="guide-share-cooksnap-btn"
                     >
                         <TbPhotoPlus size={18} />
@@ -110,7 +110,7 @@ export const CookingGuideCelebration: React.FC<
                 <button
                     type="button"
                     onClick={onRestart}
-                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border border-neutral-200/80 bg-neutral-50/80 px-5 py-3 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100 sm:w-auto dark:border-neutral-700/60 dark:bg-neutral-800/60 dark:text-neutral-300 dark:hover:bg-neutral-800"
+                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border border-neutral-200/80 bg-neutral-50/80 px-5 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-100 md:w-auto md:py-3 dark:border-neutral-700/60 dark:bg-neutral-800/60 dark:text-neutral-300 dark:hover:bg-neutral-800"
                     data-testid="guide-restart-btn"
                 >
                     <FiRotateCcw size={16} />
@@ -126,7 +126,7 @@ export const CookingGuideCelebration: React.FC<
                 <button
                     type="button"
                     onClick={onClose}
-                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-neutral-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-neutral-800 sm:w-auto dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
+                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-neutral-900 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-neutral-800 md:w-auto md:py-3 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
                     data-testid="guide-done-btn"
                 >
                     <FiCheck size={16} />

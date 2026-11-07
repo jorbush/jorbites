@@ -324,7 +324,7 @@ export const StepSmartTimer: React.FC<StepSmartTimerProps> = ({
 
     return (
         <div
-            className="mt-5 flex flex-col items-center gap-3"
+            className="mt-3 flex flex-col items-center gap-2.5 md:mt-5 md:gap-3"
             data-testid="step-smart-timer"
         >
             {state.totalSeconds !== null ? (
@@ -347,7 +347,7 @@ export const StepSmartTimer: React.FC<StepSmartTimerProps> = ({
                             key={preset.id}
                             type="button"
                             onClick={() => startPreset(preset.seconds)}
-                            className="border-green-450/50 bg-green-450 hover:bg-green-450/90 flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold text-neutral-900 shadow-xs transition-transform duration-200 hover:scale-102"
+                            className="border-green-450/50 bg-green-450 hover:bg-green-450/90 flex cursor-pointer items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-semibold whitespace-nowrap text-neutral-900 shadow-xs transition-transform duration-200 hover:scale-102 md:px-4 md:py-2"
                             data-testid={`smart-timer-preset-${preset.seconds}`}
                         >
                             <FiClock size={14} />
@@ -362,12 +362,12 @@ export const StepSmartTimer: React.FC<StepSmartTimerProps> = ({
                         </button>
                     ))}
 
-                    <div className="flex items-center gap-1.5 rounded-full border border-neutral-200/80 bg-neutral-50/80 px-2.5 py-1 dark:border-neutral-800 dark:bg-neutral-800/60">
+                    <div className="flex items-center gap-1 rounded-full border border-neutral-200/80 bg-neutral-50/80 px-2.5 py-1 whitespace-nowrap md:gap-1.5 dark:border-neutral-800 dark:bg-neutral-800/60">
                         <FiClock
                             size={12}
-                            className="text-neutral-400 dark:text-neutral-500"
+                            className="shrink-0 text-neutral-400 dark:text-neutral-500"
                         />
-                        <span className="text-[11px] font-medium text-neutral-500 dark:text-neutral-400">
+                        <span className="hidden text-[11px] font-medium text-neutral-500 md:inline dark:text-neutral-400">
                             {String(
                                 t('guide_quick_timer', {
                                     defaultValue: 'Quick timer:',

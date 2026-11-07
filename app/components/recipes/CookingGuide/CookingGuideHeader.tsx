@@ -71,17 +71,17 @@ export const CookingGuideHeader: React.FC<CookingGuideHeaderProps> = ({
     const seenSteps = new Map<string, number>();
 
     return (
-        <header className="relative z-10 border-b border-neutral-200/80 bg-white/80 px-4 py-3 backdrop-blur-md sm:px-6 sm:py-4 dark:border-neutral-800/80 dark:bg-neutral-900/70">
-            <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3">
-                <div className="flex min-w-0 items-center gap-3">
-                    <div className="border-green-450/50 bg-green-450 flex size-9 shrink-0 items-center justify-center rounded-xl border text-neutral-950 shadow-2xs">
+        <header className="relative z-10 border-b border-neutral-200/80 bg-white/80 px-3 py-2.5 backdrop-blur-md md:px-6 md:py-4 dark:border-neutral-800/80 dark:bg-neutral-900/70">
+            <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 md:gap-3">
+                <div className="flex min-w-0 flex-1 items-center gap-2.5 md:gap-3">
+                    <div className="border-green-450/50 bg-green-450 flex size-8 shrink-0 items-center justify-center rounded-xl border text-neutral-950 shadow-2xs md:size-9">
                         <FiPlay
-                            size={16}
+                            size={15}
                             className="ml-0.5 fill-current"
                         />
                     </div>
-                    <div className="min-w-0">
-                        <p className="truncate text-sm font-bold text-neutral-900 sm:text-base dark:text-white">
+                    <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-bold text-neutral-900 md:text-base dark:text-white">
                             {recipeTitle ||
                                 String(
                                     t('guide_title_fallback', {
@@ -89,7 +89,7 @@ export const CookingGuideHeader: React.FC<CookingGuideHeaderProps> = ({
                                     })
                                 )}
                         </p>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                        <p className="truncate text-[11px] text-neutral-500 md:text-xs dark:text-neutral-400">
                             {String(
                                 t('guide_step_x_of_y', {
                                     current: currentIndex + 1,
@@ -107,12 +107,12 @@ export const CookingGuideHeader: React.FC<CookingGuideHeaderProps> = ({
                     </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2">
-                    <div className="flex items-center gap-1 rounded-full border border-neutral-200/80 bg-neutral-50/90 p-1 dark:border-neutral-700/70 dark:bg-neutral-800/80">
+                <div className="flex shrink-0 items-center gap-1.5 md:gap-2">
+                    <div className="flex items-center gap-1 rounded-full border border-neutral-200/80 bg-neutral-50/90 p-0.5 md:p-1 dark:border-neutral-700/70 dark:bg-neutral-800/80">
                         <button
                             type="button"
                             onClick={onToggleMusic}
-                            className={`flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+                            className={`flex cursor-pointer items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-semibold transition-colors md:px-3 ${
                                 isMusicPlaying
                                     ? 'border-green-450/50 bg-green-450 text-neutral-950 shadow-2xs'
                                     : 'text-neutral-600 hover:bg-neutral-200/60 dark:text-neutral-300 dark:hover:bg-neutral-700'
@@ -147,13 +147,13 @@ export const CookingGuideHeader: React.FC<CookingGuideHeaderProps> = ({
                             )}
                         </button>
 
-                        <div className="hidden items-center gap-0.5 sm:flex">
+                        <div className="hidden items-center gap-0.5 md:flex">
                             {VIBE_OPTIONS.map((vibe) => (
                                 <button
                                     key={vibe.id}
                                     type="button"
                                     onClick={() => onSelectVibe(vibe.id)}
-                                    className={`cursor-pointer rounded-full px-2.5 py-1 text-[11px] font-medium transition-colors ${
+                                    className={`cursor-pointer rounded-full px-2.5 py-1 text-[11px] font-medium whitespace-nowrap transition-colors ${
                                         musicVibe === vibe.id
                                             ? 'bg-neutral-900 font-semibold text-white dark:bg-white dark:text-neutral-900'
                                             : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
@@ -173,7 +173,7 @@ export const CookingGuideHeader: React.FC<CookingGuideHeaderProps> = ({
                     <button
                         type="button"
                         onClick={onReadAloud}
-                        className={`flex size-9 cursor-pointer items-center justify-center rounded-full border transition-colors ${
+                        className={`flex size-8 cursor-pointer items-center justify-center rounded-full border transition-colors md:size-9 ${
                             isSpeaking
                                 ? 'border-green-450 bg-green-450 text-neutral-950'
                                 : 'border-neutral-200/80 bg-neutral-50/80 text-neutral-700 hover:bg-neutral-100 dark:border-neutral-700/60 dark:bg-neutral-800/80 dark:text-neutral-300 dark:hover:bg-neutral-700'
@@ -191,9 +191,9 @@ export const CookingGuideHeader: React.FC<CookingGuideHeaderProps> = ({
                         data-testid="guide-read-aloud-btn"
                     >
                         {isSpeaking ? (
-                            <FiVolumeX size={16} />
+                            <FiVolumeX size={15} />
                         ) : (
-                            <FiVolume2 size={16} />
+                            <FiVolume2 size={15} />
                         )}
                     </button>
 
@@ -201,11 +201,11 @@ export const CookingGuideHeader: React.FC<CookingGuideHeaderProps> = ({
                         <button
                             type="button"
                             onClick={onToggleIngredients}
-                            className="flex cursor-pointer items-center gap-1.5 rounded-full border border-neutral-200/80 bg-neutral-50/80 px-3.5 py-2 text-xs font-semibold text-neutral-700 transition-colors hover:bg-neutral-100 dark:border-neutral-700/60 dark:bg-neutral-800/80 dark:text-neutral-200 dark:hover:bg-neutral-700"
+                            className="flex cursor-pointer items-center gap-1.5 rounded-full border border-neutral-200/80 bg-neutral-50/80 px-2.5 py-1.5 text-xs font-semibold text-neutral-700 transition-colors hover:bg-neutral-100 md:px-3.5 md:py-2 dark:border-neutral-700/60 dark:bg-neutral-800/80 dark:text-neutral-200 dark:hover:bg-neutral-700"
                             data-testid="guide-ingredients-toggle-btn"
                         >
                             <FiList size={14} />
-                            <span className="hidden sm:inline">
+                            <span className="hidden md:inline">
                                 {String(
                                     t('ingredients', {
                                         defaultValue: 'Ingredients',
@@ -221,20 +221,20 @@ export const CookingGuideHeader: React.FC<CookingGuideHeaderProps> = ({
                     <button
                         type="button"
                         onClick={onClose}
-                        className="flex size-9 cursor-pointer items-center justify-center rounded-full border border-neutral-200/80 bg-neutral-100 text-neutral-700 transition-colors hover:bg-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
+                        className="flex size-8 cursor-pointer items-center justify-center rounded-full border border-neutral-200/80 bg-neutral-100 text-neutral-700 transition-colors hover:bg-neutral-200 md:size-9 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
                         aria-label={String(
                             t('close', { defaultValue: 'Close' })
                         )}
                         data-testid="guide-close-btn"
                         data-cy="guide-close-btn"
                     >
-                        <FiX size={18} />
+                        <FiX size={17} />
                     </button>
                 </div>
             </div>
 
             <div
-                className="mx-auto mt-3 flex max-w-5xl items-center gap-1.5"
+                className="mx-auto mt-2.5 flex max-w-5xl items-center gap-1 md:mt-3 md:gap-1.5"
                 role="tablist"
                 aria-label={String(t('steps', { defaultValue: 'Steps' }))}
             >
@@ -256,9 +256,9 @@ export const CookingGuideHeader: React.FC<CookingGuideHeaderProps> = ({
                                 t('step', { defaultValue: 'Step' })
                             )} ${idx + 1}`}
                             onClick={() => onGoToStep(idx)}
-                            className={`h-2 flex-1 cursor-pointer rounded-full transition-colors duration-300 ${
+                            className={`h-1.5 flex-1 cursor-pointer rounded-full transition-colors duration-300 md:h-2 ${
                                 isCurrent
-                                    ? 'bg-green-450 ring-green-450/40 h-2.5 ring-2'
+                                    ? 'bg-green-450 ring-green-450/40 h-2 ring-2 md:h-2.5'
                                     : isDone
                                       ? 'bg-green-450/70 hover:bg-green-450'
                                       : 'bg-neutral-200 hover:bg-neutral-300 dark:bg-neutral-800 dark:hover:bg-neutral-700'
