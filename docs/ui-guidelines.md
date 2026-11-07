@@ -156,6 +156,14 @@ Tab navigation rows must cleanly scroll horizontally on small screens without pa
     - Passed / Completed: `border border-neutral-300/80 bg-neutral-100/80 text-neutral-500 dark:border-neutral-700/80 dark:bg-neutral-800/80 dark:text-neutral-400`
     - Active / Live: `border border-green-450/50 bg-green-450/20 text-neutral-900 dark:text-neutral-100`
 
+### 5.4 Responsive Card Grids (Single Column Below `md`)
+
+- **Strict Breakpoint Rule**: For feeds, directories, and lists of cards with rich content (titles, badges, descriptions, buttons like Courses, Workshops, Quests, Blog), **always use 1 column for any screen below `md`**:
+    ```tsx
+    className = 'grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3';
+    ```
+- **Strictly Prohibited**: Never use `sm:grid-cols-2` for rich cards. Small screens and portrait mobile viewports between 640px and 768px (or high-density mobile viewports) cause severe horizontal squishing, resulting in truncated single-word titles, cramped multi-line text, and broken buttons. Multi-column cards must strictly begin at `md:grid-cols-2` or higher.
+
 ---
 
 ## 6. Skeletons & Suspense Fallbacks
