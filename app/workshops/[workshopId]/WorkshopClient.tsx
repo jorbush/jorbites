@@ -39,12 +39,15 @@ const WorkshopClient: React.FC<WorkshopClientProps> = ({
     if (workshop.isPrivate && !canAccessPrivate) {
         return (
             <Container>
-                <div className="mx-auto flex max-w-screen-lg flex-col gap-6 pt-24">
-                    <div className="rounded-lg bg-yellow-100 p-6 text-center dark:bg-yellow-900/30">
-                        <h2 className="mb-2 text-2xl font-semibold dark:text-neutral-100">
+                <div className="mx-auto flex max-w-screen-lg flex-col gap-6 pt-16">
+                    <div className="rounded-2xl border border-neutral-200/80 bg-white p-8 text-center shadow-xs dark:border-neutral-800 dark:bg-neutral-900/90">
+                        <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-xl border border-neutral-200/80 bg-neutral-100 dark:border-neutral-700/60 dark:bg-neutral-800">
+                            <span className="text-xl">🔒</span>
+                        </div>
+                        <h2 className="mb-2 text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
                             {t('private_workshop_title')}
                         </h2>
-                        <p className="text-neutral-600 dark:text-neutral-400">
+                        <p className="text-sm text-neutral-600 dark:text-neutral-400">
                             {t('private_workshop_message')}
                         </p>
                     </div>
@@ -60,7 +63,7 @@ const WorkshopClient: React.FC<WorkshopClientProps> = ({
                 setIsOpen={setIsDeleteModalOpen}
                 id={workshop.id}
             />
-            <div className="mx-auto flex max-w-screen-lg flex-col gap-6 pt-2">
+            <div className="mx-auto flex max-w-screen-lg flex-col gap-6 pt-2 pb-12 sm:pt-4">
                 <WorkshopHead
                     title={workshop.title}
                     date={workshop.date}
@@ -107,31 +110,40 @@ const WorkshopClient: React.FC<WorkshopClientProps> = ({
                                     isHost={isHost}
                                 />
                             )}
-                            <div className="rounded-lg border p-4 dark:border-neutral-700">
-                                <div className="text-sm text-neutral-500">
-                                    <p className="mb-2 font-semibold dark:text-neutral-100">
+                            <div className="rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-xs dark:border-neutral-800 dark:bg-neutral-900/90">
+                                <div className="text-sm text-neutral-600 dark:text-neutral-400">
+                                    <p className="mb-3 font-bold text-neutral-900 dark:text-white">
                                         {t('workshop_information_title')}
                                     </p>
-                                    <p>
-                                        {t('participants_label')}{' '}
-                                        {workshop.participants?.length || 0}
-                                    </p>
-                                    {workshop.price > 0 ? (
+                                    <div className="space-y-2">
                                         <p>
-                                            {t('price_label')}{' '}
-                                            {workshop.price.toFixed(2)}
-                                            {workshop.currency == 'EUR'
-                                                ? '€'
-                                                : '$'}
+                                            {t('participants_label')}{' '}
+                                            <span className="font-semibold text-neutral-900 dark:text-neutral-200">
+                                                {workshop.participants
+                                                    ?.length || 0}
+                                            </span>
                                         </p>
-                                    ) : (
-                                        <p>{t('free')}</p>
-                                    )}
-                                    {workshop.isPrivate && (
-                                        <p className="mt-2 text-yellow-600 dark:text-yellow-400">
-                                            {t('private_workshop_badge')}
-                                        </p>
-                                    )}
+                                        {workshop.price > 0 ? (
+                                            <p>
+                                                {t('price_label')}{' '}
+                                                <span className="font-semibold text-neutral-900 dark:text-neutral-200">
+                                                    {workshop.price.toFixed(2)}{' '}
+                                                    {workshop.currency == 'EUR'
+                                                        ? '€'
+                                                        : '$'}
+                                                </span>
+                                            </p>
+                                        ) : (
+                                            <p className="text-green-450 font-semibold">
+                                                {t('free')}
+                                            </p>
+                                        )}
+                                        {workshop.isPrivate && (
+                                            <p className="mt-2 inline-flex items-center gap-1 rounded-full border border-yellow-200/80 bg-yellow-50 px-2.5 py-0.5 text-xs font-semibold text-yellow-700 dark:border-yellow-800/60 dark:bg-yellow-950/40 dark:text-yellow-400">
+                                                {t('private_workshop_badge')}
+                                            </p>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
