@@ -10,6 +10,7 @@ export interface RecipeChecklistHeaderProps {
     completedCount: number;
     totalCount: number;
     onReset: () => void;
+    actionSlot?: React.ReactNode;
 }
 
 export const RecipeChecklistHeader: React.FC<RecipeChecklistHeaderProps> = ({
@@ -17,10 +18,13 @@ export const RecipeChecklistHeader: React.FC<RecipeChecklistHeaderProps> = ({
     completedCount,
     totalCount,
     onReset,
+    actionSlot,
 }) => {
     const { t } = useTranslation();
     const mounted = useIsMounted();
-    const resetLabel = mounted ? t('reset_checklist') || 'Reset' : 'Reset';
+    const resetLabel = String(
+        mounted ? t('reset_checklist') || 'Reset' : 'Reset'
+    );
 
     return (
         <div className="flex items-center justify-between gap-2">
@@ -35,17 +39,22 @@ export const RecipeChecklistHeader: React.FC<RecipeChecklistHeaderProps> = ({
                 )}
             </div>
 
-            {completedCount > 0 && (
-                <button
-                    type="button"
-                    onClick={onReset}
-                    className="flex cursor-pointer items-center gap-1 text-xs font-medium text-neutral-400 transition-colors duration-200 hover:text-neutral-700 dark:text-neutral-500 dark:hover:text-neutral-300"
-                    title={resetLabel}
-                    aria-label={resetLabel}
-                >
-                    <FiRotateCcw size={12} />
-                    <span>{resetLabel}</span>
-                </button>
+            {(completedCount > 0 || actionSlot) && (
+                <div className="flex items-center gap-2.5">
+                    {completedCount > 0 && (
+                        <button
+                            type="button"
+                            onClick={onReset}
+                            className="flex cursor-pointer items-center gap-1 text-xs font-medium text-neutral-400 transition-colors duration-200 hover:text-neutral-700 dark:text-neutral-500 dark:hover:text-neutral-300"
+                            title={resetLabel}
+                            aria-label={resetLabel}
+                        >
+                            <FiRotateCcw size={12} />
+                            <span>{resetLabel}</span>
+                        </button>
+                    )}
+                    {actionSlot}
+                </div>
             )}
         </div>
     );

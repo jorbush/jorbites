@@ -1,30 +1,43 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FiCheck } from 'react-icons/fi';
+import { FiCheck, FiPlay } from 'react-icons/fi';
 import useIsMounted from '@/app/hooks/useIsMounted';
 import useRecipeChecklist from '@/app/hooks/useRecipeChecklist';
 import { formatText } from '@/app/utils/textFormatting';
 import RecipeChecklistHeader from './RecipeChecklistHeader';
+import RecipeCookingGuideModal from './CookingGuide/RecipeCookingGuideModal';
 
 export interface RecipeStepsProps {
     items: string[];
     recipeId?: string;
+    ingredients?: string[];
+    recipeTitle?: string;
 }
+
+const EMPTY_INGREDIENTS: string[] = [];
 
 export const RecipeSteps: React.FC<RecipeStepsProps> = ({
     items,
     recipeId,
+    ingredients = EMPTY_INGREDIENTS,
+    recipeTitle,
 }) => {
     const { t } = useTranslation();
     const mounted = useIsMounted();
+    const [isGuideOpen, setIsGuideOpen] = useState(false);
     const { isCompleted, toggleIndex, resetChecklist, completedCount } =
         useRecipeChecklist(recipeId, 'steps');
 
     if (items.length === 0) return null;
 
     const seen = new Map<string, number>();
+    const playGuideLabel = String(
+        mounted
+            ? t('start_cooking_guide', { defaultValue: 'Play Guide' })
+            : 'Play Guide'
+    );
 
     return (
         <div
@@ -36,6 +49,23 @@ export const RecipeSteps: React.FC<RecipeStepsProps> = ({
                 completedCount={completedCount}
                 totalCount={items.length}
                 onReset={resetChecklist}
+                actionSlot={
+                    <button
+                        type="button"
+                        onClick={() => setIsGuideOpen(true)}
+                        className="border-green-450/50 bg-green-450 flex cursor-pointer items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-semibold text-neutral-900 shadow-xs transition-transform duration-200 hover:scale-102"
+                        title={playGuideLabel}
+                        aria-label={playGuideLabel}
+                        data-testid="steps-play-button"
+                        data-cy="steps-play-button"
+                    >
+                        <FiPlay
+                            size={13}
+                            className="fill-current"
+                        />
+                        <span>{playGuideLabel}</span>
+                    </button>
+                }
             />
 
             <ol className="mt-4 space-y-2">
@@ -93,6 +123,18 @@ export const RecipeSteps: React.FC<RecipeStepsProps> = ({
                     );
                 })}
             </ol>
+
+            <RecipeCookingGuideModal
+                isOpen={isGuideOpen}
+                onClose={() => setIsGuideOpen(false)}
+                steps={items}
+                ingredients={ingredients}
+                recipeId={recipeId}
+                recipeTitle={recipeTitle}
+                isStepCompleted={isCompleted}
+                onToggleStep={toggleIndex}
+                completedStepsCount={completedCount}
+            />
         </div>
     );
 };
