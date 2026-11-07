@@ -2,13 +2,33 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 
+const CHECKLIST_SYNC_EVENT = 'jorbites:checklist-sync';
+
+function readChecklistStorage(storageKey: string | null): Set<number> {
+    if (!storageKey || typeof window === 'undefined') return new Set();
+    try {
+        const raw = localStorage.getItem(storageKey);
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) {
+                return new Set(
+                    parsed.filter((n): n is number => typeof n === 'number')
+                );
+            }
+        }
+    } catch {
+        // Ignore localStorage errors
+    }
+    return new Set();
+}
+
 export function useRecipeChecklist(
     recipeId: string | undefined,
     type: 'ingredients' | 'steps'
 ) {
     const storageKey = recipeId ? `jorbites_recipe_${recipeId}_${type}` : null;
-    const [checkedIndices, setCheckedIndices] = useState<Set<number>>(
-        new Set()
+    const [checkedIndices, setCheckedIndices] = useState<Set<number>>(() =>
+        readChecklistStorage(storageKey)
     );
     const checkedIndicesRef = useRef<Set<number>>(checkedIndices);
 
@@ -18,21 +38,38 @@ export function useRecipeChecklist(
 
     useEffect(() => {
         if (!storageKey || typeof window === 'undefined') return;
-        try {
-            const raw = localStorage.getItem(storageKey);
-            if (raw) {
-                const parsed = JSON.parse(raw);
-                if (Array.isArray(parsed)) {
-                    const loaded = new Set(
-                        parsed.filter((n): n is number => typeof n === 'number')
-                    );
-                    checkedIndicesRef.current = loaded;
-                    setCheckedIndices(loaded);
-                }
+
+        const syncFromStorage = () => {
+            const loaded = readChecklistStorage(storageKey);
+            checkedIndicesRef.current = loaded;
+            setCheckedIndices(loaded);
+        };
+
+        const handleCustomSync = (e: Event) => {
+            const customEvent = e as CustomEvent<{
+                storageKey?: string;
+                source?: object;
+            }>;
+            if (
+                customEvent.detail?.storageKey === storageKey &&
+                customEvent.detail?.source !== checkedIndicesRef
+            ) {
+                syncFromStorage();
             }
-        } catch {
-            // Ignore localStorage errors
-        }
+        };
+
+        const handleStorageEvent = (e: StorageEvent) => {
+            if (e.key === storageKey) {
+                syncFromStorage();
+            }
+        };
+
+        window.addEventListener(CHECKLIST_SYNC_EVENT, handleCustomSync);
+        window.addEventListener('storage', handleStorageEvent);
+        return () => {
+            window.removeEventListener(CHECKLIST_SYNC_EVENT, handleCustomSync);
+            window.removeEventListener('storage', handleStorageEvent);
+        };
     }, [storageKey]);
 
     const toggleIndex = useCallback(
@@ -56,6 +93,14 @@ export function useRecipeChecklist(
                             JSON.stringify(Array.from(next))
                         );
                     }
+                    window.dispatchEvent(
+                        new CustomEvent(CHECKLIST_SYNC_EVENT, {
+                            detail: {
+                                storageKey,
+                                source: checkedIndicesRef,
+                            },
+                        })
+                    );
                 } catch {
                     // Ignore localStorage errors
                 }
@@ -71,6 +116,14 @@ export function useRecipeChecklist(
         if (storageKey && typeof window !== 'undefined') {
             try {
                 localStorage.removeItem(storageKey);
+                window.dispatchEvent(
+                    new CustomEvent(CHECKLIST_SYNC_EVENT, {
+                        detail: {
+                            storageKey,
+                            source: checkedIndicesRef,
+                        },
+                    })
+                );
             } catch {
                 // Ignore localStorage errors
             }

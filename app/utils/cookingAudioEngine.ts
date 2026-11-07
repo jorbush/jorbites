@@ -37,7 +37,6 @@ export class CookingAudioEngine {
     private ctx: AudioContext | null = null;
     private intervalId: ReturnType<typeof setInterval> | null = null;
     private isPlaying = false;
-    private isMuted = false;
     private vibe: MusicVibe = 'lofi';
     private stepCounter = 0;
 
@@ -75,7 +74,6 @@ export class CookingAudioEngine {
             filterFreq?: number;
         } = {}
     ) {
-        if (this.isMuted) return;
         const ctx = this.getContext();
         if (!ctx) return;
 
@@ -116,7 +114,7 @@ export class CookingAudioEngine {
     }
 
     private tickLoop = () => {
-        if (!this.isPlaying || this.isMuted) return;
+        if (!this.isPlaying) return;
 
         if (this.vibe === 'lofi') {
             const chordIndex =
@@ -223,25 +221,6 @@ export class CookingAudioEngine {
     public stopMusic() {
         this.isPlaying = false;
         this.stopLoopOnly();
-    }
-
-    public setVibe(vibe: MusicVibe) {
-        this.vibe = vibe;
-        if (this.isPlaying) {
-            this.startMusic(vibe);
-        }
-    }
-
-    public setMuted(muted: boolean) {
-        this.isMuted = muted;
-    }
-
-    public getIsPlaying(): boolean {
-        return this.isPlaying;
-    }
-
-    public getVibe(): MusicVibe {
-        return this.vibe;
     }
 
     public playStepAdvance() {

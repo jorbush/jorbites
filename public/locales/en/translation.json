@@ -59,6 +59,8 @@
     "guide_quick_timer": "Quick timer:",
     "guide_celebration_title": "Bon Appétit! Recipe Complete!",
     "guide_celebration_subtitle": "You followed every step like a true chef. Enjoy your delicious creation or share a photo with the community!",
+    "guide_celebration_review_title": "Bon Appétit! Guide Finished!",
+    "guide_celebration_review_subtitle": "You reached the end of the guide. You can review any remaining steps or share a photo of your creation!",
     "guide_restart": "Review Steps",
     "guide_done": "Done",
     "guide_checked": "checked",

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { FiCheck } from 'react-icons/fi';
@@ -47,7 +47,8 @@ const ActiveCookingGuideDialog: React.FC<ActiveCookingGuideDialogProps> = ({
     onToggleStep,
     completedStepsCount,
 }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const dialogRef = useRef<HTMLDialogElement>(null);
 
     const {
         currentIndex,
@@ -58,6 +59,7 @@ const ActiveCookingGuideDialog: React.FC<ActiveCookingGuideDialogProps> = ({
         musicVibe,
         isIngredientsOpen,
         isSpeaking,
+        timer,
         setIsIngredientsOpen,
         handleReadAloud,
         handleGoToStep,
@@ -65,17 +67,32 @@ const ActiveCookingGuideDialog: React.FC<ActiveCookingGuideDialogProps> = ({
         handleNext,
         handleCompleteAndNext,
         handleToggleCurrentStep,
-        handleTimerComplete,
         handleToggleMusic,
         handleSelectVibe,
         handleRestart,
     } = useCookingGuideController({
         steps,
         ingredientsCount: ingredients.length,
+        language: i18n?.language,
         isStepCompleted,
         onToggleStep,
         onClose,
     });
+
+    useEffect(() => {
+        const dialog = dialogRef.current;
+        if (!dialog) return;
+        if (typeof dialog.showModal === 'function') {
+            try {
+                if (dialog.open) {
+                    dialog.close();
+                }
+                dialog.showModal();
+            } catch {
+                dialog.setAttribute('open', '');
+            }
+        }
+    }, []);
 
     const detectedAction = useMemo(
         () => detectStepAction(currentStepText),
@@ -93,7 +110,16 @@ const ActiveCookingGuideDialog: React.FC<ActiveCookingGuideDialogProps> = ({
 
     const dialogContent = (
         <dialog
+            ref={dialogRef}
             open
+            onCancel={(e) => {
+                e.preventDefault();
+                if (isIngredientsOpen) {
+                    setIsIngredientsOpen(false);
+                } else {
+                    onClose();
+                }
+            }}
             aria-label={String(
                 t('guide_modal_label', {
                     defaultValue: 'Interactive Cooking Guide',
@@ -110,13 +136,15 @@ const ActiveCookingGuideDialog: React.FC<ActiveCookingGuideDialogProps> = ({
                 <div
                     className={`bg-green-450/20 dark:bg-green-450/15 absolute -top-24 -left-24 size-96 rounded-full blur-3xl transition-transform duration-1000 ${
                         isMusicPlaying
-                            ? 'scale-105 animate-pulse'
+                            ? 'scale-105 motion-safe:animate-pulse'
                             : 'opacity-50'
                     }`}
                 />
                 <div
                     className={`bg-green-450/15 dark:bg-green-450/10 absolute -right-24 -bottom-24 size-96 rounded-full blur-3xl transition-transform duration-1000 ${
-                        isMusicPlaying ? 'animate-smooth-float' : 'opacity-40'
+                        isMusicPlaying
+                            ? 'motion-safe:animate-smooth-float'
+                            : 'opacity-40'
                     }`}
                 />
             </div>
@@ -131,6 +159,7 @@ const ActiveCookingGuideDialog: React.FC<ActiveCookingGuideDialogProps> = ({
                 musicVibe={musicVibe}
                 isSpeaking={isSpeaking}
                 ingredientsCount={ingredients.length}
+                timer={timer}
                 isStepCompleted={isStepCompleted}
                 onToggleMusic={handleToggleMusic}
                 onSelectVibe={handleSelectVibe}
@@ -176,7 +205,7 @@ const ActiveCookingGuideDialog: React.FC<ActiveCookingGuideDialogProps> = ({
 
                         <StepSmartTimer
                             presets={timerPresets}
-                            onTimerComplete={handleTimerComplete}
+                            timer={timer}
                         />
 
                         <div className="mt-4 md:mt-6">

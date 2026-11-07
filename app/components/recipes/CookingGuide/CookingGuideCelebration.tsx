@@ -28,6 +28,7 @@ export const CookingGuideCelebration: React.FC<
 }) => {
     const { t } = useTranslation();
     const cooksnapModal = useCooksnapModal();
+    const allCompleted = totalSteps > 0 && completedCount >= totalSteps;
 
     useEffect(() => {
         try {
@@ -54,7 +55,7 @@ export const CookingGuideCelebration: React.FC<
             data-testid="cooking-guide-celebration"
         >
             <div className="relative mb-5 flex items-center justify-center md:mb-6">
-                <div className="border-green-450/40 bg-green-450/20 absolute -inset-4 animate-ping rounded-full border opacity-60" />
+                <div className="border-green-450/40 bg-green-450/20 absolute -inset-4 rounded-full border opacity-60 motion-safe:animate-ping" />
                 <div className="border-green-450 bg-green-450 relative z-10 flex size-16 items-center justify-center rounded-2xl border text-neutral-950 shadow-lg md:size-20">
                     <FiAward className="size-8 md:size-10" />
                 </div>
@@ -66,11 +67,17 @@ export const CookingGuideCelebration: React.FC<
             </span>
 
             <h2 className="mt-1 text-xl font-bold tracking-tight text-neutral-900 md:text-3xl dark:text-white">
-                {String(
-                    t('guide_celebration_title', {
-                        defaultValue: 'Bon Appétit! Recipe Complete!',
-                    })
-                )}
+                {allCompleted
+                    ? String(
+                          t('guide_celebration_title', {
+                              defaultValue: 'Bon Appétit! Recipe Complete!',
+                          })
+                      )
+                    : String(
+                          t('guide_celebration_review_title', {
+                              defaultValue: 'Bon Appétit! Guide Finished!',
+                          })
+                      )}
             </h2>
 
             {recipeTitle && (
@@ -80,12 +87,19 @@ export const CookingGuideCelebration: React.FC<
             )}
 
             <p className="mt-2 max-w-md text-xs leading-relaxed text-neutral-500 md:text-sm dark:text-neutral-400">
-                {String(
-                    t('guide_celebration_subtitle', {
-                        defaultValue:
-                            'You followed every step like a true chef. Enjoy your delicious creation or share a photo with the community!',
-                    })
-                )}
+                {allCompleted
+                    ? String(
+                          t('guide_celebration_subtitle', {
+                              defaultValue:
+                                  'You followed every step like a true chef. Enjoy your delicious creation or share a photo with the community!',
+                          })
+                      )
+                    : String(
+                          t('guide_celebration_review_subtitle', {
+                              defaultValue:
+                                  'You reached the end of the guide. You can review any remaining steps or share a photo of your creation!',
+                          })
+                      )}
             </p>
 
             <div className="mt-6 flex w-full flex-col items-center justify-center gap-2.5 md:mt-8 md:flex-row md:gap-3">

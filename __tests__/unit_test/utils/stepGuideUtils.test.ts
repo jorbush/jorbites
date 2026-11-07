@@ -3,6 +3,8 @@ import {
     detectStepAction,
     extractStepTimers,
     formatTimerDisplay,
+    sanitizeStepTextForSpeech,
+    resolveSpeechLang,
 } from '@/app/utils/stepGuideUtils';
 
 describe('stepGuideUtils', () => {
@@ -25,9 +27,12 @@ describe('stepGuideUtils', () => {
             expect(detectStepAction('Bullir la pasta en aigua')).toBe('boil');
         });
 
-        it('detects heat/sauté actions', () => {
+        it('detects heat/sauté actions including accented Unicode words', () => {
             expect(detectStepAction('Sauté onions in a hot pan')).toBe('heat');
-            expect(detectStepAction('Saltear en la sartén')).toBe('heat');
+            expect(detectStepAction('Usar la sartén caliente')).toBe('heat');
+            expect(detectStepAction('Freír las patatas en aceite')).toBe(
+                'heat'
+            );
         });
 
         it('detects chopping and prep actions', () => {
@@ -51,6 +56,18 @@ describe('stepGuideUtils', () => {
             expect(detectStepAction('Dejar reposar en la nevera')).toBe(
                 'chill'
             );
+            expect(detectStepAction('Let the dough rest for 15 minutes')).toBe(
+                'chill'
+            );
+        });
+
+        it('avoids false positives on "rest of the" and "brown sugar"', () => {
+            expect(
+                detectStepAction('Add the rest of the brown sugar to the bowl')
+            ).toBe('general');
+            expect(
+                detectStepAction('Whisk the rest of the brown sugar with eggs')
+            ).toBe('mix');
         });
 
         it('detects plating and serving actions', () => {
@@ -67,6 +84,25 @@ describe('stepGuideUtils', () => {
                 'general'
             );
             expect(detectStepAction('')).toBe('general');
+        });
+    });
+
+    describe('sanitizeStepTextForSpeech & resolveSpeechLang', () => {
+        it('strips markdown formatting, user mention IDs, and URLs for speech', () => {
+            expect(
+                sanitizeStepTextForSpeech(
+                    'Follow **@ChefMaria[user-99]** tip at https://jorbites.com/tip and _whisk_ gently'
+                )
+            ).toBe('Follow @ChefMaria tip at and whisk gently');
+            expect(sanitizeStepTextForSpeech('')).toBe('');
+        });
+
+        it('resolves speech synthesis BCP-47 locale tags for en, es, and ca', () => {
+            expect(resolveSpeechLang('en')).toBe('en-US');
+            expect(resolveSpeechLang('es')).toBe('es-ES');
+            expect(resolveSpeechLang('es-ES')).toBe('es-ES');
+            expect(resolveSpeechLang('ca')).toBe('ca-ES');
+            expect(resolveSpeechLang(undefined)).toBe('en-US');
         });
     });
 

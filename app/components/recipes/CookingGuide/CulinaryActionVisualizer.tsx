@@ -37,54 +37,54 @@ const ACTION_CONFIG: Record<
         icon: TbCooker,
         labelKey: 'guide_action_bake',
         defaultLabel: 'Oven & Baking',
-        motionClass: 'animate-pulse-scale',
+        motionClass: 'motion-safe:animate-pulse-scale',
         showSteam: true,
     },
     boil: {
         icon: TbSoup,
         labelKey: 'guide_action_boil',
         defaultLabel: 'Boil & Simmer',
-        motionClass: 'animate-smooth-float',
+        motionClass: 'motion-safe:animate-smooth-float',
         showSteam: true,
     },
     heat: {
         icon: FiThermometer,
         labelKey: 'guide_action_heat',
         defaultLabel: 'Heat & Sear',
-        motionClass: 'animate-pulse-scale',
+        motionClass: 'motion-safe:animate-pulse-scale',
         showSteam: true,
     },
     chop: {
         icon: FiScissors,
         labelKey: 'guide_action_chop',
         defaultLabel: 'Prep & Slice',
-        motionClass: 'animate-smooth-float',
+        motionClass: 'motion-safe:animate-smooth-float',
     },
     mix: {
         icon: FiRefreshCw,
         labelKey: 'guide_action_mix',
         defaultLabel: 'Mix & Combine',
-        motionClass: 'animate-spin',
+        motionClass: 'motion-safe:animate-spin',
         showOrbit: true,
     },
     chill: {
         icon: FiWind,
         labelKey: 'guide_action_chill',
         defaultLabel: 'Chill & Rest',
-        motionClass: 'animate-smooth-float',
+        motionClass: 'motion-safe:animate-smooth-float',
     },
     plate: {
         icon: TbSalad,
         labelKey: 'guide_action_plate',
         defaultLabel: 'Plate & Serve',
-        motionClass: 'animate-smooth-float',
+        motionClass: 'motion-safe:animate-smooth-float',
         showOrbit: true,
     },
     general: {
         icon: FiZap,
         labelKey: 'guide_action_general',
         defaultLabel: 'Cooking Step',
-        motionClass: 'animate-smooth-float',
+        motionClass: 'motion-safe:animate-smooth-float',
     },
 };
 
@@ -110,14 +110,14 @@ export const CulinaryActionVisualizer: React.FC<
                     className={`border-green-450/30 bg-green-450/10 pointer-events-none absolute -inset-2 rounded-2xl border transition-opacity duration-500 md:-inset-3 md:rounded-3xl ${
                         isCompleted
                             ? 'scale-105 opacity-100'
-                            : 'animate-pulse opacity-75'
+                            : 'opacity-75 motion-safe:animate-pulse'
                     }`}
                 />
 
                 {/* Orbiting dashed ring for mix / plate */}
                 {config.showOrbit && !isCompleted && (
                     <div
-                        className="border-green-450/40 pointer-events-none absolute -inset-3.5 animate-spin rounded-full border border-dashed md:-inset-5"
+                        className="border-green-450/40 pointer-events-none absolute -inset-3.5 rounded-full border border-dashed motion-safe:animate-spin md:-inset-5"
                         style={{ animationDuration: '10s' }}
                     />
                 )}
@@ -128,13 +128,13 @@ export const CulinaryActionVisualizer: React.FC<
                         className="pointer-events-none absolute -top-4 flex items-end gap-1 md:-top-6 md:gap-1.5"
                         aria-hidden="true"
                     >
-                        <span className="bg-green-450/50 h-2.5 w-1 animate-bounce rounded-full md:h-3" />
+                        <span className="bg-green-450/50 h-2.5 w-1 rounded-full motion-safe:animate-bounce md:h-3" />
                         <span
-                            className="bg-green-450/70 h-3 w-1 animate-bounce rounded-full md:h-4"
+                            className="bg-green-450/70 h-3 w-1 rounded-full motion-safe:animate-bounce md:h-4"
                             style={{ animationDelay: '150ms' }}
                         />
                         <span
-                            className="bg-green-450/50 h-2.5 w-1 animate-bounce rounded-full md:h-3"
+                            className="bg-green-450/50 h-2.5 w-1 rounded-full motion-safe:animate-bounce md:h-3"
                             style={{ animationDelay: '300ms' }}
                         />
                     </div>

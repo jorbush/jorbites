@@ -5,9 +5,14 @@ import { useTranslation } from 'react-i18next';
 import { FiCheck, FiPlay } from 'react-icons/fi';
 import useIsMounted from '@/app/hooks/useIsMounted';
 import useRecipeChecklist from '@/app/hooks/useRecipeChecklist';
+import { dynamicImport } from '@/app/utils/dynamicImport';
 import { formatText } from '@/app/utils/textFormatting';
 import RecipeChecklistHeader from './RecipeChecklistHeader';
-import RecipeCookingGuideModal from './CookingGuide/RecipeCookingGuideModal';
+import type { RecipeCookingGuideModalProps } from './CookingGuide/RecipeCookingGuideModal';
+
+const RecipeCookingGuideModal = dynamicImport<RecipeCookingGuideModalProps>(
+    () => import('./CookingGuide/RecipeCookingGuideModal')
+);
 
 export interface RecipeStepsProps {
     items: string[];
@@ -124,17 +129,19 @@ export const RecipeSteps: React.FC<RecipeStepsProps> = ({
                 })}
             </ol>
 
-            <RecipeCookingGuideModal
-                isOpen={isGuideOpen}
-                onClose={() => setIsGuideOpen(false)}
-                steps={items}
-                ingredients={ingredients}
-                recipeId={recipeId}
-                recipeTitle={recipeTitle}
-                isStepCompleted={isCompleted}
-                onToggleStep={toggleIndex}
-                completedStepsCount={completedCount}
-            />
+            {isGuideOpen && (
+                <RecipeCookingGuideModal
+                    isOpen={isGuideOpen}
+                    onClose={() => setIsGuideOpen(false)}
+                    steps={items}
+                    ingredients={ingredients}
+                    recipeId={recipeId}
+                    recipeTitle={recipeTitle}
+                    isStepCompleted={isCompleted}
+                    onToggleStep={toggleIndex}
+                    completedStepsCount={completedCount}
+                />
+            )}
         </div>
     );
 };

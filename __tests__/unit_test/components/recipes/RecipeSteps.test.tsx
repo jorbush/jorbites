@@ -104,7 +104,7 @@ describe('RecipeSteps', () => {
         expect(thirdStep.getAttribute('aria-checked')).toBe('false');
     });
 
-    it('renders the Play button in the steps header and opens the interactive cooking guide modal', () => {
+    it('renders the Play button in the steps header and opens the interactive cooking guide modal', async () => {
         render(
             <RecipeSteps
                 items={mockSteps}
@@ -118,7 +118,9 @@ describe('RecipeSteps', () => {
         expect(screen.queryByTestId('recipe-cooking-guide-modal')).toBeNull();
 
         fireEvent.click(playBtn);
-        expect(screen.getByTestId('recipe-cooking-guide-modal')).toBeDefined();
+        expect(
+            await screen.findByTestId('recipe-cooking-guide-modal')
+        ).toBeDefined();
 
         // Closing the guide modal hides it
         fireEvent.click(screen.getByTestId('guide-close-btn'));

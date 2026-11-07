@@ -9,8 +9,12 @@ import {
     FiMusic,
     FiList,
     FiPlay,
+    FiClock,
+    FiBell,
 } from 'react-icons/fi';
 import { MusicVibe } from '@/app/utils/cookingAudioEngine';
+import { formatTimerDisplay } from '@/app/utils/stepGuideUtils';
+import { CookingTimerController } from './useCookingTimer';
 
 const VIBE_OPTIONS: {
     id: MusicVibe;
@@ -40,6 +44,7 @@ export interface CookingGuideHeaderProps {
     musicVibe: MusicVibe;
     isSpeaking: boolean;
     ingredientsCount: number;
+    timer?: CookingTimerController;
     isStepCompleted: (index: number) => boolean;
     onToggleMusic: () => void;
     onSelectVibe: (vibe: MusicVibe) => void;
@@ -48,6 +53,37 @@ export interface CookingGuideHeaderProps {
     onGoToStep: (index: number) => void;
     onClose: () => void;
 }
+
+const HeaderTimerBadge: React.FC<{ timer: CookingTimerController }> = ({
+    timer,
+}) => {
+    const { t } = useTranslation();
+    const { state } = timer;
+    if (state.totalSeconds === null) return null;
+
+    return (
+        <button
+            type="button"
+            onClick={timer.togglePause}
+            className={`flex cursor-pointer items-center gap-1.5 rounded-full border px-2.5 py-1.5 font-mono text-xs font-bold tabular-nums transition-colors ${
+                state.isFinished
+                    ? 'border-green-450 bg-green-450 text-neutral-950 motion-safe:animate-pulse'
+                    : state.isRunning
+                      ? 'border-green-450/50 bg-green-450/20 dark:text-green-450 text-neutral-900'
+                      : 'border-neutral-200/80 bg-neutral-100 text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'
+            }`}
+            aria-label={String(
+                state.isRunning
+                    ? t('guide_timer_pause', { defaultValue: 'Pause timer' })
+                    : t('guide_timer_resume', { defaultValue: 'Start timer' })
+            )}
+            data-testid="header-active-timer-badge"
+        >
+            {state.isFinished ? <FiBell size={13} /> : <FiClock size={13} />}
+            <span>{formatTimerDisplay(state.remainingSeconds)}</span>
+        </button>
+    );
+};
 
 export const CookingGuideHeader: React.FC<CookingGuideHeaderProps> = ({
     recipeTitle,
@@ -59,6 +95,7 @@ export const CookingGuideHeader: React.FC<CookingGuideHeaderProps> = ({
     musicVibe,
     isSpeaking,
     ingredientsCount,
+    timer,
     isStepCompleted,
     onToggleMusic,
     onSelectVibe,
@@ -108,6 +145,8 @@ export const CookingGuideHeader: React.FC<CookingGuideHeaderProps> = ({
                 </div>
 
                 <div className="flex shrink-0 items-center gap-1.5 md:gap-2">
+                    {timer && <HeaderTimerBadge timer={timer} />}
+
                     <div className="flex items-center gap-1 rounded-full border border-neutral-200/80 bg-neutral-50/90 p-0.5 md:p-1 dark:border-neutral-700/70 dark:bg-neutral-800/80">
                         <button
                             type="button"
@@ -134,13 +173,13 @@ export const CookingGuideHeader: React.FC<CookingGuideHeaderProps> = ({
                                     className="flex items-end gap-0.5"
                                     aria-hidden="true"
                                 >
-                                    <span className="h-2.5 w-0.5 animate-bounce rounded-full bg-neutral-950" />
+                                    <span className="h-2.5 w-0.5 rounded-full bg-neutral-950 motion-safe:animate-bounce" />
                                     <span
-                                        className="h-3.5 w-0.5 animate-bounce rounded-full bg-neutral-950"
+                                        className="h-3.5 w-0.5 rounded-full bg-neutral-950 motion-safe:animate-bounce"
                                         style={{ animationDelay: '150ms' }}
                                     />
                                     <span
-                                        className="h-2 w-0.5 animate-bounce rounded-full bg-neutral-950"
+                                        className="h-2 w-0.5 rounded-full bg-neutral-950 motion-safe:animate-bounce"
                                         style={{ animationDelay: '300ms' }}
                                     />
                                 </span>
@@ -212,7 +251,7 @@ export const CookingGuideHeader: React.FC<CookingGuideHeaderProps> = ({
                                     })
                                 )}
                             </span>
-                            <span className="border-green-450/40 bg-green-450/20 dark:text-green-450 py-0.2 rounded-full border px-1.5 text-[10px] font-bold text-neutral-900">
+                            <span className="border-green-450/40 bg-green-450/20 dark:text-green-450 rounded-full border px-1.5 py-0.5 text-[10px] font-bold text-neutral-900">
                                 {ingredientsCount}
                             </span>
                         </button>

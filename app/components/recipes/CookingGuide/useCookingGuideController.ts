@@ -2,10 +2,106 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { CookingAudioEngine, MusicVibe } from '@/app/utils/cookingAudioEngine';
+import {
+    sanitizeStepTextForSpeech,
+    resolveSpeechLang,
+} from '@/app/utils/stepGuideUtils';
+import { useCookingTimer } from './useCookingTimer';
+
+const MUSIC_PREF_STORAGE_KEY = 'jorbites_cooking_guide_music';
+
+interface MusicPreference {
+    isPlaying: boolean;
+    vibe: MusicVibe;
+}
+
+function readMusicPreference(): MusicPreference {
+    if (typeof window === 'undefined') {
+        return { isPlaying: true, vibe: 'lofi' };
+    }
+    try {
+        const raw = localStorage.getItem(MUSIC_PREF_STORAGE_KEY);
+        if (raw) {
+            const parsed = JSON.parse(raw) as Partial<MusicPreference>;
+            const validVibe =
+                parsed.vibe === 'lofi' ||
+                parsed.vibe === 'acoustic' ||
+                parsed.vibe === 'zen'
+                    ? parsed.vibe
+                    : 'lofi';
+            return {
+                isPlaying:
+                    typeof parsed.isPlaying === 'boolean'
+                        ? parsed.isPlaying
+                        : true,
+                vibe: validVibe,
+            };
+        }
+    } catch {
+        // Ignore storage read errors
+    }
+    return { isPlaying: true, vibe: 'lofi' };
+}
+
+function saveMusicPreference(pref: MusicPreference): void {
+    if (typeof window === 'undefined') return;
+    try {
+        localStorage.setItem(MUSIC_PREF_STORAGE_KEY, JSON.stringify(pref));
+    } catch {
+        // Ignore storage write errors
+    }
+}
+
+function useWakeLockAndScrollLock(): void {
+    useEffect(() => {
+        if (typeof document === 'undefined') return;
+        const originalOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+
+        let wakeLockSentinel: { release: () => Promise<void> } | null = null;
+        const nav = navigator as Navigator & {
+            wakeLock?: {
+                request: (
+                    type: 'screen'
+                ) => Promise<{ release: () => Promise<void> }>;
+            };
+        };
+
+        const acquireWakeLock = () => {
+            if (!nav.wakeLock?.request) return;
+            nav.wakeLock
+                .request('screen')
+                .then((sentinel) => {
+                    wakeLockSentinel = sentinel;
+                })
+                .catch(() => {});
+        };
+
+        acquireWakeLock();
+
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible') {
+                acquireWakeLock();
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            document.body.style.overflow = originalOverflow;
+            document.removeEventListener(
+                'visibilitychange',
+                handleVisibilityChange
+            );
+            wakeLockSentinel?.release().catch(() => {});
+        };
+    }, []);
+}
 
 interface UseCookingGuideControllerParams {
     steps: string[];
     ingredientsCount: number;
+    language?: string;
     isStepCompleted: (index: number) => boolean;
     onToggleStep: (index: number) => void;
     onClose: () => void;
@@ -14,6 +110,7 @@ interface UseCookingGuideControllerParams {
 export function useCookingGuideController({
     steps,
     ingredientsCount,
+    language,
     isStepCompleted,
     onToggleStep,
     onClose,
@@ -27,13 +124,26 @@ export function useCookingGuideController({
         return firstIncomplete >= 0 ? firstIncomplete : 0;
     });
     const [isCelebration, setIsCelebration] = useState<boolean>(false);
-    const [isMusicPlaying, setIsMusicPlaying] = useState<boolean>(true);
-    const [musicVibe, setMusicVibe] = useState<MusicVibe>('lofi');
+    const [musicPref, setMusicPref] = useState<MusicPreference>(() =>
+        readMusicPreference()
+    );
     const [isIngredientsOpen, setIsIngredientsOpen] = useState<boolean>(false);
     const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
 
-    // Manage Audio Engine lifecycle
+    const { isPlaying: isMusicPlaying, vibe: musicVibe } = musicPref;
+
+    useWakeLockAndScrollLock();
+
+    const handleTimerComplete = useCallback(() => {
+        audioEngineRef.current?.playTimerAlarm();
+    }, []);
+
+    const timer = useCookingTimer(handleTimerComplete);
+
+    // Manage Audio Engine lifecycle & persist music preference
     useEffect(() => {
+        saveMusicPreference({ isPlaying: isMusicPlaying, vibe: musicVibe });
+
         if (!audioEngineRef.current) {
             audioEngineRef.current = new CookingAudioEngine();
         }
@@ -59,35 +169,6 @@ export function useCookingGuideController({
         };
     }, []);
 
-    // Lock body scroll & request screen wake lock while mounted
-    useEffect(() => {
-        if (typeof document === 'undefined') return;
-        const originalOverflow = document.body.style.overflow;
-        document.body.style.overflow = 'hidden';
-
-        let wakeLockSentinel: { release: () => Promise<void> } | null = null;
-        const nav = navigator as Navigator & {
-            wakeLock?: {
-                request: (
-                    type: 'screen'
-                ) => Promise<{ release: () => Promise<void> }>;
-            };
-        };
-        if (nav.wakeLock?.request) {
-            nav.wakeLock
-                .request('screen')
-                .then((sentinel) => {
-                    wakeLockSentinel = sentinel;
-                })
-                .catch(() => {});
-        }
-
-        return () => {
-            document.body.style.overflow = originalOverflow;
-            wakeLockSentinel?.release().catch(() => {});
-        };
-    }, []);
-
     const currentStepText = steps[currentIndex] || '';
     const currentStepDone = isStepCompleted(currentIndex);
 
@@ -108,8 +189,9 @@ export function useCookingGuideController({
         }
         try {
             window.speechSynthesis.cancel();
-            const cleanText = currentStepText.replace(/[*_]/g, '');
+            const cleanText = sanitizeStepTextForSpeech(currentStepText);
             const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = resolveSpeechLang(language);
             utterance.onend = () => setIsSpeaking(false);
             utterance.onerror = () => setIsSpeaking(false);
             setIsSpeaking(true);
@@ -117,7 +199,7 @@ export function useCookingGuideController({
         } catch {
             setIsSpeaking(false);
         }
-    }, [currentStepText, isSpeaking, stopSpeech]);
+    }, [currentStepText, isSpeaking, language, stopSpeech]);
 
     const handleGoToStep = useCallback(
         (index: number) => {
@@ -173,17 +255,12 @@ export function useCookingGuideController({
         audioEngineRef.current?.playStepComplete();
     }, [currentIndex, onToggleStep]);
 
-    const handleTimerComplete = useCallback(() => {
-        audioEngineRef.current?.playTimerAlarm();
-    }, []);
-
     const handleToggleMusic = useCallback(() => {
-        setIsMusicPlaying((prev) => !prev);
+        setMusicPref((prev) => ({ ...prev, isPlaying: !prev.isPlaying }));
     }, []);
 
     const handleSelectVibe = useCallback((vibe: MusicVibe) => {
-        setMusicVibe(vibe);
-        setIsMusicPlaying(true);
+        setMusicPref({ isPlaying: true, vibe });
     }, []);
 
     const handleRestart = useCallback(() => {
@@ -239,6 +316,7 @@ export function useCookingGuideController({
         musicVibe,
         isIngredientsOpen,
         isSpeaking,
+        timer,
         setIsIngredientsOpen,
         handleReadAloud,
         handleGoToStep,

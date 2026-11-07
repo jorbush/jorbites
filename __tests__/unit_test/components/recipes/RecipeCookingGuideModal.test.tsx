@@ -13,6 +13,7 @@ vi.mock('react-i18next', () => ({
     useTranslation: () => ({
         t: (key: string, options?: { defaultValue?: string }) =>
             options?.defaultValue || key,
+        i18n: { language: 'es' },
     }),
 }));
 
@@ -64,7 +65,7 @@ describe('RecipeCookingGuideModal', () => {
         expect(screen.queryByTestId('recipe-cooking-guide-modal')).toBeNull();
     });
 
-    it('renders active step, smart timer preset, and navigates steps', () => {
+    it('persists active timer across step changes and shows header mini-timer badge', () => {
         const onClose = vi.fn();
         const onToggleStep = vi.fn();
 
@@ -88,12 +89,8 @@ describe('RecipeCookingGuideModal', () => {
             screen.getByText('Preheat oven to 180°C for 10 minutes')
         ).toBeDefined();
 
-        // Smart timer preset detected for 10 minutes (600s)
-        const timerPresetBtn = screen.getByTestId('smart-timer-preset-600');
-        expect(timerPresetBtn).toBeDefined();
-
-        // Start timer and advance 2 seconds
-        fireEvent.click(timerPresetBtn);
+        // Start 10 minute timer (600s) and advance 2 seconds
+        fireEvent.click(screen.getByTestId('smart-timer-preset-600'));
         expect(screen.getByTestId('timer-countdown-display').textContent).toBe(
             '10:00'
         );
@@ -103,23 +100,46 @@ describe('RecipeCookingGuideModal', () => {
         expect(screen.getByTestId('timer-countdown-display').textContent).toBe(
             '09:58'
         );
+        expect(
+            screen.getByTestId('header-active-timer-badge').textContent
+        ).toContain('09:58');
 
-        // Navigate to Step 2 via Complete & Next
-        const completeNextBtn = screen.getByTestId('guide-complete-next-btn');
-        fireEvent.click(completeNextBtn);
+        // Navigate to Step 2 via Complete & Next — timer must survive step transition!
+        fireEvent.click(screen.getByTestId('guide-complete-next-btn'));
         expect(onToggleStep).toHaveBeenCalledWith(0);
         expect(screen.getByText('Whisk eggs and sugar together')).toBeDefined();
+        expect(screen.getByTestId('timer-countdown-display').textContent).toBe(
+            '09:58'
+        );
+        expect(
+            screen.getByTestId('header-active-timer-badge').textContent
+        ).toContain('09:58');
+
+        // Advance another 3 seconds while on Step 2
+        act(() => {
+            vi.advanceTimersByTime(3000);
+        });
+        expect(screen.getByTestId('timer-countdown-display').textContent).toBe(
+            '09:55'
+        );
 
         // Navigate to Step 3 via Next button
-        const skipNextBtn = screen.getByTestId('guide-skip-next-btn');
-        fireEvent.click(skipNextBtn);
+        fireEvent.click(screen.getByTestId('guide-skip-next-btn'));
         expect(screen.getByText('Garnish and serve warm')).toBeDefined();
 
         // Finish cooking on last step shows Celebration Finale
         fireEvent.click(screen.getByTestId('guide-complete-next-btn'));
         expect(screen.getByTestId('cooking-guide-celebration')).toBeDefined();
 
-        // Clicking "I Made This!" opens Cooksnap modal and closes guide
+        // Clicking "Review Steps" restarts at Step 1
+        fireEvent.click(screen.getByTestId('guide-restart-btn'));
+        expect(
+            screen.getByText('Preheat oven to 180°C for 10 minutes')
+        ).toBeDefined();
+
+        // Jump to celebration again and share Cooksnap
+        fireEvent.click(screen.getByTestId('guide-progress-segment-2'));
+        fireEvent.click(screen.getByTestId('guide-complete-next-btn'));
         fireEvent.click(screen.getByTestId('guide-share-cooksnap-btn'));
         expect(onClose).toHaveBeenCalledTimes(1);
         expect(mockCooksnapOpen).toHaveBeenCalledWith(
@@ -128,8 +148,34 @@ describe('RecipeCookingGuideModal', () => {
         );
     });
 
-    it('opens and closes the quick-peek ingredients drawer and toggles music vibes', () => {
+    it('supports keyboard shortcuts (ArrowRight, ArrowLeft, i, m, Escape) and speech language', () => {
         const onClose = vi.fn();
+        const mockSpeak = vi.fn();
+        const mockCancel = vi.fn();
+
+        Object.defineProperty(window, 'speechSynthesis', {
+            writable: true,
+            configurable: true,
+            value: {
+                speak: mockSpeak,
+                cancel: mockCancel,
+            },
+        });
+
+        class MockUtterance {
+            text: string;
+            lang = '';
+            onend: (() => void) | null = null;
+            onerror: (() => void) | null = null;
+            constructor(text: string) {
+                this.text = text;
+            }
+        }
+        Object.defineProperty(window, 'SpeechSynthesisUtterance', {
+            writable: true,
+            configurable: true,
+            value: MockUtterance,
+        });
 
         render(
             <RecipeCookingGuideModal
@@ -144,25 +190,37 @@ describe('RecipeCookingGuideModal', () => {
             />
         );
 
-        // Toggle ingredients drawer
-        fireEvent.click(screen.getByTestId('guide-ingredients-toggle-btn'));
+        // ArrowRight advances to Step 2, ArrowLeft returns to Step 1
+        fireEvent.keyDown(window, { key: 'ArrowRight' });
+        expect(screen.getByText('Whisk eggs and sugar together')).toBeDefined();
+        fireEvent.keyDown(window, { key: 'ArrowLeft' });
+        expect(
+            screen.getByText('Preheat oven to 180°C for 10 minutes')
+        ).toBeDefined();
+
+        // Read aloud uses Spanish locale from i18n
+        fireEvent.click(screen.getByTestId('guide-read-aloud-btn'));
+        expect(mockSpeak).toHaveBeenCalledTimes(1);
+        expect(mockSpeak.mock.calls[0][0].lang).toBe('es-ES');
+
+        // 'i' opens ingredients drawer, Escape closes drawer first
+        fireEvent.keyDown(window, { key: 'i' });
         expect(
             screen.getByTestId('cooking-guide-ingredients-drawer')
         ).toBeDefined();
-        expect(screen.getByText('200g Flour')).toBeDefined();
-
-        // Close drawer via Escape key first before closing modal
         fireEvent.keyDown(window, { key: 'Escape' });
         expect(
             screen.queryByTestId('cooking-guide-ingredients-drawer')
         ).toBeNull();
         expect(onClose).not.toHaveBeenCalled();
 
-        // Switch music vibe and toggle music
-        fireEvent.click(screen.getByTestId('guide-vibe-acoustic'));
-        fireEvent.click(screen.getByTestId('guide-music-toggle-btn'));
+        // 'm' toggles music preference and saves to localStorage
+        fireEvent.keyDown(window, { key: 'm' });
+        expect(localStorage.getItem('jorbites_cooking_guide_music')).toContain(
+            '"isPlaying":false'
+        );
 
-        // Pressing Escape again closes the modal
+        // Escape closes modal
         fireEvent.keyDown(window, { key: 'Escape' });
         expect(onClose).toHaveBeenCalledTimes(1);
     });

@@ -14,17 +14,38 @@ export interface StepTimerPreset {
     seconds: number;
 }
 
+const BOUNDARY_START = '(?:^|[^\\p{L}\\p{N}_])';
+const BOUNDARY_END = '(?=$|[^\\p{L}\\p{N}_])';
+
+function createKeywordRegex(pattern: string): RegExp {
+    return new RegExp(`${BOUNDARY_START}(?:${pattern})${BOUNDARY_END}`, 'iu');
+}
+
 const ACTION_KEYWORDS: Record<
     Exclude<CulinaryActionType, 'general'>,
     RegExp
 > = {
-    bake: /\b(bake|baking|oven|roast|roasting|broil|preheat|hornear|horno|asar|precalentar|fornejar|forn|rostir|preescalfar)\b/i,
-    boil: /\b(boil|boiling|simmer|simmering|steam|steaming|poach|blanch|hervir|hirviendo|cocer|vapor|escalfar|bullir|coure)\b/i,
-    heat: /\b(fry|frying|saut[eé]|sear|searing|pan|grill|toast|brown|caramelize|melt|skillet|wok|fre[ií]r|saltear|dorar|sart[eé]n|plancha|tostar|fundir|fregir|saltar|daurar|paella|torrar|fondre)\b/i,
-    chop: /\b(chop|chopping|slice|slicing|dice|dicing|mince|mincing|cut|cutting|peel|grate|julienne|crush|cortar|picar|trocear|pelar|rallar|rebanar|tallar|trossejar|ratllar)\b/i,
-    mix: /\b(mix|mixing|whisk|whisking|stir|stirring|blend|blending|fold|folding|beat|beating|knead|combine|toss|mash|mezclar|batir|remover|integrar|amasar|triturar|combinar|barrejar|batre|remenar|pastar)\b/i,
-    chill: /\b(chill|chilling|freeze|freezing|cool|cooling|refrigerate|fridge|freezer|ice|marinate|rest|resting|enfriar|congelar|refrigerar|nevera|reposar|marinar|refredar|congelador)\b/i,
-    plate: /\b(serve|serving|plate|plating|garnish|decorate|drizzle|sprinkle|enjoy|servir|emplatar|decorar|espolvorear|disfrutar|gaudir|empolvorar)\b/i,
+    bake: createKeywordRegex(
+        'bake|baking|oven|roast|roasting|broil|preheat|hornear|horno|asar|precalentar|fornejar|forn|rostir|preescalfar'
+    ),
+    boil: createKeywordRegex(
+        'boil|boiling|simmer|simmering|steam|steaming|poach|blanch|hervir|hirviendo|cocer|vapor|escalfar|bullir|coure'
+    ),
+    heat: createKeywordRegex(
+        'fry|frying|saut[eé]|sear|searing|pan|grill|toast|browning|brown(?!\\s+(?:sugar|rice|butter|flour|bread|lentils))|caramelize|melt|skillet|wok|fre[ií]r|saltear|dorar|sart[eé]n|plancha|tostar|fundir|fregir|saltar|daurar|paella|torrar|fondre'
+    ),
+    chop: createKeywordRegex(
+        'chop|chopping|slice|slicing|dice|dicing|mince|mincing|cut|cutting|peel|grate|julienne|crush|cortar|picar|trocear|pelar|rallar|rebanar|tallar|trossejar|ratllar'
+    ),
+    mix: createKeywordRegex(
+        'mix|mixing|whisk|whisking|stir|stirring|blend|blending|fold|folding|beat|beating|knead|combine|toss|mash|mezclar|batir|remover|integrar|amasar|triturar|combinar|barrejar|batre|remenar|pastar'
+    ),
+    chill: createKeywordRegex(
+        'chill|chilling|freeze|freezing|cool|cooling|refrigerate|fridge|freezer|ice|marinate|resting|rest(?!\\s+of\\b)|enfriar|congelar|refrigerar|nevera|reposar|marinar|refredar|congelador'
+    ),
+    plate: createKeywordRegex(
+        'serve|serving|plate|plating|garnish|decorate|drizzle|sprinkle|enjoy|servir|emplatar|decorar|espolvorear|disfrutar|gaudir|empolvorar'
+    ),
 };
 
 /**
@@ -50,6 +71,29 @@ export function detectStepAction(stepText: string): CulinaryActionType {
     }
 
     return 'general';
+}
+
+/**
+ * Cleans markdown, user mention tags (@name[id]), and raw URLs for speech synthesis.
+ */
+export function sanitizeStepTextForSpeech(stepText: string): string {
+    if (!stepText) return '';
+    return stepText
+        .replace(/@([^[\]]+)\[([^\]]+)\]/g, '@$1')
+        .replace(/https?:\/\/[^\s]+/g, '')
+        .replace(/[*_]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+/**
+ * Maps an i18n language code to a BCP-47 speech synthesis locale tag.
+ */
+export function resolveSpeechLang(language?: string): string {
+    const normalized = (language || 'en').toLowerCase();
+    if (normalized.startsWith('ca')) return 'ca-ES';
+    if (normalized.startsWith('es')) return 'es-ES';
+    return 'en-US';
 }
 
 /**
