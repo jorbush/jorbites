@@ -4,7 +4,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { FiClock, FiAward, FiCheck } from 'react-icons/fi';
+import { FiClock, FiAward } from 'react-icons/fi';
 import Button from '@/app/components/buttons/Button';
 
 interface CertificateCardProps {
