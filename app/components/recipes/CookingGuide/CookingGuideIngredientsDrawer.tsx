@@ -24,6 +24,8 @@ export const CookingGuideIngredientsDrawer: React.FC<
 
     if (!isOpen || ingredients.length === 0) return null;
 
+    const seen = new Map<string, number>();
+
     return (
         <div
             className="fixed inset-0 z-50 flex justify-end bg-neutral-950/50 backdrop-blur-xs"
@@ -76,9 +78,12 @@ export const CookingGuideIngredientsDrawer: React.FC<
 
                 <ul className="mt-4 flex-1 space-y-1.5 overflow-y-auto pr-1">
                     {ingredients.map((item, idx) => {
+                        const count = (seen.get(item) ?? 0) + 1;
+                        seen.set(item, count);
+                        const itemKey = count === 1 ? item : `${item}-${count}`;
                         const completed = isCompleted(idx);
                         return (
-                            <li key={`${item}-${idx}`}>
+                            <li key={itemKey}>
                                 <button
                                     type="button"
                                     role="checkbox"

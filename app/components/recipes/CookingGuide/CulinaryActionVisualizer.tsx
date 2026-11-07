@@ -107,7 +107,7 @@ export const CulinaryActionVisualizer: React.FC<
             <div className="relative flex items-center justify-center">
                 {/* Ambient outer pulse ring */}
                 <div
-                    className={`border-green-450/30 bg-green-450/10 pointer-events-none absolute -inset-3 rounded-3xl border transition-all duration-500 ${
+                    className={`border-green-450/30 bg-green-450/10 pointer-events-none absolute -inset-3 rounded-3xl border transition-opacity duration-500 ${
                         isCompleted
                             ? 'scale-105 opacity-100'
                             : 'animate-pulse opacity-75'
@@ -142,7 +142,7 @@ export const CulinaryActionVisualizer: React.FC<
 
                 {/* Main Squircle Icon Container */}
                 <div
-                    className={`relative z-10 flex size-16 items-center justify-center rounded-2xl border shadow-md transition-all duration-300 sm:size-20 ${
+                    className={`relative z-10 flex size-16 items-center justify-center rounded-2xl border shadow-md transition-colors duration-300 sm:size-20 ${
                         isCompleted
                             ? 'border-green-450 bg-green-450 text-neutral-950'
                             : 'border-neutral-200/80 bg-white/90 text-neutral-900 dark:border-neutral-700/80 dark:bg-neutral-800/90 dark:text-white'

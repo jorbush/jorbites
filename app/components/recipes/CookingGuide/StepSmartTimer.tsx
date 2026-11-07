@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useReducer, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     FiClock,
@@ -19,8 +19,96 @@ import {
 
 interface StepSmartTimerProps {
     presets: StepTimerPreset[];
-    stepIndex: number;
     onTimerComplete?: () => void;
+}
+
+interface TimerState {
+    totalSeconds: number | null;
+    remainingSeconds: number;
+    isRunning: boolean;
+    isFinished: boolean;
+}
+
+type TimerAction =
+    | { type: 'START'; seconds: number }
+    | { type: 'TICK' }
+    | { type: 'TOGGLE_PAUSE' }
+    | { type: 'ADJUST'; deltaSeconds: number }
+    | { type: 'RESET' }
+    | { type: 'DISMISS' };
+
+const INITIAL_TIMER_STATE: TimerState = {
+    totalSeconds: null,
+    remainingSeconds: 0,
+    isRunning: false,
+    isFinished: false,
+};
+
+function timerReducer(state: TimerState, action: TimerAction): TimerState {
+    switch (action.type) {
+        case 'START':
+            return {
+                totalSeconds: action.seconds,
+                remainingSeconds: action.seconds,
+                isRunning: true,
+                isFinished: false,
+            };
+        case 'TICK': {
+            if (state.remainingSeconds <= 1) {
+                return {
+                    ...state,
+                    remainingSeconds: 0,
+                    isRunning: false,
+                    isFinished: true,
+                };
+            }
+            return {
+                ...state,
+                remainingSeconds: state.remainingSeconds - 1,
+            };
+        }
+        case 'TOGGLE_PAUSE': {
+            if (state.isFinished && state.totalSeconds) {
+                return {
+                    ...state,
+                    remainingSeconds: state.totalSeconds,
+                    isFinished: false,
+                    isRunning: true,
+                };
+            }
+            return {
+                ...state,
+                isRunning: !state.isRunning,
+            };
+        }
+        case 'ADJUST': {
+            const nextRemaining = Math.max(
+                5,
+                state.remainingSeconds + action.deltaSeconds
+            );
+            const nextTotal = state.totalSeconds
+                ? Math.max(state.totalSeconds, nextRemaining)
+                : nextRemaining;
+            return {
+                ...state,
+                remainingSeconds: nextRemaining,
+                totalSeconds: nextTotal,
+                isFinished: false,
+            };
+        }
+        case 'RESET':
+            if (!state.totalSeconds) return state;
+            return {
+                ...state,
+                remainingSeconds: state.totalSeconds,
+                isRunning: false,
+                isFinished: false,
+            };
+        case 'DISMISS':
+            return INITIAL_TIMER_STATE;
+        default:
+            return state;
+    }
 }
 
 const QUICK_CUSTOM_SECONDS = [
@@ -29,89 +117,30 @@ const QUICK_CUSTOM_SECONDS = [
     { label: '+10m', seconds: 600 },
 ];
 
-export const StepSmartTimer: React.FC<StepSmartTimerProps> = ({
-    presets,
-    stepIndex,
-    onTimerComplete,
+interface ActiveTimerCardProps {
+    totalSeconds: number;
+    remainingSeconds: number;
+    isRunning: boolean;
+    isFinished: boolean;
+    onTogglePause: () => void;
+    onAdjust: (delta: number) => void;
+    onReset: () => void;
+    onDismiss: () => void;
+}
+
+const ActiveTimerCard: React.FC<ActiveTimerCardProps> = ({
+    totalSeconds,
+    remainingSeconds,
+    isRunning,
+    isFinished,
+    onTogglePause,
+    onAdjust,
+    onReset,
+    onDismiss,
 }) => {
     const { t } = useTranslation();
-    const [totalSeconds, setTotalSeconds] = useState<number | null>(null);
-    const [remainingSeconds, setRemainingSeconds] = useState<number>(0);
-    const [isRunning, setIsRunning] = useState<boolean>(false);
-    const [isFinished, setIsFinished] = useState<boolean>(false);
-
-    // Reset timer view when user changes step unless a timer is actively running
-    useEffect(() => {
-        if (!isRunning) {
-            setTotalSeconds(null);
-            setRemainingSeconds(0);
-            setIsFinished(false);
-        }
-    }, [stepIndex, isRunning]);
-
-    useEffect(() => {
-        if (!isRunning) return;
-
-        const interval = setInterval(() => {
-            setRemainingSeconds((prev) => {
-                if (prev <= 1) {
-                    setIsRunning(false);
-                    setIsFinished(true);
-                    onTimerComplete?.();
-                    return 0;
-                }
-                return prev - 1;
-            });
-        }, 1000);
-
-        return () => clearInterval(interval);
-    }, [isRunning, onTimerComplete]);
-
-    const startPreset = useCallback((seconds: number) => {
-        setTotalSeconds(seconds);
-        setRemainingSeconds(seconds);
-        setIsFinished(false);
-        setIsRunning(true);
-    }, []);
-
-    const togglePause = useCallback(() => {
-        if (isFinished && totalSeconds) {
-            setRemainingSeconds(totalSeconds);
-            setIsFinished(false);
-            setIsRunning(true);
-            return;
-        }
-        setIsRunning((prev) => !prev);
-    }, [isFinished, totalSeconds]);
-
-    const adjustTime = useCallback((deltaSeconds: number) => {
-        setRemainingSeconds((prev) => {
-            const next = Math.max(5, prev + deltaSeconds);
-            setTotalSeconds((currTotal) =>
-                currTotal ? Math.max(currTotal, next) : next
-            );
-            setIsFinished(false);
-            return next;
-        });
-    }, []);
-
-    const resetTimer = useCallback(() => {
-        if (totalSeconds) {
-            setRemainingSeconds(totalSeconds);
-            setIsRunning(false);
-            setIsFinished(false);
-        }
-    }, [totalSeconds]);
-
-    const dismissTimer = useCallback(() => {
-        setIsRunning(false);
-        setIsFinished(false);
-        setTotalSeconds(null);
-        setRemainingSeconds(0);
-    }, []);
-
     const progress =
-        totalSeconds && totalSeconds > 0
+        totalSeconds > 0
             ? Math.min(1, Math.max(0, remainingSeconds / totalSeconds))
             : 0;
     const radius = 22;
@@ -120,168 +149,198 @@ export const StepSmartTimer: React.FC<StepSmartTimerProps> = ({
 
     return (
         <div
+            className={`flex flex-wrap items-center justify-between gap-4 rounded-2xl border px-4 py-3 shadow-xs transition-colors duration-300 sm:px-5 ${
+                isFinished
+                    ? 'border-green-450 bg-green-450/20 animate-pulse text-neutral-900 dark:text-white'
+                    : 'border-neutral-200/80 bg-neutral-50/90 text-neutral-900 dark:border-neutral-700/80 dark:bg-neutral-800/80 dark:text-white'
+            }`}
+            data-testid="active-step-timer"
+        >
+            <div className="flex items-center gap-3">
+                <div className="relative flex size-14 shrink-0 items-center justify-center">
+                    <svg
+                        className="-rotate-90 transform"
+                        width="54"
+                        height="54"
+                        viewBox="0 0 54 54"
+                    >
+                        <circle
+                            cx="27"
+                            cy="27"
+                            r={radius}
+                            fill="transparent"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                            className="text-neutral-200 dark:text-neutral-700"
+                        />
+                        <circle
+                            cx="27"
+                            cy="27"
+                            r={radius}
+                            fill="transparent"
+                            stroke="#C5F0A4"
+                            strokeWidth="4"
+                            strokeLinecap="round"
+                            strokeDasharray={circumference}
+                            strokeDashoffset={strokeDashoffset}
+                        />
+                    </svg>
+                    <button
+                        type="button"
+                        onClick={onTogglePause}
+                        className="bg-green-450 absolute flex size-9 cursor-pointer items-center justify-center rounded-full text-neutral-950 shadow-2xs transition-transform hover:scale-102"
+                        aria-label={String(
+                            isRunning
+                                ? t('guide_timer_pause', {
+                                      defaultValue: 'Pause timer',
+                                  })
+                                : t('guide_timer_resume', {
+                                      defaultValue: 'Start timer',
+                                  })
+                        )}
+                        data-testid="timer-play-pause-btn"
+                    >
+                        {isRunning ? (
+                            <FiPause size={15} />
+                        ) : (
+                            <FiPlay
+                                size={15}
+                                className="ml-0.5"
+                            />
+                        )}
+                    </button>
+                </div>
+
+                <div>
+                    <div
+                        className="font-mono text-2xl font-bold tracking-tight tabular-nums sm:text-3xl"
+                        data-testid="timer-countdown-display"
+                    >
+                        {formatTimerDisplay(remainingSeconds)}
+                    </div>
+                    <div className="flex items-center gap-1 text-xs font-medium text-neutral-500 dark:text-neutral-400">
+                        {isFinished ? (
+                            <span className="dark:text-green-450 flex items-center gap-1 font-semibold text-neutral-900">
+                                <FiBell size={12} />
+                                {String(
+                                    t('guide_timer_finished', {
+                                        defaultValue: 'Timer complete!',
+                                    })
+                                )}
+                            </span>
+                        ) : (
+                            <span>
+                                {isRunning
+                                    ? String(
+                                          t('guide_timer_running', {
+                                              defaultValue: 'Timer running',
+                                          })
+                                      )
+                                    : String(
+                                          t('guide_timer_paused', {
+                                              defaultValue: 'Timer paused',
+                                          })
+                                      )}
+                            </span>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+                <button
+                    type="button"
+                    onClick={() => onAdjust(-60)}
+                    className="flex size-8 cursor-pointer items-center justify-center rounded-lg border border-neutral-200/80 bg-white text-xs font-semibold text-neutral-700 transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800"
+                    title="-1 min"
+                    aria-label="-1 min"
+                    data-testid="timer-minus-btn"
+                >
+                    <FiMinus size={13} />
+                </button>
+                <button
+                    type="button"
+                    onClick={() => onAdjust(60)}
+                    className="flex size-8 cursor-pointer items-center justify-center rounded-lg border border-neutral-200/80 bg-white text-xs font-semibold text-neutral-700 transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800"
+                    title="+1 min"
+                    aria-label="+1 min"
+                    data-testid="timer-plus-btn"
+                >
+                    <FiPlus size={13} />
+                </button>
+                <button
+                    type="button"
+                    onClick={onReset}
+                    className="flex size-8 cursor-pointer items-center justify-center rounded-lg border border-neutral-200/80 bg-white text-neutral-600 transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800"
+                    title={String(
+                        t('reset_checklist', { defaultValue: 'Reset' })
+                    )}
+                    aria-label={String(
+                        t('reset_checklist', { defaultValue: 'Reset' })
+                    )}
+                    data-testid="timer-reset-btn"
+                >
+                    <FiRotateCcw size={13} />
+                </button>
+                <button
+                    type="button"
+                    onClick={onDismiss}
+                    className="flex size-8 cursor-pointer items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-neutral-200/60 hover:text-neutral-700 dark:hover:bg-neutral-700/60 dark:hover:text-neutral-200"
+                    title={String(t('close', { defaultValue: 'Close' }))}
+                    aria-label={String(t('close', { defaultValue: 'Close' }))}
+                    data-testid="timer-dismiss-btn"
+                >
+                    <FiX size={15} />
+                </button>
+            </div>
+        </div>
+    );
+};
+
+export const StepSmartTimer: React.FC<StepSmartTimerProps> = ({
+    presets,
+    onTimerComplete,
+}) => {
+    const { t } = useTranslation();
+    const [state, dispatch] = useReducer(timerReducer, INITIAL_TIMER_STATE);
+
+    useEffect(() => {
+        if (!state.isRunning) return;
+        const interval = setInterval(() => {
+            dispatch({ type: 'TICK' });
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [state.isRunning]);
+
+    useEffect(() => {
+        if (state.isFinished) {
+            onTimerComplete?.();
+        }
+    }, [state.isFinished, onTimerComplete]);
+
+    const startPreset = useCallback((seconds: number) => {
+        dispatch({ type: 'START', seconds });
+    }, []);
+
+    return (
+        <div
             className="mt-5 flex flex-col items-center gap-3"
             data-testid="step-smart-timer"
         >
-            {/* Active Timer Display */}
-            {totalSeconds !== null ? (
-                <div
-                    className={`flex flex-wrap items-center justify-between gap-4 rounded-2xl border px-4 py-3 shadow-xs transition-all duration-300 sm:px-5 ${
-                        isFinished
-                            ? 'border-green-450 bg-green-450/20 animate-pulse text-neutral-900 dark:text-white'
-                            : 'border-neutral-200/80 bg-neutral-50/90 text-neutral-900 dark:border-neutral-700/80 dark:bg-neutral-800/80 dark:text-white'
-                    }`}
-                    data-testid="active-step-timer"
-                >
-                    <div className="flex items-center gap-3">
-                        {/* Circular SVG Progress Ring */}
-                        <div className="relative flex size-14 shrink-0 items-center justify-center">
-                            <svg
-                                className="-rotate-90 transform"
-                                width="54"
-                                height="54"
-                                viewBox="0 0 54 54"
-                            >
-                                <circle
-                                    cx="27"
-                                    cy="27"
-                                    r={radius}
-                                    fill="transparent"
-                                    stroke="currentColor"
-                                    strokeWidth="4"
-                                    className="text-neutral-200 dark:text-neutral-700"
-                                />
-                                <circle
-                                    cx="27"
-                                    cy="27"
-                                    r={radius}
-                                    fill="transparent"
-                                    stroke="#C5F0A4"
-                                    strokeWidth="4"
-                                    strokeLinecap="round"
-                                    strokeDasharray={circumference}
-                                    strokeDashoffset={strokeDashoffset}
-                                    className="transition-all duration-500"
-                                />
-                            </svg>
-                            <button
-                                type="button"
-                                onClick={togglePause}
-                                className="bg-green-450 absolute flex size-9 cursor-pointer items-center justify-center rounded-full text-neutral-950 shadow-2xs transition-transform hover:scale-102"
-                                aria-label={String(
-                                    isRunning
-                                        ? t('guide_timer_pause', {
-                                              defaultValue: 'Pause timer',
-                                          })
-                                        : t('guide_timer_resume', {
-                                              defaultValue: 'Start timer',
-                                          })
-                                )}
-                                data-testid="timer-play-pause-btn"
-                            >
-                                {isRunning ? (
-                                    <FiPause size={15} />
-                                ) : (
-                                    <FiPlay
-                                        size={15}
-                                        className="ml-0.5"
-                                    />
-                                )}
-                            </button>
-                        </div>
-
-                        <div>
-                            <div
-                                className="font-mono text-2xl font-bold tracking-tight tabular-nums sm:text-3xl"
-                                data-testid="timer-countdown-display"
-                            >
-                                {formatTimerDisplay(remainingSeconds)}
-                            </div>
-                            <div className="flex items-center gap-1 text-xs font-medium text-neutral-500 dark:text-neutral-400">
-                                {isFinished ? (
-                                    <span className="dark:text-green-450 flex items-center gap-1 font-semibold text-neutral-900">
-                                        <FiBell size={12} />
-                                        {String(
-                                            t('guide_timer_finished', {
-                                                defaultValue: 'Timer complete!',
-                                            })
-                                        )}
-                                    </span>
-                                ) : (
-                                    <span>
-                                        {isRunning
-                                            ? String(
-                                                  t('guide_timer_running', {
-                                                      defaultValue:
-                                                          'Timer running',
-                                                  })
-                                              )
-                                            : String(
-                                                  t('guide_timer_paused', {
-                                                      defaultValue:
-                                                          'Timer paused',
-                                                  })
-                                              )}
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Timer Controls (-1m, +1m, Reset, Close) */}
-                    <div className="flex items-center gap-1.5">
-                        <button
-                            type="button"
-                            onClick={() => adjustTime(-60)}
-                            className="flex size-8 cursor-pointer items-center justify-center rounded-lg border border-neutral-200/80 bg-white text-xs font-semibold text-neutral-700 transition hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800"
-                            title="-1 min"
-                            aria-label="-1 min"
-                            data-testid="timer-minus-btn"
-                        >
-                            <FiMinus size={13} />
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => adjustTime(60)}
-                            className="flex size-8 cursor-pointer items-center justify-center rounded-lg border border-neutral-200/80 bg-white text-xs font-semibold text-neutral-700 transition hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800"
-                            title="+1 min"
-                            aria-label="+1 min"
-                            data-testid="timer-plus-btn"
-                        >
-                            <FiPlus size={13} />
-                        </button>
-                        <button
-                            type="button"
-                            onClick={resetTimer}
-                            className="flex size-8 cursor-pointer items-center justify-center rounded-lg border border-neutral-200/80 bg-white text-neutral-600 transition hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800"
-                            title={String(
-                                t('reset_checklist', { defaultValue: 'Reset' })
-                            )}
-                            aria-label={String(
-                                t('reset_checklist', { defaultValue: 'Reset' })
-                            )}
-                            data-testid="timer-reset-btn"
-                        >
-                            <FiRotateCcw size={13} />
-                        </button>
-                        <button
-                            type="button"
-                            onClick={dismissTimer}
-                            className="flex size-8 cursor-pointer items-center justify-center rounded-lg text-neutral-400 transition hover:bg-neutral-200/60 hover:text-neutral-700 dark:hover:bg-neutral-700/60 dark:hover:text-neutral-200"
-                            title={String(
-                                t('close', { defaultValue: 'Close' })
-                            )}
-                            aria-label={String(
-                                t('close', { defaultValue: 'Close' })
-                            )}
-                            data-testid="timer-dismiss-btn"
-                        >
-                            <FiX size={15} />
-                        </button>
-                    </div>
-                </div>
+            {state.totalSeconds !== null ? (
+                <ActiveTimerCard
+                    totalSeconds={state.totalSeconds}
+                    remainingSeconds={state.remainingSeconds}
+                    isRunning={state.isRunning}
+                    isFinished={state.isFinished}
+                    onTogglePause={() => dispatch({ type: 'TOGGLE_PAUSE' })}
+                    onAdjust={(deltaSeconds) =>
+                        dispatch({ type: 'ADJUST', deltaSeconds })
+                    }
+                    onReset={() => dispatch({ type: 'RESET' })}
+                    onDismiss={() => dispatch({ type: 'DISMISS' })}
+                />
             ) : (
-                /* Preset & Quick Timer Triggers */
                 <div className="flex flex-wrap items-center justify-center gap-2">
                     {presets.map((preset) => (
                         <button
@@ -303,7 +362,6 @@ export const StepSmartTimer: React.FC<StepSmartTimerProps> = ({
                         </button>
                     ))}
 
-                    {/* Quick custom timer pills */}
                     <div className="flex items-center gap-1.5 rounded-full border border-neutral-200/80 bg-neutral-50/80 px-2.5 py-1 dark:border-neutral-800 dark:bg-neutral-800/60">
                         <FiClock
                             size={12}
@@ -321,7 +379,7 @@ export const StepSmartTimer: React.FC<StepSmartTimerProps> = ({
                                 key={item.seconds}
                                 type="button"
                                 onClick={() => startPreset(item.seconds)}
-                                className="cursor-pointer rounded-full px-2 py-0.5 text-[11px] font-semibold text-neutral-700 transition hover:bg-neutral-200/70 dark:text-neutral-300 dark:hover:bg-neutral-700"
+                                className="cursor-pointer rounded-full px-2 py-0.5 text-[11px] font-semibold text-neutral-700 transition-colors hover:bg-neutral-200/70 dark:text-neutral-300 dark:hover:bg-neutral-700"
                                 data-testid={`quick-timer-${item.seconds}`}
                             >
                                 {item.label}
