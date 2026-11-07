@@ -96,28 +96,23 @@ export const PlanningCard: React.FC<PlanningCardProps> = ({
                 </p>
             </div>
 
-            <div className="mt-4 flex w-full flex-col gap-1.5">
-                <span className="text-[11px] font-semibold tracking-wider text-neutral-400 uppercase dark:text-neutral-500">
-                    {t('PREVIEW_RECIPES') || 'Recipes Preview'}
-                </span>
-                <div className="flex flex-row items-center overflow-hidden py-0.5">
-                    {previews.map((recipe: any) => (
-                        <CustomProxyImage
-                            key={recipe.id}
-                            src={recipe.imageSrc}
-                            alt={recipe.title}
-                            className="dark:ring-neutral-850 -ml-2.5 inline-block size-8 rounded-full object-cover ring-2 ring-white transition-transform duration-200 first:ml-0"
-                            width={32}
-                            height={32}
-                            circular={true}
-                        />
-                    ))}
-                    {previews.length === 0 && (
-                        <span className="text-xs text-neutral-400 italic">
-                            {t('no_recipes_yet') || 'No recipes yet'}
-                        </span>
-                    )}
-                </div>
+            <div className="mt-4 flex flex-row items-center overflow-hidden py-0.5">
+                {previews.map((recipe: any) => (
+                    <CustomProxyImage
+                        key={recipe.id}
+                        src={recipe.imageSrc}
+                        alt={recipe.title}
+                        className="dark:ring-neutral-850 -ml-2.5 inline-block size-8 rounded-full object-cover ring-2 ring-white transition-transform duration-200 first:ml-0"
+                        width={32}
+                        height={32}
+                        circular={true}
+                    />
+                ))}
+                {previews.length === 0 && (
+                    <span className="text-xs text-neutral-400 italic">
+                        {t('no_recipes_yet') || 'No recipes yet'}
+                    </span>
+                )}
             </div>
 
             <div className="mt-4 border-t border-neutral-100 pt-3 dark:border-neutral-800">

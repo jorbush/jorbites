@@ -213,7 +213,7 @@ describe('ListsClient', () => {
         expect(mockPush).toHaveBeenCalledWith('/profile/user-id');
     });
 
-    it('renders recipes preview and preview header on list cards', () => {
+    it('renders recipes preview on list cards', () => {
         render(
             <ListsClient
                 initialMyLists={mockMyLists}
@@ -222,9 +222,6 @@ describe('ListsClient', () => {
             />
         );
 
-        expect(screen.getAllByText('PREVIEW_RECIPES').length).toBeGreaterThan(
-            0
-        );
         expect(screen.getByAltText('Delicious Pasta')).toBeDefined();
     });
 });

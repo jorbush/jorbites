@@ -68,7 +68,6 @@ describe('ListCard', () => {
         expect(screen.getByText('public')).toBeDefined();
         expect(screen.getByText('2 recipes')).toBeDefined();
         expect(screen.getByText('John Doe')).toBeDefined();
-        expect(screen.getByText('PREVIEW_RECIPES')).toBeDefined();
         expect(screen.getByAltText('Recipe 1')).toBeDefined();
         expect(screen.getByAltText('Recipe 2')).toBeDefined();
     });
