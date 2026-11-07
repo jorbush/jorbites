@@ -100,4 +100,41 @@ describe('useRecipeChecklist', () => {
         expect(result.current.isCompleted(1)).toBe(true);
         expect(result.current.completedCount).toBe(1);
     });
+
+    it('synchronizes state in real time across multiple hook instances for the same recipe and type', () => {
+        const pageHook = renderHook(() =>
+            useRecipeChecklist('recipe-sync', 'ingredients')
+        );
+        const drawerHook = renderHook(() =>
+            useRecipeChecklist('recipe-sync', 'ingredients')
+        );
+
+        // Toggle item 0 in the drawer hook
+        act(() => {
+            drawerHook.result.current.toggleIndex(0);
+        });
+
+        // Page hook immediately reflects item 0 checked
+        expect(pageHook.result.current.isCompleted(0)).toBe(true);
+        expect(pageHook.result.current.completedCount).toBe(1);
+
+        // Toggle item 1 on the page hook without losing item 0 from the drawer
+        act(() => {
+            pageHook.result.current.toggleIndex(1);
+        });
+
+        expect(pageHook.result.current.isCompleted(0)).toBe(true);
+        expect(pageHook.result.current.isCompleted(1)).toBe(true);
+        expect(drawerHook.result.current.isCompleted(0)).toBe(true);
+        expect(drawerHook.result.current.isCompleted(1)).toBe(true);
+        expect(drawerHook.result.current.completedCount).toBe(2);
+
+        // Resetting from page hook clears drawer hook as well
+        act(() => {
+            pageHook.result.current.resetChecklist();
+        });
+
+        expect(drawerHook.result.current.completedCount).toBe(0);
+        expect(drawerHook.result.current.isCompleted(0)).toBe(false);
+    });
 });

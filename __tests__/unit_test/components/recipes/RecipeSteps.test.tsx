@@ -103,4 +103,27 @@ describe('RecipeSteps', () => {
         fireEvent.keyDown(thirdStep, { key: 'Enter' });
         expect(thirdStep.getAttribute('aria-checked')).toBe('false');
     });
+
+    it('renders the Play button in the steps header and opens the interactive cooking guide modal', async () => {
+        render(
+            <RecipeSteps
+                items={mockSteps}
+                recipeId="rec-1"
+                recipeTitle="Test Cake"
+            />
+        );
+
+        const playBtn = screen.getByTestId('steps-play-button');
+        expect(playBtn).toBeDefined();
+        expect(screen.queryByTestId('recipe-cooking-guide-modal')).toBeNull();
+
+        fireEvent.click(playBtn);
+        expect(
+            await screen.findByTestId('recipe-cooking-guide-modal')
+        ).toBeDefined();
+
+        // Closing the guide modal hides it
+        fireEvent.click(screen.getByTestId('guide-close-btn'));
+        expect(screen.queryByTestId('recipe-cooking-guide-modal')).toBeNull();
+    });
 });

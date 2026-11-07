@@ -52,4 +52,25 @@ describe('RecipeChecklistHeader', () => {
         fireEvent.click(resetBtn);
         expect(onReset).toHaveBeenCalledTimes(1);
     });
+
+    it('renders actionSlot on the right side even when completedCount is 0', () => {
+        render(
+            <RecipeChecklistHeader
+                title="Steps"
+                completedCount={0}
+                totalCount={3}
+                onReset={vi.fn()}
+                actionSlot={
+                    <button
+                        type="button"
+                        data-testid="custom-action-slot"
+                    >
+                        Play
+                    </button>
+                }
+            />
+        );
+
+        expect(screen.getByTestId('custom-action-slot')).toBeDefined();
+    });
 });
