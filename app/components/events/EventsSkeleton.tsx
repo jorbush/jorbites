@@ -12,16 +12,20 @@ export const EventsSkeleton: React.FC<EventsSkeletonProps> = ({
     return (
         <Container>
             <div className="px-4 py-8">
-                {/* SectionHeader Skeleton */}
-                <div className="mb-10 animate-pulse text-center">
-                    <div className="mb-3 flex items-center justify-center gap-3">
-                        {/* Icon placeholder */}
-                        <div className="size-10 rounded-xl bg-neutral-200 sm:size-11 dark:bg-neutral-700"></div>
-                        {/* Title placeholder */}
-                        <div className="h-8 w-40 rounded bg-neutral-200 sm:h-10 sm:w-48 dark:bg-neutral-700"></div>
+                {/* Header Skeleton */}
+                <div className="mb-8 flex animate-pulse flex-col justify-between gap-4 md:flex-row md:items-center">
+                    <div className="flex items-center gap-3.5">
+                        {/* Squircle Icon placeholder */}
+                        <div className="size-11 shrink-0 rounded-xl bg-neutral-200 sm:size-12 dark:bg-neutral-700"></div>
+                        <div className="space-y-2">
+                            {/* Title placeholder */}
+                            <div className="h-8 w-36 rounded-lg bg-neutral-200 sm:w-48 dark:bg-neutral-700"></div>
+                            {/* Description placeholder */}
+                            <div className="h-4 w-60 rounded bg-neutral-200 sm:w-80 dark:bg-neutral-700"></div>
+                        </div>
                     </div>
-                    {/* Description placeholder */}
-                    <div className="mx-auto h-4 w-64 rounded bg-neutral-200 sm:w-80 dark:bg-neutral-700"></div>
+                    {/* Action button placeholder */}
+                    <div className="hidden h-10 w-36 rounded-xl bg-neutral-200 md:block dark:bg-neutral-700"></div>
                 </div>
 
                 {/* WeeklyChallenge Skeleton (only if it exists) */}

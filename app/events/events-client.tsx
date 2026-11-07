@@ -11,12 +11,12 @@ import { EventCardSkeleton } from '@/app/components/events/EventCard';
 import useTheme from '@/app/hooks/useTheme';
 import WeeklyChallenge from '@/app/components/events/WeeklyChallenge';
 import { FcIdea } from 'react-icons/fc';
-import SectionHeader from '@/app/components/utils/SectionHeader';
+import { FiCalendar, FiPlus } from 'react-icons/fi';
 import EventCalendar from '@/app/components/events/EventCalendar';
 import { SafeWeeklyChallenge } from '@/app/types';
 import TopRecipeVoting from '@/app/components/events/TopRecipeVoting';
 import TopRecipeResult from '@/app/components/events/TopRecipeResult';
-import CmsSubmitButton from '@/app/components/cms/CmsSubmitButton';
+import { CMS_EVENTS_URL } from '@/app/utils/constants';
 
 interface EventsClientProps {
     weeklyChallenge: SafeWeeklyChallenge | null;
@@ -68,14 +68,34 @@ const EventsClient: React.FC<EventsClientProps> = ({ weeklyChallenge }) => {
     return (
         <Container>
             <div className="px-4 py-8">
-                <SectionHeader
-                    icon={FcIdea}
-                    title={`${t('events')}`}
-                    description={t('events_description')}
-                />
+                {/* Header */}
+                <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-center">
+                    <div className="flex items-center gap-3.5">
+                        <div className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-neutral-200/80 bg-neutral-100 shadow-2xs sm:size-12 dark:border-neutral-700/60 dark:bg-neutral-800">
+                            <FcIdea size={28} />
+                        </div>
+                        <div>
+                            <h1 className="text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl dark:text-white">
+                                {t('events')}
+                            </h1>
+                            <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                                {t('events_description')}
+                            </p>
+                        </div>
+                    </div>
 
-                <div className="-mt-6 mb-8 flex justify-center">
-                    <CmsSubmitButton target="events" />
+                    <div className="hidden md:block md:shrink-0">
+                        <a
+                            href={CMS_EVENTS_URL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-white shadow-xs transition-colors duration-200 hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
+                            data-testid="propose-event-button"
+                        >
+                            <FiCalendar size={18} />
+                            <span>{t('propose_event', 'Propose Event')}</span>
+                        </a>
+                    </div>
                 </div>
 
                 <WeeklyChallenge challenge={weeklyChallenge} />
@@ -203,6 +223,19 @@ const EventsClient: React.FC<EventsClientProps> = ({ weeklyChallenge }) => {
                     </>
                 )}
             </div>
+
+            {/* Mobile Floating Action Button (FAB) */}
+            <a
+                href={CMS_EVENTS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={String(t('propose_event', 'Propose Event'))}
+                aria-label={String(t('propose_event', 'Propose Event'))}
+                className="fixed right-6 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] z-10 flex size-14 cursor-pointer items-center justify-center rounded-full bg-neutral-900 text-white shadow-lg transition-colors duration-200 hover:bg-neutral-800 md:hidden dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
+                data-testid="propose-event-fab"
+            >
+                <FiPlus size={24} />
+            </a>
         </Container>
     );
 };

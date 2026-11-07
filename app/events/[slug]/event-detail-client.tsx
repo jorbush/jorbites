@@ -54,7 +54,7 @@ const EventDetailClient: React.FC<EventDetailClientProps> = ({ slug }) => {
                     <button
                         type="button"
                         onClick={() => push('/events')}
-                        className="bg-green-450 cursor-pointer rounded-lg px-4 py-2 text-black"
+                        className="border-green-450/50 bg-green-450 cursor-pointer rounded-xl border px-4 py-2 text-sm font-semibold text-neutral-900 shadow-xs transition-colors duration-200 hover:bg-[#b5e890]"
                     >
                         {t('back_to_events') || 'Back to Events'}
                     </button>

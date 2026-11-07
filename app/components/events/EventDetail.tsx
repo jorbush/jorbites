@@ -75,7 +75,7 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
         a: ({ href, children, ...props }) => (
             <Link
                 href={href || '#'}
-                className="text-green-450 hover:underline"
+                className="dark:text-green-450 text-green-500 hover:underline"
                 {...props}
             >
                 {children}
@@ -165,30 +165,32 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
 
     return (
         <div className="mx-auto max-w-[800px] px-4 py-6 dark:text-neutral-100">
-            <div className="mb-6 flex items-baseline justify-between">
+            <div className="mb-6 flex items-center justify-between gap-4">
                 <button
                     type="button"
-                    className="mr-4 flex translate-y-3 cursor-pointer items-center gap-2 text-neutral-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
+                    className="flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-neutral-200/80 bg-neutral-100/80 text-neutral-600 transition-colors duration-200 hover:border-neutral-300 hover:bg-neutral-200 hover:text-neutral-900 focus:outline-hidden dark:border-neutral-700/60 dark:bg-neutral-800/80 dark:text-neutral-300 dark:hover:border-neutral-600 dark:hover:bg-neutral-700 dark:hover:text-white"
                     onClick={() => back()}
                     aria-label="Back"
                 >
                     <FiChevronLeft className="text-xl" />
                 </button>
-                <Heading
-                    title={event.frontmatter.title}
-                    center
-                />
+                <div className="min-w-0 flex-1">
+                    <Heading
+                        title={event.frontmatter.title}
+                        center
+                    />
+                </div>
                 <button
                     type="button"
-                    className="ml-4 flex translate-y-3 cursor-pointer items-center gap-2 text-neutral-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
+                    className="flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-neutral-200/80 bg-neutral-100/80 text-neutral-600 transition-colors duration-200 hover:border-neutral-300 hover:bg-neutral-200 hover:text-neutral-900 focus:outline-hidden dark:border-neutral-700/60 dark:bg-neutral-800/80 dark:text-neutral-300 dark:hover:border-neutral-600 dark:hover:bg-neutral-700 dark:hover:text-white"
                     onClick={() => share({ title: event.frontmatter.title })}
                     aria-label="Share"
                 >
-                    <FiShare2 className="text-xl" />
+                    <FiShare2 className="text-lg" />
                 </button>
             </div>
 
-            <div className="mb-6 w-full overflow-hidden rounded-xl">
+            <div className="relative mb-6 overflow-hidden rounded-2xl border border-neutral-200/80 bg-neutral-100 dark:border-neutral-800/80 dark:bg-neutral-800/60">
                 <Image
                     src={event.frontmatter.image || '/jorbites-social.jpg'}
                     alt={event.frontmatter.title}
@@ -201,9 +203,11 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
             </div>
 
             {!isPermanent && dateDisplay && (
-                <div className="mb-6 flex items-center text-neutral-500 dark:text-neutral-400">
-                    <FiCalendar className="mr-2 text-lg" />
-                    <span>{dateDisplay}</span>
+                <div className="mb-6">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-neutral-200/80 bg-neutral-50/80 px-3.5 py-1.5 text-xs font-medium text-neutral-600 sm:text-sm dark:border-neutral-700/60 dark:bg-neutral-800/60 dark:text-neutral-300">
+                        <FiCalendar className="size-4" />
+                        <span>{dateDisplay}</span>
+                    </div>
                 </div>
             )}
 
@@ -222,19 +226,18 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
 export const EventDetailSkeleton = () => {
     return (
         <div className="mx-auto max-w-[800px] px-4 py-6">
-            <div className="mb-6 flex items-baseline justify-between">
-                <div className="size-6 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+            <div className="mb-6 flex items-center justify-between gap-4">
+                <div className="size-9 shrink-0 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
                 <div className="mx-auto h-8 w-2/3 animate-pulse rounded-lg bg-neutral-200 dark:bg-neutral-700"></div>
-                <div className="size-6 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                <div className="size-9 shrink-0 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
             </div>
 
-            <div className="mb-6 w-full animate-pulse overflow-hidden rounded-xl">
+            <div className="mb-6 w-full animate-pulse overflow-hidden rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80">
                 <div className="aspect-[4/3] w-full bg-neutral-200 dark:bg-neutral-700"></div>
             </div>
 
             <div className="mb-6 flex items-center">
-                <div className="mr-2 size-4 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
-                <div className="h-4 w-1/3 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                <div className="h-7 w-40 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
             </div>
 
             <div className="flex flex-col gap-4">
