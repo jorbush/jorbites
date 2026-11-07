@@ -10,6 +10,7 @@ import EditWorkshopButton from '@/app/components/workshops/EditWorkshopButton';
 import DeleteWorkshopModal from '@/app/components/modals/DeleteWorkshopModal';
 import Button from '@/app/components/buttons/Button';
 import { MdDelete } from 'react-icons/md';
+import { BiLockAlt } from 'react-icons/bi';
 import { useState } from 'react';
 
 interface WorkshopClientProps {
@@ -42,7 +43,7 @@ const WorkshopClient: React.FC<WorkshopClientProps> = ({
                 <div className="mx-auto flex max-w-screen-lg flex-col gap-6 pt-16">
                     <div className="rounded-2xl border border-neutral-200/80 bg-white p-8 text-center shadow-xs dark:border-neutral-800 dark:bg-neutral-900/90">
                         <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-xl border border-neutral-200/80 bg-neutral-100 dark:border-neutral-700/60 dark:bg-neutral-800">
-                            <span className="text-xl">🔒</span>
+                            <BiLockAlt className="size-6 text-neutral-600 dark:text-neutral-300" />
                         </div>
                         <h2 className="mb-2 text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
                             {t('private_workshop_title')}

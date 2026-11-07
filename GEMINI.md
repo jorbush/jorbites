@@ -46,6 +46,7 @@ Actions that create, request, or propose content (e.g. "Create Workshop", "Reque
 
 - Containers: `rounded-2xl border border-neutral-200/80 bg-white/80 dark:border-neutral-800/80 dark:bg-neutral-900/60`.
 - Hover zoom: Use subtle, smooth scaling `group-hover:scale-102 transition-transform duration-300 ease-out`. Avoid aggressive scales like `scale-110`.
+- **Single Column Below `md`**: For card feeds and directories (Courses, Workshops, Quests, Blog), grids must strictly use 1 single column when screen width is less than `md`: `grid-cols-1 md:grid-cols-2 lg:grid-cols-3`. Never use `sm:grid-cols-2` because narrow mobile viewports squish cards horizontally and truncate titles and descriptions.
 
 ---
 

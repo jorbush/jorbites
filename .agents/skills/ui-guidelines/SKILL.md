@@ -89,6 +89,7 @@ When a page has an action to create or submit content:
 
 - Container: `rounded-2xl border border-neutral-200/80 bg-white/80 dark:border-neutral-800/80 dark:bg-neutral-900/60`
 - Restrained hover zoom: `group-hover:scale-102 transition-transform duration-300 ease-out`. Never use aggressive scaling like `scale-110`.
+- **Single Column Below `md`**: Card grids with rich content must strictly use 1 single column when screen width is `< md` (`grid-cols-1 md:grid-cols-2 lg:grid-cols-3`). Strictly avoid `sm:grid-cols-2` because narrow mobile widths squish cards horizontally and truncate titles/descriptions.
 
 ### 6. SSR & Hydration Safeguards
 
@@ -107,7 +108,8 @@ When modernizing a page or component:
 4. [ ] Desktop action placed in header; mobile action placed in bottom-right FAB.
 5. [ ] Tab/filter row is clean and isolated with horizontal scroll.
 6. [ ] Card hover scale is `scale-102` max.
-7. [ ] Dark mode styles verified.
-8. [ ] Hydration safety checks passed (`useIsMounted()`, valid HTML nesting).
-9. [ ] All existing `data-cy` / `data-testid` selectors preserved.
-10. [ ] `npx tsc --noEmit && pnpm run format` succeeds with zero errors.
+7. [ ] Card grids use 1 column below `md` (`grid-cols-1 md:grid-cols-2 lg:grid-cols-3`; no `sm:grid-cols-2`).
+8. [ ] Dark mode styles verified.
+9. [ ] Hydration safety checks passed (`useIsMounted()`, valid HTML nesting).
+10. [ ] All existing `data-cy` / `data-testid` selectors preserved.
+11. [ ] `npx tsc --noEmit && pnpm run format` succeeds with zero errors.

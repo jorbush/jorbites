@@ -4,7 +4,6 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SafeCertificate, SafeUser } from '@/app/types';
 import Container from '@/app/components/utils/Container';
-import SectionHeader from '@/app/components/utils/SectionHeader';
 import CertificateCard from '@/app/components/courses/certificate/CertificateCard';
 import { FcDiploma1 } from 'react-icons/fc';
 
@@ -39,14 +38,23 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
 
     return (
         <Container>
-            <div className="px-4 py-8">
-                <SectionHeader
-                    icon={FcDiploma1}
-                    title={t('courses')}
-                    description={t('courses_description')}
-                />
+            <div className="flex flex-col gap-6 pt-2 pb-12 sm:pt-4">
+                {/* Header */}
+                <div className="flex items-center gap-3.5">
+                    <div className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-neutral-200/80 bg-neutral-100 shadow-2xs sm:size-12 dark:border-neutral-700/60 dark:bg-neutral-800">
+                        <FcDiploma1 size={28} />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl dark:text-white">
+                            {t('courses')}
+                        </h1>
+                        <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                            {t('courses_description')}
+                        </p>
+                    </div>
+                </div>
 
-                <div className="mx-auto max-w-4xl space-y-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {/* 1. Jorbites Basics */}
                     <CertificateCard
                         id="jorbites-basics"
