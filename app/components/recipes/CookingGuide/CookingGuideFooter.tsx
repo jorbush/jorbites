@@ -25,7 +25,7 @@ export const CookingGuideFooter: React.FC<CookingGuideFooterProps> = ({
     const isLastStep = currentIndex === totalSteps - 1;
 
     return (
-        <footer className="relative z-10 border-t border-neutral-200/80 bg-white/80 px-3 py-2.5 backdrop-blur-md md:px-6 md:py-4 dark:border-neutral-800/80 dark:bg-neutral-900/70">
+        <footer className="relative z-10 border-t border-neutral-200/80 bg-white/80 px-3 pt-2.5 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] backdrop-blur-md md:px-6 md:pt-4 md:pb-[calc(1rem+env(safe-area-inset-bottom,0px))] dark:border-neutral-800/80 dark:bg-neutral-900/70">
             <div className="mx-auto flex max-w-3xl items-center justify-between gap-2 md:gap-3">
                 <button
                     type="button"

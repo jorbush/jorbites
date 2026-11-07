@@ -1,11 +1,15 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { CookingAudioEngine } from '@/app/utils/cookingAudioEngine';
+import {
+    CookingAudioEngine,
+    unlockCookingAudio,
+} from '@/app/utils/cookingAudioEngine';
 
 describe('CookingAudioEngine', () => {
     let mockStart: ReturnType<typeof vi.fn>;
     let mockStop: ReturnType<typeof vi.fn>;
     let mockClose: ReturnType<typeof vi.fn>;
     let mockResume: ReturnType<typeof vi.fn>;
+    let mockBufferSourceStart: ReturnType<typeof vi.fn>;
     let originalAudioContext: typeof window.AudioContext;
 
     beforeEach(() => {
@@ -14,6 +18,7 @@ describe('CookingAudioEngine', () => {
         mockStop = vi.fn();
         mockClose = vi.fn().mockResolvedValue(undefined);
         mockResume = vi.fn().mockResolvedValue(undefined);
+        mockBufferSourceStart = vi.fn();
 
         originalAudioContext = window.AudioContext;
 
@@ -23,6 +28,12 @@ describe('CookingAudioEngine', () => {
             destination = {};
             resume = mockResume;
             close = mockClose;
+            createBuffer = vi.fn().mockReturnValue({});
+            createBufferSource = () => ({
+                buffer: null,
+                connect: vi.fn(),
+                start: mockBufferSourceStart,
+            });
             createOscillator = () => ({
                 type: 'sine',
                 frequency: { setValueAtTime: vi.fn() },
@@ -59,6 +70,25 @@ describe('CookingAudioEngine', () => {
             configurable: true,
             value: originalAudioContext,
         });
+    });
+
+    it('unlocks iOS Safari and PWA audio synchronously with audioSession playback and silent buffer', () => {
+        const mockAudioSession = { type: 'ambient' };
+        Object.defineProperty(navigator, 'audioSession', {
+            writable: true,
+            configurable: true,
+            value: mockAudioSession,
+        });
+
+        const ctx = unlockCookingAudio();
+        expect(ctx).not.toBeNull();
+        expect(mockAudioSession.type).toBe('playback');
+        expect(mockResume).toHaveBeenCalled();
+        expect(mockBufferSourceStart).toHaveBeenCalledWith(0);
+
+        const engine = new CookingAudioEngine();
+        engine.unlock();
+        engine.dispose();
     });
 
     it('starts and loops ambient music across lofi, acoustic, and zen vibes', () => {

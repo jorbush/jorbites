@@ -1,7 +1,11 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { CookingAudioEngine, MusicVibe } from '@/app/utils/cookingAudioEngine';
+import {
+    CookingAudioEngine,
+    MusicVibe,
+    unlockCookingAudio,
+} from '@/app/utils/cookingAudioEngine';
 import {
     sanitizeStepTextForSpeech,
     resolveSpeechLang,
@@ -85,7 +89,17 @@ function useWakeLockAndScrollLock(): void {
             }
         };
 
+        const handleGestureUnlock = () => {
+            unlockCookingAudio();
+        };
+
         document.addEventListener('visibilitychange', handleVisibilityChange);
+        document.addEventListener('touchstart', handleGestureUnlock, {
+            passive: true,
+        });
+        document.addEventListener('click', handleGestureUnlock, {
+            passive: true,
+        });
 
         return () => {
             document.body.style.overflow = originalOverflow;
@@ -93,6 +107,8 @@ function useWakeLockAndScrollLock(): void {
                 'visibilitychange',
                 handleVisibilityChange
             );
+            document.removeEventListener('touchstart', handleGestureUnlock);
+            document.removeEventListener('click', handleGestureUnlock);
             wakeLockSentinel?.release().catch(() => {});
         };
     }, []);
@@ -204,6 +220,7 @@ export function useCookingGuideController({
     const handleGoToStep = useCallback(
         (index: number) => {
             if (index < 0 || index >= steps.length) return;
+            unlockCookingAudio();
             stopSpeech();
             setIsCelebration(false);
             setCurrentIndex(index);
@@ -223,6 +240,7 @@ export function useCookingGuideController({
     }, [currentIndex, handleGoToStep, isCelebration]);
 
     const handleNext = useCallback(() => {
+        unlockCookingAudio();
         stopSpeech();
         if (currentIndex < steps.length - 1) {
             setCurrentIndex((prev) => prev + 1);
@@ -234,6 +252,7 @@ export function useCookingGuideController({
     }, [currentIndex, steps.length, stopSpeech]);
 
     const handleCompleteAndNext = useCallback(() => {
+        unlockCookingAudio();
         stopSpeech();
         if (!currentStepDone) {
             onToggleStep(currentIndex);
@@ -251,19 +270,23 @@ export function useCookingGuideController({
     }, [currentIndex, currentStepDone, onToggleStep, steps.length, stopSpeech]);
 
     const handleToggleCurrentStep = useCallback(() => {
+        unlockCookingAudio();
         onToggleStep(currentIndex);
         audioEngineRef.current?.playStepComplete();
     }, [currentIndex, onToggleStep]);
 
     const handleToggleMusic = useCallback(() => {
+        unlockCookingAudio();
         setMusicPref((prev) => ({ ...prev, isPlaying: !prev.isPlaying }));
     }, []);
 
     const handleSelectVibe = useCallback((vibe: MusicVibe) => {
+        unlockCookingAudio();
         setMusicPref({ isPlaying: true, vibe });
     }, []);
 
     const handleRestart = useCallback(() => {
+        unlockCookingAudio();
         setIsCelebration(false);
         setCurrentIndex(0);
     }, []);
