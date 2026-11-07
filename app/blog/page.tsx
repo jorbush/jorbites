@@ -34,10 +34,29 @@ const BlogPage = async ({ searchParams }: BlogPageProps) => {
         <Suspense
             fallback={
                 <Container>
-                    <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-                        {[...Array(2)].map((_, index) => (
-                            <BlogCardSkeleton key={index} />
-                        ))}
+                    <div className="flex flex-col gap-6 pt-2 pb-12 sm:pt-4">
+                        {/* Header Skeleton */}
+                        <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
+                            <div className="flex items-center gap-3.5">
+                                <div className="size-11 shrink-0 animate-pulse rounded-xl bg-neutral-200 sm:size-12 dark:bg-neutral-800" />
+                                <div className="space-y-1.5">
+                                    <div className="h-7 w-32 animate-pulse rounded bg-neutral-200 dark:bg-neutral-800" />
+                                    <div className="h-4 w-56 animate-pulse rounded bg-neutral-200 dark:bg-neutral-800" />
+                                </div>
+                            </div>
+                            <div className="hidden h-10 w-36 shrink-0 animate-pulse rounded-xl bg-neutral-200 lg:block dark:bg-neutral-800" />
+                        </div>
+
+                        {/* Category Pills Skeleton */}
+                        <div className="flex gap-2">
+                            <div className="h-9 w-28 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-800" />
+                            <div className="h-9 w-36 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-800" />
+                        </div>
+                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                            {[...Array(6)].map((_, index) => (
+                                <BlogCardSkeleton key={index} />
+                            ))}
+                        </div>
                     </div>
                 </Container>
             }

@@ -1,12 +1,14 @@
-import { render, screen, cleanup } from '@testing-library/react';
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import BlogCard from '@/app/components/blog/BlogCard';
 import { Blog } from '@/app/utils/markdownUtils';
+
+const mockPush = vi.fn();
 
 // Mock the dependencies
 vi.mock('next/navigation', () => ({
     useRouter: () => ({
-        push: vi.fn(),
+        push: mockPush,
     }),
 }));
 
@@ -50,7 +52,7 @@ vi.mock('@/app/utils/date-utils', () => ({
     },
 }));
 
-vi.mock('next/image', () => ({
+vi.mock('@/app/components/optimization/CustomProxyImage', () => ({
     default: ({ alt }: { alt: string }) => (
         <img
             alt={alt}
@@ -70,9 +72,14 @@ describe('BlogCard', () => {
             date: '2025-08-29',
             user_id: '123456',
         },
-        content: 'Blog content',
+        content: 'Blog content without image',
         language: 'en',
+        category: 'general',
     };
+
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
 
     afterEach(() => {
         cleanup();
@@ -86,6 +93,9 @@ describe('BlogCard', () => {
 
         // Check if description is displayed
         expect(screen.getByText('This is a test blog post')).toBeDefined();
+
+        // Check read more text is displayed
+        expect(screen.getByText('read_more')).toBeDefined();
     });
 
     it('displays the date correctly', () => {
@@ -94,5 +104,26 @@ describe('BlogCard', () => {
         // Check if the date is displayed
         const dateElement = screen.getByText(/August 29, 2025/i);
         expect(dateElement).toBeDefined();
+    });
+
+    it('renders thumbnail when blog content has markdown image', () => {
+        const blogWithImage: Blog = {
+            ...mockBlog,
+            content: 'Hello world ![Cover Image](/images/cover.webp) end.',
+        };
+
+        render(<BlogCard blog={blogWithImage} />);
+        expect(screen.getByTestId('blog-image')).toBeDefined();
+    });
+
+    it('navigates to blog detail on title button click', () => {
+        render(<BlogCard blog={mockBlog} />);
+
+        const titleBtn = screen.getByRole('button', {
+            name: 'Test Blog Post',
+        });
+        fireEvent.click(titleBtn);
+
+        expect(mockPush).toHaveBeenCalledWith('/blog/test-blog');
     });
 });
