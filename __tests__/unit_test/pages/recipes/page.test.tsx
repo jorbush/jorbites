@@ -54,7 +54,7 @@ describe('RecipePage', () => {
         expect(await findByTestId('empty-state')).toBeDefined();
     });
 
-    it('renders RecipeClient when recipe is found', async () => {
+    it('renders RecipeClient synchronously when recipe is found so ViewTransition pairs during navigation', async () => {
         const getRecipeByIdMock = await import('@/app/actions/getRecipeById');
         vi.mocked(getRecipeByIdMock.default).mockResolvedValue({
             id: '1',
@@ -72,10 +72,10 @@ describe('RecipePage', () => {
             { id: 'comment1' },
         ] as any);
 
-        const { findByTestId } = render(
+        const { getByTestId } = render(
             await RecipePage({ params: Promise.resolve({ recipeId: '1' }) })
         );
 
-        expect(await findByTestId('recipe-client')).toBeDefined();
+        expect(getByTestId('recipe-client')).toBeDefined();
     });
 });

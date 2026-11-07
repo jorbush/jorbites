@@ -8,6 +8,7 @@ import OrderByDropdown from '@/app/components/navbar/OrderByDropdown';
 import { FcLike } from 'react-icons/fc';
 import { useTranslation } from 'react-i18next';
 import { IFavoriteRecipesParams } from '@/app/actions/getFavoriteRecipes';
+import useIsMounted from '@/app/hooks/useIsMounted';
 
 interface FavoritesClientProps {
     recipes: SafeRecipe[];
@@ -25,6 +26,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
     searchParams,
 }) => {
     const { t } = useTranslation();
+    const mounted = useIsMounted();
 
     return (
         <Container>
@@ -37,11 +39,13 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
                         </div>
                         <div>
                             <h1 className="text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl dark:text-white">
-                                {t('favorites')}
+                                {mounted ? t('favorites') : 'favorites'}
                             </h1>
                             <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                                {t('favorites_subtitle') ||
-                                    'Todas tus recetas favoritas guardadas en un solo lugar.'}
+                                {mounted
+                                    ? t('favorites_subtitle') ||
+                                      'Todas tus recetas favoritas guardadas en un solo lugar.'
+                                    : 'Todas tus recetas favoritas guardadas en un solo lugar.'}
                             </p>
                         </div>
                     </div>

@@ -4,7 +4,6 @@ import getRecipeById from '@/app/actions/getRecipeById';
 import ClientOnly from '@/app/components/utils/ClientOnly';
 import EmptyState from '@/app/components/utils/EmptyState';
 import RecipeClient from '@/app/recipes/[recipeId]/RecipeClient';
-import RecipeDetailSkeleton from '@/app/components/recipes/RecipeDetailSkeleton';
 import getCommentsByRecipeId from '@/app/actions/getCommentsByRecipeId';
 import getCooksnapsByRecipeId from '@/app/actions/getCooksnapsByRecipeId';
 import getRecipeRemixes from '@/app/actions/getRecipeRemixes';
@@ -103,15 +102,13 @@ const RecipePage = async (props: { params: Promise<IParams> }) => {
     }
 
     return (
-        <ClientOnly fallback={<RecipeDetailSkeleton />}>
-            <RecipeClient
-                recipe={recipe}
-                currentUser={currentUser}
-                comments={comments}
-                cooksnaps={cooksnaps}
-                remixes={remixes}
-            />
-        </ClientOnly>
+        <RecipeClient
+            recipe={recipe}
+            currentUser={currentUser}
+            comments={comments}
+            cooksnaps={cooksnaps}
+            remixes={remixes}
+        />
     );
 };
 
