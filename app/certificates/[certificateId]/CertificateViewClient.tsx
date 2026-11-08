@@ -1,16 +1,18 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
-import { FiCopy, FiArrowLeft } from 'react-icons/fi';
+import { FiCopy, FiChevronLeft, FiShare2 } from 'react-icons/fi';
+import { FcDiploma1 } from 'react-icons/fc';
 import toast from 'react-hot-toast';
 import dynamic from 'next/dynamic';
 
 import Container from '@/app/components/utils/Container';
 import { SafeCertificate } from '@/app/types';
 import { formatDate } from '@/app/utils/date-utils';
+import useIsMounted from '@/app/hooks/useIsMounted';
 
 const CertificateDownloadSection = dynamic(
     () =>
@@ -33,13 +35,18 @@ const CertificateViewClient: React.FC<CertificateViewClientProps> = ({
     certificate,
 }) => {
     const { t, i18n } = useTranslation();
+    const mounted = useIsMounted();
     const [copied, setCopied] = useState(false);
 
     const issueDate = useMemo(
         () => new Date(certificate.issuedAt),
         [certificate.issuedAt]
     );
-    const dateString = formatDate(issueDate, i18n.language);
+    const dateString = useMemo(() => {
+        if (!mounted) return '';
+        return formatDate(issueDate, i18n.language);
+    }, [mounted, issueDate, i18n.language]);
+
     const issueYear = issueDate.getFullYear().toString();
     const issueMonth = (issueDate.getMonth() + 1).toString();
 
@@ -56,8 +63,8 @@ const CertificateViewClient: React.FC<CertificateViewClientProps> = ({
         certUrl
     )}&certId=${certificate.certId}`;
 
-    const handleCopyLink = () => {
-        if (typeof navigator !== 'undefined') {
+    const handleCopyLink = useCallback(() => {
+        if (typeof navigator !== 'undefined' && navigator.clipboard) {
             navigator.clipboard.writeText(certUrl);
             setCopied(true);
             toast.success(
@@ -65,7 +72,28 @@ const CertificateViewClient: React.FC<CertificateViewClientProps> = ({
             );
             setTimeout(() => setCopied(false), 2500);
         }
-    };
+    }, [certUrl, t]);
+
+    const handleShare = useCallback(async () => {
+        if (typeof navigator !== 'undefined' && navigator.share) {
+            try {
+                await navigator.share({
+                    title: `${certificate.userName} - ${certificate.courseTitle} Certificate | Jorbites`,
+                    url: certUrl,
+                });
+            } catch (error) {
+                if ((error as DOMException)?.name === 'AbortError') return;
+                handleCopyLink();
+            }
+        } else {
+            handleCopyLink();
+        }
+    }, [
+        certificate.userName,
+        certificate.courseTitle,
+        certUrl,
+        handleCopyLink,
+    ]);
 
     const labels = useMemo(
         () => ({
@@ -97,20 +125,65 @@ const CertificateViewClient: React.FC<CertificateViewClientProps> = ({
 
     return (
         <Container>
-            <div className="mx-auto max-w-4xl px-4 py-8 md:py-12">
-                {/* Back Link */}
-                <div className="mb-6 flex items-center">
-                    <Link
-                        href="/courses"
-                        className="inline-flex items-center gap-2 text-sm font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
-                    >
-                        <FiArrowLeft className="size-4" />
-                        <span>{t('explore_courses') || 'Explore Courses'}</span>
-                    </Link>
+            <div className="mx-auto flex max-w-4xl flex-col gap-6 pt-2 pb-12 sm:pt-4">
+                {/* Back Link & Header */}
+                <div className="flex flex-col gap-4">
+                    <div className="flex items-center">
+                        <Link
+                            href="/courses"
+                            className="group inline-flex items-center gap-2 text-sm font-semibold text-neutral-600 transition-colors duration-200 hover:text-neutral-900 focus:outline-hidden dark:text-neutral-400 dark:hover:text-white"
+                            aria-label={String(
+                                t('explore_courses') || 'Explore Courses'
+                            )}
+                            data-cy="back-to-courses"
+                        >
+                            <div className="flex size-9 items-center justify-center rounded-xl border border-neutral-200/80 bg-white text-neutral-700 shadow-2xs transition-colors duration-200 group-hover:border-neutral-300 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300 dark:group-hover:border-neutral-600">
+                                <FiChevronLeft size={18} />
+                            </div>
+                            <span>
+                                {t('explore_courses') || 'Explore Courses'}
+                            </span>
+                        </Link>
+                    </div>
+
+                    {/* Squircle Icon Header */}
+                    <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+                        <div className="flex items-center gap-3.5">
+                            <div className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-neutral-200/80 bg-neutral-100 shadow-2xs sm:size-12 dark:border-neutral-700/60 dark:bg-neutral-800">
+                                <FcDiploma1 size={28} />
+                            </div>
+                            <div>
+                                <h1 className="text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl dark:text-white">
+                                    {t('verified_certificate') ||
+                                        'Verified Certificate'}
+                                </h1>
+                                <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                                    {t('certificate_verified_desc') ||
+                                        'This certificate has been issued and verified by Jorbites.'}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Desktop Action Slot */}
+                        <div className="hidden md:block md:shrink-0">
+                            <button
+                                type="button"
+                                onClick={handleShare}
+                                className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-neutral-200/80 bg-white/80 px-4 py-2.5 text-sm font-semibold text-neutral-700 shadow-2xs backdrop-blur-xs transition-colors hover:border-neutral-300 hover:bg-neutral-100 dark:border-neutral-700/60 dark:bg-neutral-800/80 dark:text-neutral-300 dark:hover:border-neutral-600 dark:hover:bg-neutral-700"
+                                data-cy="share-certificate-button"
+                                aria-label={String(
+                                    t('share') || 'Share Certificate'
+                                )}
+                            >
+                                <FiShare2 className="size-4" />
+                                <span>{t('share') || 'Share'}</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Main Certificate Visual Frame */}
-                <div className="border-green-450/30 dark:border-green-450/20 relative overflow-hidden rounded-3xl border-8 bg-[#FCFDF9] p-6 shadow-xl sm:p-10 md:p-14 dark:bg-neutral-900">
+                <div className="border-green-450/30 dark:border-green-450/20 relative overflow-hidden rounded-3xl border-8 bg-[#FCFDF9] p-6 shadow-xl sm:p-10 md:p-14 dark:bg-neutral-900/90">
                     <div className="border-green-450/60 dark:border-green-450/30 flex flex-col items-center rounded-2xl border-2 p-6 text-center sm:p-8 md:p-12">
                         {/* Jorbites Logo */}
                         <div className="relative mb-3 size-20">
@@ -169,7 +242,7 @@ const CertificateViewClient: React.FC<CertificateViewClientProps> = ({
                         )}
 
                         {/* Footer Details */}
-                        <div className="mt-6 flex w-full flex-col items-center justify-between gap-4 border-t border-neutral-200 pt-6 text-xs text-neutral-500 sm:flex-row dark:border-neutral-800 dark:text-neutral-400">
+                        <div className="mt-6 flex w-full flex-col items-center justify-between gap-4 border-t border-neutral-200/80 pt-6 text-xs text-neutral-500 sm:flex-row dark:border-neutral-800/80 dark:text-neutral-400">
                             <div className="text-center sm:text-left">
                                 <p className="font-semibold text-neutral-700 dark:text-neutral-300">
                                     {labels.team}
@@ -196,7 +269,7 @@ const CertificateViewClient: React.FC<CertificateViewClientProps> = ({
                 </div>
 
                 {/* Actions & Sharing Banner */}
-                <div className="mt-8 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+                <div className="rounded-2xl border border-neutral-200/80 bg-white/80 p-6 shadow-2xs backdrop-blur-xs sm:p-8 dark:border-neutral-800/80 dark:bg-neutral-900/60">
                     <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <h3 className="text-base font-semibold text-neutral-900 dark:text-white">
@@ -212,7 +285,8 @@ const CertificateViewClient: React.FC<CertificateViewClientProps> = ({
                         <button
                             type="button"
                             onClick={handleCopyLink}
-                            className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2 text-xs font-semibold text-neutral-700 transition hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
+                            className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-neutral-200/80 bg-neutral-100/80 px-3.5 py-2 text-xs font-semibold text-neutral-700 shadow-2xs transition-colors hover:border-neutral-300 hover:bg-neutral-200 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:border-neutral-600 dark:hover:bg-neutral-700"
+                            data-cy="copy-certificate-link-button"
                         >
                             <FiCopy className="size-3.5" />
                             <span>
@@ -223,7 +297,7 @@ const CertificateViewClient: React.FC<CertificateViewClientProps> = ({
                         </button>
                     </div>
 
-                    <div className="border-t border-neutral-100 pt-4 dark:border-neutral-800">
+                    <div className="border-t border-neutral-200/80 pt-5 dark:border-neutral-800/80">
                         <CertificateDownloadSection
                             name={certificate.userName}
                             dateString={dateString}
@@ -238,6 +312,17 @@ const CertificateViewClient: React.FC<CertificateViewClientProps> = ({
                         />
                     </div>
                 </div>
+
+                {/* Mobile Floating Action Button (FAB) */}
+                <button
+                    type="button"
+                    onClick={handleShare}
+                    className="fixed right-6 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] z-10 flex size-14 cursor-pointer items-center justify-center rounded-full bg-neutral-900 text-white shadow-lg transition-colors duration-200 hover:bg-neutral-800 md:hidden dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
+                    data-cy="share-certificate-mobile"
+                    aria-label={String(t('share') || 'Share Certificate')}
+                >
+                    <FiShare2 className="size-6" />
+                </button>
             </div>
         </Container>
     );

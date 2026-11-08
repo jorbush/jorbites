@@ -257,8 +257,8 @@ const CertificateConfirmedSection: React.FC<
 
     return (
         <div className="space-y-6">
-            <div className="bg-green-450/20 dark:bg-green-450/10 flex items-center gap-2 rounded-xl p-4 text-green-800 dark:text-green-300">
-                <FiCheck className="size-5 flex-shrink-0" />
+            <div className="bg-green-450/20 dark:bg-green-450/10 border-green-450/30 flex items-center gap-2.5 rounded-xl border p-4 text-neutral-900 dark:text-neutral-100">
+                <FiCheck className="dark:text-green-450 size-5 shrink-0 text-neutral-900" />
                 <div>
                     <p className="text-sm font-semibold">
                         {t('contest_manager_course_details.name_confirmed')}:{' '}
@@ -267,7 +267,7 @@ const CertificateConfirmedSection: React.FC<
                     <button
                         type="button"
                         onClick={onEditName}
-                        className="text-xs text-green-600 underline hover:text-green-700 dark:text-green-400"
+                        className="text-xs text-neutral-600 underline hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
                     >
                         {t('contest_manager_course_details.change_name')}
                     </button>
@@ -390,8 +390,8 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
         pngBadgeUrl || (badgePath ? getAbsoluteUrl(badgePath) : undefined);
 
     return (
-        <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
-            <h3 className="mb-4 text-xl font-semibold text-neutral-900 dark:text-white">
+        <div className="rounded-2xl border border-neutral-200/80 bg-white/80 p-6 shadow-2xs backdrop-blur-xs md:p-8 dark:border-neutral-800/80 dark:bg-neutral-900/60">
+            <h3 className="mb-4 text-xl font-bold tracking-tight text-neutral-900 dark:text-white">
                 {t('contest_manager_course_details.download_your_certificate')}
             </h3>
 
