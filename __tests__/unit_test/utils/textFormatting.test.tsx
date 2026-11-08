@@ -33,8 +33,11 @@ describe('formatText', () => {
         const link = container.querySelector('a[href="/profile/user123"]');
         expect(link).toBeDefined();
         expect(link?.textContent).toBe('@John Doe');
-        expect(link?.className).toContain('text-green-450');
-        expect(link?.className).toContain('hover:underline');
+        expect(link?.className).toContain('decoration-green-450');
+        expect(link?.className).toContain('hover:text-green-450');
+        expect(link?.className).toContain('underline');
+        expect(link?.className).toContain('decoration-2');
+        expect(link?.className).toContain('underline-offset-4');
     });
 
     it('handles multiple mentions in the same text', () => {
@@ -80,6 +83,42 @@ describe('formatText', () => {
         const link = container.querySelector('a[href="/profile/user456"]');
         expect(link).toBeDefined();
         expect(link?.textContent).toBe('@John Smith');
+    });
+
+    it('formats URLs as clickable links with updated styling', () => {
+        const text = 'Check out https://jorbites.com for great recipes!';
+        const result = formatText(text);
+
+        const { container } = render(<>{result}</>);
+
+        const link = container.querySelector('a[href="https://jorbites.com"]');
+        expect(link).toBeDefined();
+        expect(link?.textContent).toBe('https://jorbites.com');
+        expect(link?.getAttribute('target')).toBe('_blank');
+        expect(link?.getAttribute('rel')).toBe('noopener noreferrer');
+        expect(link?.className).toContain('decoration-green-450');
+        expect(link?.className).toContain('hover:text-green-450');
+        expect(link?.className).toContain('underline');
+        expect(link?.className).toContain('decoration-2');
+        expect(link?.className).toContain('underline-offset-4');
+        expect(link?.className).toContain('break-all');
+    });
+
+    it('allows custom linkClassName override', () => {
+        const text = 'Check out https://jorbites.com and @User[user123]';
+        const result = formatText(text, 'custom-link-class');
+
+        const { container } = render(<>{result}</>);
+
+        const urlLink = container.querySelector(
+            'a[href="https://jorbites.com"]'
+        );
+        expect(urlLink?.className).toContain('custom-link-class');
+
+        const mentionLink = container.querySelector(
+            'a[href="/profile/user123"]'
+        );
+        expect(mentionLink?.className).toContain('custom-link-class');
     });
 
     it('handles text without mentions normally', () => {
