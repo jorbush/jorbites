@@ -39,6 +39,7 @@ const SILENT_WAV_DATA_URI =
 
 let sharedAudioContext: AudioContext | null = null;
 let silentHtmlAudio: HTMLAudioElement | null = null;
+let unlockedAudioContext: AudioContext | null = null;
 
 function getAudioContextConstructor(): typeof AudioContext | null {
     if (typeof window === 'undefined') return null;
@@ -72,13 +73,18 @@ function getOrCreateSharedContext(): AudioContext | null {
 export function unlockCookingAudio(): AudioContext | null {
     if (typeof window === 'undefined') return null;
 
+    const ctx = getOrCreateSharedContext();
+    if (ctx && unlockedAudioContext === ctx && ctx.state === 'running') {
+        return ctx;
+    }
+
     // 1. iOS 16.4+ / 17+ / 18+ navigator.audioSession API:
     // Routes Web Audio to the media 'playback' channel so it plays even when the iPhone hardware Ring/Silent switch is on Silent.
     try {
         const nav = navigator as Navigator & {
             audioSession?: { type: string };
         };
-        if (nav.audioSession) {
+        if (nav.audioSession && nav.audioSession.type !== 'playback') {
             nav.audioSession.type = 'playback';
         }
     } catch {
@@ -87,7 +93,10 @@ export function unlockCookingAudio(): AudioContext | null {
 
     // 2. Fallback for older iOS WebKit: playing an HTML5 <audio> element promotes the page audio session to playback
     try {
-        if (typeof Audio !== 'undefined') {
+        const isJsdom =
+            typeof navigator !== 'undefined' &&
+            /jsdom/i.test(navigator.userAgent || '');
+        if (typeof Audio !== 'undefined' && !isJsdom) {
             if (!silentHtmlAudio) {
                 silentHtmlAudio = new Audio(SILENT_WAV_DATA_URI);
                 silentHtmlAudio.volume = 0.01;
@@ -102,7 +111,6 @@ export function unlockCookingAudio(): AudioContext | null {
     }
 
     // 3. Create or resume Web Audio context and play a 1-frame silent buffer synchronously
-    const ctx = getOrCreateSharedContext();
     if (!ctx) return null;
 
     try {
@@ -119,6 +127,7 @@ export function unlockCookingAudio(): AudioContext | null {
             source.connect(ctx.destination);
             source.start(0);
         }
+        unlockedAudioContext = ctx;
     } catch {
         // Ignore unlock errors in mock/restricted environments
     }
@@ -399,6 +408,9 @@ export class CookingAudioEngine {
             this.ctx.close().catch(() => {});
             if (sharedAudioContext === this.ctx) {
                 sharedAudioContext = null;
+            }
+            if (unlockedAudioContext === this.ctx) {
+                unlockedAudioContext = null;
             }
             this.ctx = null;
         }

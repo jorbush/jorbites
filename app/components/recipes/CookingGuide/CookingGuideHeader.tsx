@@ -178,13 +178,13 @@ export const CookingGuideHeader: React.FC<CookingGuideHeaderProps> = ({
                                     className="flex items-end gap-0.5"
                                     aria-hidden="true"
                                 >
-                                    <span className="h-2.5 w-0.5 rounded-full bg-neutral-950 motion-safe:animate-bounce" />
+                                    <span className="h-2.5 w-0.5 transform-gpu rounded-full bg-neutral-950 motion-safe:animate-bounce" />
                                     <span
-                                        className="h-3.5 w-0.5 rounded-full bg-neutral-950 motion-safe:animate-bounce"
+                                        className="h-3.5 w-0.5 transform-gpu rounded-full bg-neutral-950 motion-safe:animate-bounce"
                                         style={{ animationDelay: '150ms' }}
                                     />
                                     <span
-                                        className="h-2 w-0.5 rounded-full bg-neutral-950 motion-safe:animate-bounce"
+                                        className="h-2 w-0.5 transform-gpu rounded-full bg-neutral-950 motion-safe:animate-bounce"
                                         style={{ animationDelay: '300ms' }}
                                     />
                                 </span>

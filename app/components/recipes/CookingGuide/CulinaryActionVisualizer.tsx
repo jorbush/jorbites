@@ -88,104 +88,107 @@ const ACTION_CONFIG: Record<
     },
 };
 
-export const CulinaryActionVisualizer: React.FC<
-    CulinaryActionVisualizerProps
-> = ({ action, isCompleted, stepIndex }) => {
-    const { t } = useTranslation();
-    const config = ACTION_CONFIG[action] || ACTION_CONFIG.general;
-    const ActionIcon = isCompleted ? FiCheck : config.icon;
-    const label = String(
-        t(config.labelKey, { defaultValue: config.defaultLabel })
-    );
+export const CulinaryActionVisualizer: React.FC<CulinaryActionVisualizerProps> =
+    React.memo(({ action, isCompleted, stepIndex }) => {
+        const { t } = useTranslation();
+        const config = ACTION_CONFIG[action] || ACTION_CONFIG.general;
+        const ActionIcon = isCompleted ? FiCheck : config.icon;
+        const label = String(
+            t(config.labelKey, { defaultValue: config.defaultLabel })
+        );
 
-    return (
-        <div
-            className="flex flex-col items-center gap-2 md:gap-3"
-            data-testid="culinary-action-visualizer"
-            data-action={action}
-        >
-            <div className="relative mt-1 flex items-center justify-center">
-                {/* Ambient outer pulse ring */}
-                <div
-                    className={`border-green-450/30 bg-green-450/10 pointer-events-none absolute -inset-2 rounded-2xl border transition-opacity duration-500 md:-inset-3 md:rounded-3xl ${
-                        isCompleted
-                            ? 'scale-105 opacity-100'
-                            : 'opacity-75 motion-safe:animate-pulse'
-                    }`}
-                />
-
-                {/* Orbiting dashed ring for mix / plate */}
-                {config.showOrbit && !isCompleted && (
+        return (
+            <div
+                className="flex flex-col items-center gap-2 md:gap-3"
+                data-testid="culinary-action-visualizer"
+                data-action={action}
+            >
+                <div className="relative mt-1 flex items-center justify-center">
+                    {/* Ambient outer pulse ring */}
                     <div
-                        className="border-green-450/40 pointer-events-none absolute -inset-3.5 rounded-full border border-dashed motion-safe:animate-spin md:-inset-5"
-                        style={{ animationDuration: '10s' }}
-                    />
-                )}
-
-                {/* Rising steam wisps for heat / boil / bake */}
-                {config.showSteam && !isCompleted && (
-                    <div
-                        className="pointer-events-none absolute -top-4 flex items-end gap-1 md:-top-6 md:gap-1.5"
-                        aria-hidden="true"
-                    >
-                        <span className="bg-green-450/50 h-2.5 w-1 rounded-full motion-safe:animate-bounce md:h-3" />
-                        <span
-                            className="bg-green-450/70 h-3 w-1 rounded-full motion-safe:animate-bounce md:h-4"
-                            style={{ animationDelay: '150ms' }}
-                        />
-                        <span
-                            className="bg-green-450/50 h-2.5 w-1 rounded-full motion-safe:animate-bounce md:h-3"
-                            style={{ animationDelay: '300ms' }}
-                        />
-                    </div>
-                )}
-
-                {/* Main Squircle Icon Container */}
-                <div
-                    className={`relative z-10 flex size-13 items-center justify-center rounded-2xl border shadow-md transition-colors duration-300 md:size-20 ${
-                        isCompleted
-                            ? 'border-green-450 bg-green-450 text-neutral-950'
-                            : 'border-neutral-200/80 bg-white/90 text-neutral-900 dark:border-neutral-700/80 dark:bg-neutral-800/90 dark:text-white'
-                    }`}
-                >
-                    <ActionIcon
-                        className={`size-6 md:size-8 ${
+                        className={`border-green-450/30 bg-green-450/10 pointer-events-none absolute -inset-2 transform-gpu rounded-2xl border md:-inset-3 md:rounded-3xl ${
                             isCompleted
-                                ? 'stroke-[3] text-neutral-950'
-                                : `dark:text-green-450 text-neutral-900 ${
-                                      action === 'mix' ? '' : config.motionClass
-                                  }`
+                                ? 'scale-105 opacity-100 transition-opacity duration-500'
+                                : 'opacity-75 motion-safe:animate-pulse'
                         }`}
                     />
-                    <span className="border-green-450/50 bg-green-450 absolute -right-1.5 -bottom-1.5 flex size-5 items-center justify-center rounded-full border text-[11px] font-bold text-neutral-950 shadow-2xs md:-right-2 md:-bottom-2 md:size-6 md:text-xs">
-                        {stepIndex + 1}
-                    </span>
-                </div>
-            </div>
 
-            {/* Action Category Pill */}
-            <span className="border-green-450/40 bg-green-450/15 dark:text-green-450 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold text-neutral-900 md:px-3 md:py-1 md:text-xs">
-                {isCompleted ? (
-                    <>
-                        <FiAward size={12} />
-                        {String(
-                            t('guide_step_completed_badge', {
-                                defaultValue: 'Step Completed',
-                            })
-                        )}
-                    </>
-                ) : (
-                    <>
-                        <FiDroplet
-                            size={11}
-                            className="opacity-70"
+                    {/* Orbiting dashed ring for mix / plate */}
+                    {config.showOrbit && !isCompleted && (
+                        <div
+                            className="border-green-450/40 pointer-events-none absolute -inset-3.5 transform-gpu rounded-full border border-dashed motion-safe:animate-spin md:-inset-5"
+                            style={{ animationDuration: '10s' }}
                         />
-                        {label}
-                    </>
-                )}
-            </span>
-        </div>
-    );
-};
+                    )}
+
+                    {/* Rising steam wisps for heat / boil / bake */}
+                    {config.showSteam && !isCompleted && (
+                        <div
+                            className="pointer-events-none absolute -top-4 flex items-end gap-1 md:-top-6 md:gap-1.5"
+                            aria-hidden="true"
+                        >
+                            <span className="bg-green-450/50 h-2.5 w-1 transform-gpu rounded-full motion-safe:animate-bounce md:h-3" />
+                            <span
+                                className="bg-green-450/70 h-3 w-1 transform-gpu rounded-full motion-safe:animate-bounce md:h-4"
+                                style={{ animationDelay: '150ms' }}
+                            />
+                            <span
+                                className="bg-green-450/50 h-2.5 w-1 transform-gpu rounded-full motion-safe:animate-bounce md:h-3"
+                                style={{ animationDelay: '300ms' }}
+                            />
+                        </div>
+                    )}
+
+                    {/* Main Squircle Icon Container */}
+                    <div
+                        className={`relative z-10 flex size-13 items-center justify-center rounded-2xl border shadow-md transition-colors duration-300 md:size-20 ${
+                            isCompleted
+                                ? 'border-green-450 bg-green-450 text-neutral-950'
+                                : 'border-neutral-200/80 bg-white/90 text-neutral-900 dark:border-neutral-700/80 dark:bg-neutral-800/90 dark:text-white'
+                        }`}
+                    >
+                        <ActionIcon
+                            className={`size-6 transform-gpu md:size-8 ${
+                                isCompleted
+                                    ? 'stroke-[3] text-neutral-950'
+                                    : `dark:text-green-450 text-neutral-900 ${
+                                          action === 'mix'
+                                              ? ''
+                                              : config.motionClass
+                                      }`
+                            }`}
+                        />
+                        <span className="border-green-450/50 bg-green-450 absolute -right-1.5 -bottom-1.5 flex size-5 items-center justify-center rounded-full border text-[11px] font-bold text-neutral-950 shadow-2xs md:-right-2 md:-bottom-2 md:size-6 md:text-xs">
+                            {stepIndex + 1}
+                        </span>
+                    </div>
+                </div>
+
+                {/* Action Category Pill */}
+                <span className="border-green-450/40 bg-green-450/15 dark:text-green-450 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold text-neutral-900 md:px-3 md:py-1 md:text-xs">
+                    {isCompleted ? (
+                        <>
+                            <FiAward size={12} />
+                            {String(
+                                t('guide_step_completed_badge', {
+                                    defaultValue: 'Step Completed',
+                                })
+                            )}
+                        </>
+                    ) : (
+                        <>
+                            <FiDroplet
+                                size={11}
+                                className="opacity-70"
+                            />
+                            {label}
+                        </>
+                    )}
+                </span>
+            </div>
+        );
+    });
+
+CulinaryActionVisualizer.displayName = 'CulinaryActionVisualizer';
 
 export default CulinaryActionVisualizer;

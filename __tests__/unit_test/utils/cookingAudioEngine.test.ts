@@ -83,8 +83,19 @@ describe('CookingAudioEngine', () => {
         const ctx = unlockCookingAudio();
         expect(ctx).not.toBeNull();
         expect(mockAudioSession.type).toBe('playback');
-        expect(mockResume).toHaveBeenCalled();
+        expect(mockResume).toHaveBeenCalledTimes(1);
+        expect(mockBufferSourceStart).toHaveBeenCalledTimes(1);
         expect(mockBufferSourceStart).toHaveBeenCalledWith(0);
+
+        // Once running, subsequent unlock calls short-circuit without spawning new buffer sources
+        if (ctx) {
+            Object.defineProperty(ctx, 'state', {
+                value: 'running',
+                configurable: true,
+            });
+        }
+        unlockCookingAudio();
+        expect(mockBufferSourceStart).toHaveBeenCalledTimes(1);
 
         const engine = new CookingAudioEngine();
         engine.unlock();
