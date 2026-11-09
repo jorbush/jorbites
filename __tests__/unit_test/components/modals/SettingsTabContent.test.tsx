@@ -63,6 +63,12 @@ vi.mock('@/app/components/settings/ChangePassword', () => ({
     ),
 }));
 
+vi.mock('@/app/components/settings/TwoFactorAuth', () => ({
+    default: () => (
+        <div data-testid="two-factor-auth-selector">TwoFactorAuth</div>
+    ),
+}));
+
 vi.mock('@/app/components/settings/ChangeProfileDetails', () => ({
     default: ({ ref: _ref }: any) => (
         <div data-testid="change-profile-details">ChangeProfileDetails</div>
@@ -140,6 +146,7 @@ describe('SettingsTabContent', () => {
         expect(screen.getByTestId('change-user-image-selector')).toBeDefined();
         expect(screen.getByTestId('change-user-name-selector')).toBeDefined();
         expect(screen.getByTestId('change-password-selector')).toBeDefined();
+        expect(screen.getByTestId('two-factor-auth-selector')).toBeDefined();
         expect(screen.getByTestId('profile-preferences-form')).toBeDefined();
         expect(screen.getByTestId('delete-account-selector')).toBeDefined();
 

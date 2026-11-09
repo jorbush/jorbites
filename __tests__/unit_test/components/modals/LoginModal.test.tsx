@@ -226,4 +226,54 @@ describe('LoginModal', () => {
         // @ts-ignore
         resolvePromise({ ok: true });
     });
+
+    it('transitions to 2FA verification step when signIn returns 2FA_REQUIRED and submits twoFactorCode', async () => {
+        const signIn = vi.mocked(await import('next-auth/react')).signIn;
+        const toast = vi.mocked(await import('react-hot-toast')).toast;
+
+        signIn
+            .mockResolvedValueOnce({
+                ok: false,
+                error: '2FA_REQUIRED',
+                status: 401,
+                url: null,
+            } as SignInResponse)
+            .mockResolvedValueOnce({
+                ok: true,
+                error: null,
+                status: 200,
+                url: null,
+            } as SignInResponse);
+
+        render(<LoginModal />);
+
+        fireEvent.change(screen.getByLabelText('email'), {
+            target: { value: 'test@example.com' },
+        });
+        fireEvent.change(screen.getByLabelText('password'), {
+            target: { value: 'password123' },
+        });
+
+        fireEvent.click(screen.getByText('continue'));
+
+        await waitFor(() => {
+            expect(screen.getByTestId('login-2fa-step')).toBeDefined();
+        });
+
+        fireEvent.change(screen.getByTestId('login-2fa-code-input'), {
+            target: { value: '654321' },
+        });
+
+        fireEvent.click(screen.getByText('verify'));
+
+        await waitFor(() => {
+            expect(signIn).toHaveBeenLastCalledWith('credentials', {
+                email: 'test@example.com',
+                password: 'password123',
+                twoFactorCode: '654321',
+                redirect: false,
+            });
+            expect(toast.success).toHaveBeenCalledWith('logged_in');
+        });
+    });
 });

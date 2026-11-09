@@ -5,6 +5,11 @@ import GithubProvider from 'next-auth/providers/github';
 import GoogleProvider from 'next-auth/providers/google';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import prisma from '@/app/lib/prismadb';
+import {
+    decryptTotpSecret,
+    verifyTotpCode,
+    verifyBackupCode,
+} from '@/app/utils/totp';
 
 export const authOptions: AuthOptions = {
     adapter: PrismaAdapter(prisma),
@@ -24,6 +29,10 @@ export const authOptions: AuthOptions = {
                 password: {
                     label: 'password',
                     type: 'password',
+                },
+                twoFactorCode: {
+                    label: 'twoFactorCode',
+                    type: 'text',
                 },
             },
             async authorize(credentials) {
@@ -48,6 +57,35 @@ export const authOptions: AuthOptions = {
 
                 if (!isCorrectPassword) {
                     throw new Error('Invalid credentials');
+                }
+
+                if (user.twoFactorEnabled && user.twoFactorSecret) {
+                    const submittedCode = credentials.twoFactorCode?.trim();
+                    if (!submittedCode) {
+                        throw new Error('2FA_REQUIRED');
+                    }
+
+                    const secret = decryptTotpSecret(user.twoFactorSecret);
+                    const isValidTotp = verifyTotpCode(submittedCode, secret);
+
+                    if (!isValidTotp) {
+                        const { valid: isValidBackup, remainingHashes } =
+                            verifyBackupCode(
+                                submittedCode,
+                                user.twoFactorBackupCodes || []
+                            );
+
+                        if (!isValidBackup) {
+                            throw new Error('INVALID_2FA_CODE');
+                        }
+
+                        await prisma.user.update({
+                            where: { id: user.id },
+                            data: {
+                                twoFactorBackupCodes: remainingHashes,
+                            },
+                        });
+                    }
                 }
 
                 return user;

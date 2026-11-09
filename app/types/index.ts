@@ -117,6 +117,9 @@ export type SafeUser = Omit<
     | 'hashedPassword'
     | 'resetToken'
     | 'resetTokenExpiry'
+    | 'twoFactorEnabled'
+    | 'twoFactorSecret'
+    | 'twoFactorBackupCodes'
     | 'email'
     | 'favoriteIds'
     | 'savedPlanningIds'
@@ -140,6 +143,7 @@ export type SafeUser = Omit<
     savedPlanningIds?: string[];
     pinnedRecipeIds?: string[];
     emailNotifications?: boolean;
+    twoFactorEnabled?: boolean;
     language?: string | null;
     recipeCount?: number | null | undefined;
     likesReceived?: number | null | undefined;
