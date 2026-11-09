@@ -116,7 +116,7 @@ export const CulinaryActionVisualizer: React.FC<CulinaryActionVisualizerProps> =
                     {/* Orbiting dashed ring for mix / plate */}
                     {config.showOrbit && !isCompleted && (
                         <div
-                            className="border-green-450/40 pointer-events-none absolute -inset-3.5 transform-gpu rounded-full border border-dashed will-change-transform motion-safe:animate-spin md:-inset-5"
+                            className="border-green-450/40 pointer-events-none absolute -inset-3.5 transform-gpu rounded-full border border-dashed motion-safe:animate-spin md:-inset-5"
                             style={{ animationDuration: '10s' }}
                         />
                     )}
@@ -127,13 +127,13 @@ export const CulinaryActionVisualizer: React.FC<CulinaryActionVisualizerProps> =
                             className="pointer-events-none absolute -top-4 flex items-end gap-1 md:-top-6 md:gap-1.5"
                             aria-hidden="true"
                         >
-                            <span className="bg-green-450/50 h-2.5 w-1 transform-gpu rounded-full will-change-transform motion-safe:animate-bounce md:h-3" />
+                            <span className="bg-green-450/50 h-2.5 w-1 transform-gpu rounded-full motion-safe:animate-bounce md:h-3" />
                             <span
-                                className="bg-green-450/70 h-3 w-1 transform-gpu rounded-full will-change-transform motion-safe:animate-bounce md:h-4"
+                                className="bg-green-450/70 h-3 w-1 transform-gpu rounded-full motion-safe:animate-bounce md:h-4"
                                 style={{ animationDelay: '150ms' }}
                             />
                             <span
-                                className="bg-green-450/50 h-2.5 w-1 transform-gpu rounded-full will-change-transform motion-safe:animate-bounce md:h-3"
+                                className="bg-green-450/50 h-2.5 w-1 transform-gpu rounded-full motion-safe:animate-bounce md:h-3"
                                 style={{ animationDelay: '300ms' }}
                             />
                         </div>
@@ -154,7 +154,7 @@ export const CulinaryActionVisualizer: React.FC<CulinaryActionVisualizerProps> =
                                     : `dark:text-green-450 text-neutral-900 ${
                                           action === 'mix'
                                               ? ''
-                                              : `will-change-transform ${config.motionClass}`
+                                              : config.motionClass
                                       }`
                             }`}
                         />

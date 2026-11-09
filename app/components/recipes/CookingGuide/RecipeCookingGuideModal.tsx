@@ -129,7 +129,7 @@ const ActiveCookingGuideDialog: React.FC<ActiveCookingGuideDialogProps> = ({
                 <div
                     className={`bg-green-450/15 dark:bg-green-450/10 absolute -right-24 -bottom-24 size-96 transform-gpu rounded-full blur-3xl transition-opacity duration-700 ${
                         isMusicPlaying
-                            ? 'motion-safe:animate-smooth-float opacity-70 will-change-transform'
+                            ? 'motion-safe:animate-smooth-float opacity-70'
                             : 'opacity-40'
                     }`}
                 />
