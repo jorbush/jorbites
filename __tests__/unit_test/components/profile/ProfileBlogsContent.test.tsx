@@ -64,7 +64,13 @@ describe('ProfileBlogsContent Component', () => {
             />
         );
 
-        expect(screen.getByTestId('profile-blogs-content')).toBeDefined();
+        const content = screen.getByTestId('profile-blogs-content');
+        expect(content).toBeDefined();
+        const grid = content.querySelector('.grid');
+        expect(grid?.className).toContain('grid-cols-1');
+        expect(grid?.className).toContain('md:grid-cols-2');
+        expect(grid?.className).toContain('lg:grid-cols-3');
+        expect(grid?.className).not.toContain('sm:grid-cols-2');
         expect(screen.getByText('First Culinary Story')).toBeDefined();
         expect(screen.getByText('Second Culinary Story')).toBeDefined();
         expect(
