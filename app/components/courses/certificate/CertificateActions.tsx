@@ -4,7 +4,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Button from '@/app/components/buttons/Button';
 
-export interface CertificateActionsProps {
+interface CertificateActionsProps {
     slug: string;
     certificateId?: string;
     isCompleted: boolean;
@@ -14,7 +14,7 @@ export interface CertificateActionsProps {
     onNavigateCourse?: () => void;
 }
 
-export const getActionLabel = (
+const getActionLabel = (
     t: (key: string) => string,
     comingSoon: boolean,
     isCompleted: boolean,

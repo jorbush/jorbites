@@ -1,8 +1,6 @@
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import CertificateActions, {
-    getActionLabel,
-} from '@/app/components/courses/certificate/CertificateActions';
+import CertificateActions from '@/app/components/courses/certificate/CertificateActions';
 import React from 'react';
 
 // Mock react-i18next
@@ -15,37 +13,6 @@ vi.mock('react-i18next', () => ({
 afterEach(() => {
     cleanup();
     vi.clearAllMocks();
-});
-
-describe('getActionLabel', () => {
-    const mockT = (key: string) => `translated_${key}`;
-
-    it('returns coming_soon when comingSoon is true', () => {
-        expect(getActionLabel(mockT, true, false, false)).toBe(
-            'translated_coming_soon'
-        );
-        expect(getActionLabel(mockT, true, true, false)).toBe(
-            'translated_coming_soon'
-        );
-    });
-
-    it('returns course_completed when completed', () => {
-        expect(getActionLabel(mockT, false, true, false)).toBe(
-            'translated_course_completed'
-        );
-    });
-
-    it('returns continue_course when started', () => {
-        expect(getActionLabel(mockT, false, false, true)).toBe(
-            'translated_continue_course'
-        );
-    });
-
-    it('returns start_course by default', () => {
-        expect(getActionLabel(mockT, false, false, false)).toBe(
-            'translated_start_course'
-        );
-    });
 });
 
 describe('<CertificateActions />', () => {
@@ -123,6 +90,23 @@ describe('<CertificateActions />', () => {
                 hasStarted={false}
                 comingSoon={true}
                 onNavigateCourse={handleNavigate}
+            />
+        );
+
+        const comingSoonBtn = screen.getByRole('button', {
+            name: 'coming_soon',
+        });
+        expect(comingSoonBtn).toBeDefined();
+        expect((comingSoonBtn as HTMLButtonElement).disabled).toBe(true);
+    });
+
+    it('prioritizes coming soon over completed state', () => {
+        render(
+            <CertificateActions
+                slug="jorbites-basics"
+                isCompleted={true}
+                hasStarted={false}
+                comingSoon={true}
             />
         );
 
