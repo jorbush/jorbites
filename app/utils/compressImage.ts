@@ -31,12 +31,19 @@ export async function compressImage(
     }
 
     let objectUrl = '';
+    let result = file;
     try {
         objectUrl = URL.createObjectURL(file);
-        return await new Promise<File>((resolve, reject) => {
+        result = await new Promise<File>((resolve, reject) => {
             const image = new Image();
 
             image.onload = () => {
+                try {
+                    URL.revokeObjectURL(objectUrl);
+                } catch {
+                    // Ignore
+                }
+
                 let width = image.width || 800;
                 let height = image.height || 600;
 
@@ -86,6 +93,11 @@ export async function compressImage(
             };
 
             image.onerror = () => {
+                try {
+                    URL.revokeObjectURL(objectUrl);
+                } catch {
+                    // Ignore
+                }
                 reject(new Error('Failed to load image for compression'));
             };
 
@@ -102,4 +114,6 @@ export async function compressImage(
             }
         }
     }
+
+    return result;
 }
