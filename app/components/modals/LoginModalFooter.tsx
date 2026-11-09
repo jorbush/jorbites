@@ -7,6 +7,11 @@ import { FcGoogle } from 'react-icons/fc';
 import { AiFillGithub } from 'react-icons/ai';
 import Button from '@/app/components/buttons/Button';
 
+const OAUTH_PROVIDERS = [
+    { id: 'google', labelKey: 'login_google', icon: FcGoogle },
+    { id: 'github', labelKey: 'login_github', icon: AiFillGithub },
+] as const;
+
 interface LoginModalFooterProps {
     onToggleRegister: () => void;
 }
@@ -19,18 +24,15 @@ export const LoginModalFooter: React.FC<LoginModalFooterProps> = ({
     return (
         <div className="mt-3 flex flex-col gap-4">
             <hr />
-            <Button
-                outline
-                label={t('login_google')}
-                icon={FcGoogle}
-                onClick={() => signIn('google')}
-            />
-            <Button
-                outline
-                label={t('login_github')}
-                icon={AiFillGithub}
-                onClick={() => signIn('github')}
-            />
+            {OAUTH_PROVIDERS.map((provider) => (
+                <Button
+                    key={provider.id}
+                    outline
+                    label={t(provider.labelKey)}
+                    icon={provider.icon}
+                    onClick={() => signIn(provider.id)}
+                />
+            ))}
             <div className="mt-4 text-center font-light text-neutral-500">
                 <p>
                     {t('first_jorbites')}{' '}
