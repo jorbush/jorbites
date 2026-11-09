@@ -1,24 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
-import { format } from 'date-fns';
+import React from 'react';
 import Avatar from '@/app/components/utils/Avatar';
-import { MdDelete } from 'react-icons/md';
-import ConfirmModal from '@/app/components/modals/ConfirmModal';
-import PhotoLightbox from '@/app/components/modals/PhotoLightbox';
-import axios from 'axios';
-import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
-import { useTranslation } from 'react-i18next';
-import VerificationBadge from '@/app/components/VerificationBadge';
-import { formatText } from '@/app/utils/textFormatting';
-import StarRating from '@/app/components/utils/StarRating';
 import { useTranslateableContent } from '@/app/hooks/useTranslateableContent';
-import useIsMounted from '@/app/hooks/useIsMounted';
-import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
-import useCommentLike from '@/app/hooks/useCommentLike';
 import { SafeUser } from '@/app/types';
-import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
+import CommentHeader from './CommentHeader';
+import CommentRating from './CommentRating';
+import CommentBody from './CommentBody';
+import CommentImage from './CommentImage';
+import CommentFooter from './CommentFooter';
+import CommentDelete from './CommentDelete';
 
 const DEFAULT_LIKED_IDS: string[] = [];
 
@@ -55,43 +47,13 @@ const Comment: React.FC<CommentProps> = ({
     isCooked = false,
     imageSrc = null,
 }) => {
-    const [confirmModalOpen, setConfirmModalOpen] = useState(false);
-    const [lightboxOpen, setLightboxOpen] = useState(false);
-    const mounted = useIsMounted();
-    const { hasLiked, toggleLike } = useCommentLike({
-        commentId,
-        likedIds,
-        currentUser,
-    });
-    const formattedDate = mounted
-        ? format(new Date(createdAt), 'dd/MM/yyyy HH:mm')
-        : '';
-    const { push, refresh } = useRouter() || {};
-    const { t } = useTranslation();
-
+    const router = useRouter();
     const { displayContent, translateButtonElement } = useTranslateableContent({
         content: comment,
     });
 
-    const deleteComment = () => {
-        axios
-            .delete(`/api/comments/${commentId}`)
-            .then(() => {
-                toast.success(t('comment_deleted'));
-                refresh();
-            })
-            .catch(() => {
-                toast.error(t('something_went_wrong'));
-            })
-            .finally(() => {});
-    };
-
     const navigateToProfile = () => {
-        push('/profile/' + userId);
-    };
-
-    const openDeleteModal = () => {
-        setConfirmModalOpen(true);
+        router?.push?.('/profile/' + userId);
     };
 
     return (
@@ -105,137 +67,26 @@ const Comment: React.FC<CommentProps> = ({
                 />
             </div>
             <div className="ml-3.5 min-w-0 grow">
-                <div className="mb-1 flex flex-wrap items-center gap-2">
-                    <button
-                        type="button"
-                        className="hover:text-green-450 dark:hover:text-green-450 cursor-pointer truncate border-0 bg-transparent p-0 text-left font-bold text-neutral-800 transition-colors duration-200 dark:text-neutral-100"
-                        onClick={navigateToProfile}
-                    >
-                        {userName}
-                    </button>
-                    {verified && (
-                        <VerificationBadge className="text-green-450" />
-                    )}
-                    <span className="border-green-450/30 bg-green-450/15 dark:text-green-450 rounded-full border px-2 py-0.5 text-xs font-semibold text-neutral-800">
-                        {mounted
-                            ? `${t('level')} ${userLevel}`
-                            : `level ${userLevel}`}
-                    </span>
-                    {Boolean(isCooked) && (
-                        <span
-                            className="border-green-450/40 bg-green-450/20 dark:text-green-450 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold text-neutral-800"
-                            data-testid="cooked-badge"
-                            data-cy="cooked-badge"
-                        >
-                            🥑{' '}
-                            {mounted
-                                ? String(
-                                      t('cooked_short') &&
-                                          t('cooked_short') !== 'cooked_short'
-                                          ? t('cooked_short')
-                                          : 'Cooked'
-                                  )
-                                : 'Cooked'}
-                        </span>
-                    )}
-                </div>
-                {rating !== undefined && rating !== null && rating > 0 && (
-                    <div
-                        className="mt-1 mb-2 flex items-center"
-                        data-testid="comment-rating"
-                    >
-                        <StarRating
-                            rating={rating}
-                            size={14}
-                        />
-                    </div>
-                )}
-                <div className="text-justify break-words whitespace-normal text-neutral-800 dark:text-neutral-100">
-                    <p
-                        className="text-justify break-words whitespace-normal text-neutral-800 dark:text-neutral-100"
-                        data-cy="comment-text"
-                    >
-                        {typeof displayContent === 'string'
-                            ? formatText(displayContent)
-                            : displayContent}
-                    </p>
-                </div>
-
-                {imageSrc && (
-                    <div className="mt-2.5">
-                        <button
-                            type="button"
-                            onClick={() => setLightboxOpen(true)}
-                            className="group relative inline-block overflow-hidden rounded-xl border border-neutral-200/80 shadow-2xs transition-colors duration-200 hover:border-neutral-300 focus:outline-hidden dark:border-neutral-700/80 dark:hover:border-neutral-600"
-                            data-testid="remake-photo-button"
-                            data-cy="remake-photo-button"
-                        >
-                            <CustomProxyImage
-                                src={imageSrc}
-                                alt="User remake proof"
-                                width={180}
-                                height={140}
-                                className="object-cover transition-transform duration-200 group-hover:scale-105"
-                            />
-                        </button>
-                    </div>
-                )}
-
-                <div className="mt-2.5 flex min-h-[24px] items-center justify-between text-xs text-neutral-500 dark:text-neutral-400">
-                    <div className="flex items-center gap-4">
-                        <div className="shrink-0">{translateButtonElement}</div>
-                        <button
-                            type="button"
-                            onClick={toggleLike}
-                            className="flex cursor-pointer items-center gap-1.5 transition-colors duration-200 hover:opacity-85 focus:outline-hidden"
-                            aria-label={
-                                hasLiked ? 'Unlike comment' : 'Like comment'
-                            }
-                            data-testid="comment-like-button"
-                        >
-                            {hasLiked ? (
-                                <AiFillHeart
-                                    className="fill-green-450 text-green-450"
-                                    size={16}
-                                />
-                            ) : (
-                                <AiOutlineHeart
-                                    className="text-neutral-500 dark:text-neutral-400"
-                                    size={16}
-                                />
-                            )}
-                            <span className="text-xs font-semibold">
-                                {likedIds.length}
-                            </span>
-                        </button>
-                    </div>
-                    <div className="ml-auto">{formattedDate}</div>
-                </div>
-
-                {canDelete && (
-                    <button
-                        type="button"
-                        className="absolute top-2 right-1 cursor-pointer border-0 bg-transparent p-0 text-rose-500 transition-colors duration-200 hover:text-rose-600"
-                        onClick={openDeleteModal}
-                        aria-label="Delete comment"
-                        data-testid="MdDelete"
-                    >
-                        <MdDelete size={20} />
-                    </button>
-                )}
-
-                <ConfirmModal
-                    open={confirmModalOpen}
-                    setIsOpen={setConfirmModalOpen}
-                    onConfirm={deleteComment}
+                <CommentHeader
+                    userName={userName}
+                    verified={verified}
+                    userLevel={userLevel}
+                    isCooked={isCooked}
+                    onNavigateToProfile={navigateToProfile}
                 />
-
-                <PhotoLightbox
-                    src={imageSrc}
-                    alt="User remake proof full size"
-                    isOpen={lightboxOpen}
-                    onClose={() => setLightboxOpen(false)}
-                    testId="lightbox-modal"
+                <CommentRating rating={rating} />
+                <CommentBody content={displayContent} />
+                <CommentImage imageSrc={imageSrc} />
+                <CommentFooter
+                    commentId={commentId}
+                    likedIds={likedIds}
+                    currentUser={currentUser}
+                    translateButtonElement={translateButtonElement}
+                    createdAt={createdAt}
+                />
+                <CommentDelete
+                    commentId={commentId}
+                    canDelete={canDelete}
                 />
             </div>
         </div>
