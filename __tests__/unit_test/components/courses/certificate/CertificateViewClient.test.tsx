@@ -187,4 +187,19 @@ describe('<CertificateViewClient />', () => {
         const divider = container.querySelector('.bg-green-450');
         expect(divider).toBeDefined();
     });
+
+    it('renders top row share button opposite the back button with responsive label', () => {
+        render(<CertificateViewClient certificate={mockCertificate} />);
+
+        const shareBtn = screen.getByTestId('share-certificate-button');
+        expect(shareBtn).toBeDefined();
+
+        // Responsive text inside share button should be hidden on mobile (< md) and inline on md+
+        const label = shareBtn.querySelector('span');
+        expect(label?.className).toContain('hidden');
+        expect(label?.className).toContain('md:inline');
+
+        // Floating action button should not exist
+        expect(screen.queryByTestId('share-certificate-mobile')).toBeNull();
+    });
 });

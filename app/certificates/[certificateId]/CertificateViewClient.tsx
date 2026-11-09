@@ -151,7 +151,8 @@ const CertificateHeader: React.FC<CertificateHeaderProps> = ({ onShare }) => {
 
     return (
         <div className="flex flex-col gap-4">
-            <div className="flex items-center">
+            {/* Top Navigation Row: Back Link on left, Share Button on right */}
+            <div className="flex items-center justify-between gap-3">
                 <Link
                     href="/courses"
                     className="group inline-flex items-center gap-2 text-sm font-semibold text-neutral-600 transition-colors duration-200 hover:text-neutral-900 focus:outline-hidden dark:text-neutral-400 dark:hover:text-white"
@@ -165,36 +166,36 @@ const CertificateHeader: React.FC<CertificateHeaderProps> = ({ onShare }) => {
                     </div>
                     <span>{t('explore_courses') || 'Explore Courses'}</span>
                 </Link>
+
+                <button
+                    type="button"
+                    onClick={onShare}
+                    className="flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-neutral-200/80 bg-white text-neutral-700 shadow-2xs transition-colors duration-200 hover:border-neutral-300 focus:outline-hidden md:w-auto md:gap-2 md:px-3.5 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:border-neutral-600"
+                    data-cy="share-certificate-button"
+                    data-testid="share-certificate-button"
+                    aria-label={String(t('share') || 'Share Certificate')}
+                    title={String(t('share') || 'Share Certificate')}
+                >
+                    <FiShare2 size={16} />
+                    <span className="hidden text-xs font-semibold md:inline">
+                        {t('share') || 'Share'}
+                    </span>
+                </button>
             </div>
 
-            <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-                <div className="flex items-center gap-3.5">
-                    <div className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-neutral-200/80 bg-neutral-100 shadow-2xs sm:size-12 dark:border-neutral-700/60 dark:bg-neutral-800">
-                        <FcDiploma1 size={28} />
-                    </div>
-                    <div>
-                        <h1 className="text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl dark:text-white">
-                            {t('verified_certificate') ||
-                                'Verified Certificate'}
-                        </h1>
-                        <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                            {t('certificate_verified_desc') ||
-                                'This certificate has been issued and verified by Jorbites.'}
-                        </p>
-                    </div>
+            {/* Squircle Icon Header */}
+            <div className="flex items-center gap-3.5">
+                <div className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-neutral-200/80 bg-neutral-100 shadow-2xs sm:size-12 dark:border-neutral-700/60 dark:bg-neutral-800">
+                    <FcDiploma1 size={28} />
                 </div>
-
-                <div className="hidden md:block md:shrink-0">
-                    <button
-                        type="button"
-                        onClick={onShare}
-                        className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-neutral-200/80 bg-white/80 px-4 py-2.5 text-sm font-semibold text-neutral-700 shadow-2xs backdrop-blur-xs transition-colors hover:border-neutral-300 hover:bg-neutral-100 dark:border-neutral-700/60 dark:bg-neutral-800/80 dark:text-neutral-300 dark:hover:border-neutral-600 dark:hover:bg-neutral-700"
-                        data-cy="share-certificate-button"
-                        aria-label={String(t('share') || 'Share Certificate')}
-                    >
-                        <FiShare2 className="size-4" />
-                        <span>{t('share') || 'Share'}</span>
-                    </button>
+                <div>
+                    <h1 className="text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl dark:text-white">
+                        {t('verified_certificate') || 'Verified Certificate'}
+                    </h1>
+                    <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                        {t('certificate_verified_desc') ||
+                            'This certificate has been issued and verified by Jorbites.'}
+                    </p>
                 </div>
             </div>
         </div>
@@ -367,28 +368,6 @@ const CertificateShareCard: React.FC<CertificateShareCardProps> = ({
     );
 };
 
-interface CertificateFloatingShareButtonProps {
-    onShare: () => void;
-}
-
-const CertificateFloatingShareButton: React.FC<
-    CertificateFloatingShareButtonProps
-> = ({ onShare }) => {
-    const { t } = useTranslation();
-
-    return (
-        <button
-            type="button"
-            onClick={onShare}
-            className="fixed right-6 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] z-10 flex size-14 cursor-pointer items-center justify-center rounded-full bg-neutral-900 text-white shadow-lg transition-colors duration-200 hover:bg-neutral-800 md:hidden dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
-            data-cy="share-certificate-mobile"
-            aria-label={String(t('share') || 'Share Certificate')}
-        >
-            <FiShare2 className="size-6" />
-        </button>
-    );
-};
-
 const CertificateViewClient: React.FC<CertificateViewClientProps> = ({
     certificate,
 }) => {
@@ -424,8 +403,6 @@ const CertificateViewClient: React.FC<CertificateViewClientProps> = ({
                     copied={copied}
                     onCopyLink={handleCopyLink}
                 />
-
-                <CertificateFloatingShareButton onShare={handleShare} />
             </div>
         </Container>
     );
