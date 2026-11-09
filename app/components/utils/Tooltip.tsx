@@ -25,6 +25,7 @@ const Tooltip: React.FC<TooltipProps> = ({
     className = '',
 }) => {
     const [isVisible, setIsVisible] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const isTouchRef = useRef(false);
@@ -55,12 +56,6 @@ const Tooltip: React.FC<TooltipProps> = ({
         setIsVisible(false);
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') {
-            dismissTooltip();
-        }
-    };
-
     useEffect(() => {
         const timeout = timeoutRef.current;
         const touchTimeout = touchTimeoutRef.current;
@@ -70,18 +65,41 @@ const Tooltip: React.FC<TooltipProps> = ({
         };
     }, []);
 
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const handleClick = () => {
+            dismissTooltip();
+        };
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') {
+                dismissTooltip();
+            }
+        };
+
+        container.addEventListener('click', handleClick);
+        container.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            container.removeEventListener('click', handleClick);
+            container.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
+
     return (
         <div
+            ref={containerRef}
             className={`group relative inline-block ${className}`}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             onTouchStart={handleTouchStart}
-            onClick={dismissTooltip}
-            onKeyDown={handleKeyDown}
         >
             {children}
             {isVisible && (
                 <div
+                    role="tooltip"
                     className={`pointer-events-none absolute z-1 rounded-sm bg-white px-2 py-1 text-xs whitespace-nowrap text-neutral-800 opacity-100 shadow-md dark:bg-neutral-950 dark:text-white ${positionClasses[position]}`}
                     data-testid="tooltip"
                 >
