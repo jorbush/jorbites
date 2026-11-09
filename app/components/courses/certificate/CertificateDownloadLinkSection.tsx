@@ -162,7 +162,7 @@ const CertificateDownloadLinkSection: React.FC<
             <DownloadLink
                 document={pdfDocument}
                 fileName={`Jorbites_Certificate_${courseTitle.replace(/\s+/g, '_')}.pdf`}
-                className="bg-green-450 inline-flex animate-none cursor-pointer items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-green-950 transition hover:opacity-90"
+                className="bg-green-450 inline-flex animate-none cursor-pointer items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-neutral-900 shadow-2xs transition hover:opacity-90"
             >
                 {({ loading }: { loading: boolean }) => (
                     <>
@@ -177,7 +177,7 @@ const CertificateDownloadLinkSection: React.FC<
                     href={linkedInUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-neutral-200 bg-white px-6 py-3 text-sm font-semibold text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800"
+                    className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-neutral-200/80 bg-white/80 px-6 py-3 text-sm font-semibold text-neutral-700 shadow-2xs backdrop-blur-xs transition hover:border-neutral-300 hover:bg-neutral-100 dark:border-neutral-700/60 dark:bg-neutral-800/80 dark:text-neutral-300 dark:hover:border-neutral-600 dark:hover:bg-neutral-700"
                 >
                     <FiLinkedin className="size-4 text-[#0A66C2]" />
                     <span>{shareLinkedInLabel}</span>
@@ -189,9 +189,9 @@ const CertificateDownloadLinkSection: React.FC<
                     href={publicCertUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-neutral-200 bg-white px-6 py-3 text-sm font-semibold text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800"
+                    className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-neutral-200/80 bg-white/80 px-6 py-3 text-sm font-semibold text-neutral-700 shadow-2xs backdrop-blur-xs transition hover:border-neutral-300 hover:bg-neutral-100 dark:border-neutral-700/60 dark:bg-neutral-800/80 dark:text-neutral-300 dark:hover:border-neutral-600 dark:hover:bg-neutral-700"
                 >
-                    <FiExternalLink className="size-4 text-green-600 dark:text-green-400" />
+                    <FiExternalLink className="size-4 text-neutral-600 dark:text-neutral-400" />
                     <span>{viewCertificateLabel || 'View Certificate'}</span>
                 </a>
             )}
