@@ -8,9 +8,12 @@ import Link from 'next/link';
  * - Bold: text between ** or __ markers
  * - Italic: text between * or _ markers
  */
+export const DEFAULT_LINK_CLASS_NAME =
+    'decoration-green-450 hover:text-green-450 dark:hover:text-green-450 font-medium text-neutral-900 underline decoration-2 underline-offset-4 transition-colors duration-200 dark:text-neutral-100';
+
 export const formatText = (
     text: string,
-    linkClassName = 'text-green-450 hover:underline'
+    linkClassName = DEFAULT_LINK_CLASS_NAME
 ) => {
     const segments: React.ReactNode[] = [];
     let remainingText = text;
@@ -35,7 +38,7 @@ export const formatText = (
                 return (
                     <Link
                         href={`/profile/${userId}`}
-                        className="text-green-450 cursor-pointer hover:underline"
+                        className={`${linkClassName} cursor-pointer`}
                     >
                         @{username}
                     </Link>
