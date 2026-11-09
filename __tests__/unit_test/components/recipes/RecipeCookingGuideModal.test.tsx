@@ -89,6 +89,11 @@ describe('RecipeCookingGuideModal', () => {
             screen.getByText('Preheat oven to 180°C for 10 minutes')
         ).toBeDefined();
 
+        const initialStepCard = screen.getByTestId('guide-active-step-card');
+        expect(initialStepCard.className).not.toContain(
+            'animate-search-fade-in'
+        );
+
         // Start 10 minute timer (600s) and advance 2 seconds
         fireEvent.click(screen.getByTestId('smart-timer-preset-600'));
         expect(screen.getByTestId('timer-countdown-display').textContent).toBe(
@@ -104,10 +109,13 @@ describe('RecipeCookingGuideModal', () => {
             screen.getByTestId('header-active-timer-badge').textContent
         ).toContain('09:58');
 
-        // Navigate to Step 2 via Complete & Next — timer must survive step transition!
+        // Navigate to Step 2 via Complete & Next — card DOM node and timer must survive step transition without remounting!
         fireEvent.click(screen.getByTestId('guide-complete-next-btn'));
         expect(onToggleStep).toHaveBeenCalledWith(0);
         expect(screen.getByText('Whisk eggs and sugar together')).toBeDefined();
+        expect(screen.getByTestId('guide-active-step-card')).toBe(
+            initialStepCard
+        );
         expect(screen.getByTestId('timer-countdown-display').textContent).toBe(
             '09:58'
         );

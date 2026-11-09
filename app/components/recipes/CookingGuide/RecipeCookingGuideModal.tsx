@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { FiCheck } from 'react-icons/fi';
@@ -88,6 +88,19 @@ const ActiveCookingGuideDialog: React.FC<ActiveCookingGuideDialogProps> = ({
         [currentStepText]
     );
 
+    const formattedStepText = useMemo(
+        () => formatText(currentStepText),
+        [currentStepText]
+    );
+
+    const handleToggleIngredients = useCallback(() => {
+        setIsIngredientsOpen((prev) => !prev);
+    }, [setIsIngredientsOpen]);
+
+    const handleCloseIngredients = useCallback(() => {
+        setIsIngredientsOpen(false);
+    }, [setIsIngredientsOpen]);
+
     const progressPercent = Math.round(
         ((isCelebration ? steps.length : currentIndex + 1) / steps.length) * 100
     );
@@ -109,16 +122,14 @@ const ActiveCookingGuideDialog: React.FC<ActiveCookingGuideDialogProps> = ({
                 aria-hidden="true"
             >
                 <div
-                    className={`bg-green-450/20 dark:bg-green-450/15 absolute -top-24 -left-24 size-96 rounded-full blur-3xl transition-transform duration-1000 ${
-                        isMusicPlaying
-                            ? 'scale-105 motion-safe:animate-pulse'
-                            : 'opacity-50'
+                    className={`bg-green-450/20 dark:bg-green-450/15 absolute -top-24 -left-24 size-96 transform-gpu rounded-full blur-3xl transition-opacity duration-700 ${
+                        isMusicPlaying ? 'scale-105 opacity-80' : 'opacity-50'
                     }`}
                 />
                 <div
-                    className={`bg-green-450/15 dark:bg-green-450/10 absolute -right-24 -bottom-24 size-96 rounded-full blur-3xl transition-transform duration-1000 ${
+                    className={`bg-green-450/15 dark:bg-green-450/10 absolute -right-24 -bottom-24 size-96 transform-gpu rounded-full blur-3xl transition-opacity duration-700 ${
                         isMusicPlaying
-                            ? 'motion-safe:animate-smooth-float'
+                            ? 'motion-safe:animate-smooth-float opacity-70 will-change-transform'
                             : 'opacity-40'
                     }`}
                 />
@@ -139,9 +150,7 @@ const ActiveCookingGuideDialog: React.FC<ActiveCookingGuideDialogProps> = ({
                 onToggleMusic={handleToggleMusic}
                 onSelectVibe={handleSelectVibe}
                 onReadAloud={handleReadAloud}
-                onToggleIngredients={() =>
-                    setIsIngredientsOpen((prev) => !prev)
-                }
+                onToggleIngredients={handleToggleIngredients}
                 onGoToStep={handleGoToStep}
                 onClose={onClose}
             />
@@ -160,8 +169,7 @@ const ActiveCookingGuideDialog: React.FC<ActiveCookingGuideDialogProps> = ({
                     </div>
                 ) : (
                     <div
-                        key={currentIndex}
-                        className="animate-search-fade-in mx-auto my-auto flex w-full max-w-2xl flex-col items-center rounded-2xl border border-neutral-200/80 bg-white/90 p-5 text-center shadow-lg backdrop-blur-md md:rounded-3xl md:p-10 dark:border-neutral-800/80 dark:bg-neutral-900/85"
+                        className="mx-auto my-auto flex w-full max-w-2xl flex-col items-center rounded-2xl border border-neutral-200/80 bg-white/90 p-5 text-center shadow-lg backdrop-blur-md md:rounded-3xl md:p-10 dark:border-neutral-800/80 dark:bg-neutral-900/85"
                         data-testid="guide-active-step-card"
                     >
                         <CulinaryActionVisualizer
@@ -175,7 +183,7 @@ const ActiveCookingGuideDialog: React.FC<ActiveCookingGuideDialogProps> = ({
                             data-testid="guide-step-text"
                             data-cy="guide-step-text"
                         >
-                            {formatText(currentStepText)}
+                            {formattedStepText}
                         </div>
 
                         <StepSmartTimer
@@ -234,7 +242,7 @@ const ActiveCookingGuideDialog: React.FC<ActiveCookingGuideDialogProps> = ({
 
             <CookingGuideIngredientsDrawer
                 isOpen={isIngredientsOpen}
-                onClose={() => setIsIngredientsOpen(false)}
+                onClose={handleCloseIngredients}
                 ingredients={ingredients}
                 recipeId={recipeId}
             />

@@ -83,23 +83,32 @@ function useWakeLockAndScrollLock(): void {
 
         acquireWakeLock();
 
-        const handleVisibilityChange = () => {
-            if (document.visibilityState === 'visible') {
-                acquireWakeLock();
+        const handleGestureUnlock = () => {
+            const ctx = unlockCookingAudio();
+            if (ctx?.state === 'running') {
+                document.removeEventListener('touchstart', handleGestureUnlock);
+                document.removeEventListener('click', handleGestureUnlock);
             }
         };
 
-        const handleGestureUnlock = () => {
-            unlockCookingAudio();
+        const attachGestureUnlockListeners = () => {
+            document.addEventListener('touchstart', handleGestureUnlock, {
+                passive: true,
+            });
+            document.addEventListener('click', handleGestureUnlock, {
+                passive: true,
+            });
+        };
+
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible') {
+                acquireWakeLock();
+                attachGestureUnlockListeners();
+            }
         };
 
         document.addEventListener('visibilitychange', handleVisibilityChange);
-        document.addEventListener('touchstart', handleGestureUnlock, {
-            passive: true,
-        });
-        document.addEventListener('click', handleGestureUnlock, {
-            passive: true,
-        });
+        attachGestureUnlockListeners();
 
         return () => {
             document.body.style.overflow = originalOverflow;
