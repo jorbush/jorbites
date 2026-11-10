@@ -602,6 +602,10 @@ export async function DELETE(
                 redisCache.del(`recipe:comments:${recipeId}`),
                 redisCache.del(`recipe:cooksnaps:${recipeId}`),
                 redisCache.del(`recipe:remixes:${recipeId}`),
+                redisCache.del(`recipe:inclusions:public:${recipeId}`),
+                redisCache.del(
+                    `recipe:inclusions:user:${recipeId}:${currentUser.id}`
+                ),
                 redisCache.del(`recipes:graph:${currentUser.id}`),
                 redisCache.del(`user:activity:graph:${currentUser.id}`),
                 redisCache.incr('recipes:global:version'),

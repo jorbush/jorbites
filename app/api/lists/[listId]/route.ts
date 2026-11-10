@@ -9,6 +9,7 @@ import {
     badRequest,
     notFoundResponse,
 } from '@/app/utils/apiErrors';
+import { invalidateRecipeInclusionsCache } from '@/app/lib/recipeInclusionsCache';
 
 interface IParams {
     listId?: string;
@@ -78,6 +79,12 @@ export async function PATCH(
             listId: updatedList.id,
         });
 
+        if (existingList.recipeIds && existingList.recipeIds.length > 0) {
+            for (const rId of existingList.recipeIds) {
+                void invalidateRecipeInclusionsCache(rId, currentUser.id);
+            }
+        }
+
         const safeList = {
             ...updatedList,
             createdAt: updatedList.createdAt.toISOString(),
@@ -139,6 +146,11 @@ export async function DELETE(
         });
 
         logger.info('DELETE /api/lists/[listId] - success', { listId });
+        if (existingList.recipeIds && existingList.recipeIds.length > 0) {
+            for (const rId of existingList.recipeIds) {
+                void invalidateRecipeInclusionsCache(rId, currentUser.id);
+            }
+        }
         return NextResponse.json({ message: 'List deleted' });
     } catch (error: any) {
         logger.error('DELETE /api/lists/[listId] - error', {

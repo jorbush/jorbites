@@ -21,6 +21,7 @@ import { formatText } from '@/app/utils/textFormatting';
 import RecipeSchema from '@/app/components/recipes/RecipeSchema';
 import CookedGallery from '@/app/components/recipes/CookedGallery';
 import RecipeRemixesSection from '@/app/components/recipes/RecipeRemixesSection';
+import RecipeInclusionsSection from '@/app/components/recipes/RecipeInclusionsSection';
 
 interface RecipeClientProps {
     comments?: SafeComment[];
@@ -187,6 +188,12 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             />
                         </div>
                     )}
+                    <div className="mt-2">
+                        <RecipeInclusionsSection
+                            recipeId={recipe.id}
+                            currentUser={currentUser}
+                        />
+                    </div>
                     <div id="comments-section">
                         <Comments
                             currentUser={currentUser}

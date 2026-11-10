@@ -8,6 +8,7 @@ import {
     internalServerError,
     badRequest,
 } from '@/app/utils/apiErrors';
+import { invalidateRecipeInclusionsCache } from '@/app/lib/recipeInclusionsCache';
 
 export async function GET() {
     try {
@@ -138,6 +139,10 @@ export async function POST(request: Request) {
         }
 
         logger.info('POST /api/lists - success', { listId: list.id });
+
+        if (recipeId) {
+            void invalidateRecipeInclusionsCache(recipeId, currentUser.id);
+        }
 
         const safeList = {
             ...list,
