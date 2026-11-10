@@ -10,6 +10,7 @@ import {
     verifyTotpCode,
     verifyBackupCode,
 } from '@/app/utils/totp';
+import { twoFactorRatelimit } from '@/app/lib/ratelimit';
 
 export const authOptions: AuthOptions = {
     adapter: PrismaAdapter(prisma),
@@ -65,26 +66,51 @@ export const authOptions: AuthOptions = {
                         throw new Error('2FA_REQUIRED');
                     }
 
+                    if (
+                        process.env.NODE_ENV === 'production' ||
+                        process.env.ENV === 'production'
+                    ) {
+                        const { success } = await twoFactorRatelimit.limit(
+                            `2fa_login:${user.id}`
+                        );
+                        if (!success) {
+                            throw new Error('TOO_MANY_2FA_ATTEMPTS');
+                        }
+                    }
+
                     const secret = decryptTotpSecret(user.twoFactorSecret);
                     const isValidTotp = verifyTotpCode(submittedCode, secret);
 
                     if (!isValidTotp) {
-                        const { valid: isValidBackup, remainingHashes } =
-                            verifyBackupCode(
-                                submittedCode,
-                                user.twoFactorBackupCodes || []
-                            );
+                        const {
+                            valid: isValidBackup,
+                            matchedHash,
+                            remainingHashes,
+                        } = verifyBackupCode(
+                            submittedCode,
+                            user.twoFactorBackupCodes || []
+                        );
 
-                        if (!isValidBackup) {
+                        if (!isValidBackup || !matchedHash) {
                             throw new Error('INVALID_2FA_CODE');
                         }
 
-                        await prisma.user.update({
-                            where: { id: user.id },
+                        // Atomic check-and-update to prevent concurrent reuse of the same backup code
+                        const updateResult = await prisma.user.updateMany({
+                            where: {
+                                id: user.id,
+                                twoFactorBackupCodes: {
+                                    has: matchedHash,
+                                },
+                            },
                             data: {
                                 twoFactorBackupCodes: remainingHashes,
                             },
                         });
+
+                        if (updateResult.count === 0) {
+                            throw new Error('INVALID_2FA_CODE');
+                        }
                     }
                 }
 

@@ -1680,5 +1680,6 @@
     "disable_2fa_prompt": "Confirm your current password to disable two-factor authentication on your account.",
     "enter_2fa_code_subtitle": "Enter the 6-digit code from your authenticator app or a backup recovery code.",
     "enter_2fa_code_error": "Please enter your verification code",
-    "invalid_2fa_code": "Invalid verification code"
+    "invalid_2fa_code": "Invalid verification code",
+    "too_many_2fa_attempts": "Too many verification attempts. Please try again later."
 }

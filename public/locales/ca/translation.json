@@ -1680,5 +1680,6 @@
     "disable_2fa_prompt": "Confirma la teva contrasenya actual per desactivar l'autenticació de dos factors al teu compte.",
     "enter_2fa_code_subtitle": "Introdueix el codi de 6 dígits de la teva aplicació d'autenticació o un codi de recuperació.",
     "enter_2fa_code_error": "Si us plau, introdueix el teu codi de verificació",
-    "invalid_2fa_code": "Codi de verificació no vàlid"
+    "invalid_2fa_code": "Codi de verificació no vàlid",
+    "too_many_2fa_attempts": "Massa intents de verificació. Si us plau, torna-ho a provar més tard."
 }

@@ -145,7 +145,25 @@ export function verifyTotpCode(
 
 function getEncryptionKey(): Uint8Array {
     const rawKey =
-        process.env.NEXTAUTH_SECRET || 'jorbites-default-totp-secret-key';
+        process.env.TWO_FACTOR_ENCRYPTION_KEY || process.env.NEXTAUTH_SECRET;
+
+    if (!rawKey) {
+        if (
+            process.env.NODE_ENV === 'production' ||
+            process.env.ENV === 'production'
+        ) {
+            throw new Error(
+                'Missing TWO_FACTOR_ENCRYPTION_KEY or NEXTAUTH_SECRET in production'
+            );
+        }
+        return new Uint8Array(
+            crypto
+                .createHash('sha256')
+                .update('jorbites-dev-totp-secret-key')
+                .digest()
+        );
+    }
+
     const digest = crypto.createHash('sha256').update(rawKey).digest();
     return new Uint8Array(digest);
 }
@@ -165,8 +183,8 @@ export function encryptTotpSecret(secret: string): string {
 }
 
 export function decryptTotpSecret(stored: string): string {
-    if (!stored.startsWith('enc:')) {
-        return stored;
+    if (!stored || !stored.startsWith('enc:')) {
+        throw new Error('Invalid encrypted TOTP secret format');
     }
     const parts = stored.split(':');
     if (parts.length !== 4) {
@@ -190,7 +208,8 @@ export function normalizeBackupCode(code: string): string {
 
 export function hashBackupCode(code: string): string {
     const normalized = normalizeBackupCode(code);
-    return crypto.createHash('sha256').update(normalized).digest('hex');
+    const key = getEncryptionKey();
+    return crypto.createHmac('sha256', key).update(normalized).digest('hex');
 }
 
 export function generateBackupCodes(count = 8): {
@@ -218,7 +237,7 @@ export function generateBackupCodes(count = 8): {
 export function verifyBackupCode(
     inputCode: string,
     hashedCodes: string[]
-): { valid: boolean; remainingHashes: string[] } {
+): { valid: boolean; matchedHash?: string; remainingHashes: string[] } {
     const normalized = normalizeBackupCode(inputCode);
     if (normalized.length < 6) {
         return { valid: false, remainingHashes: hashedCodes };
@@ -243,8 +262,9 @@ export function verifyBackupCode(
         return { valid: false, remainingHashes: hashedCodes };
     }
 
+    const matchedHash = hashedCodes[matchedIndex];
     const remainingHashes = hashedCodes.filter(
         (_, idx) => idx !== matchedIndex
     );
-    return { valid: true, remainingHashes };
+    return { valid: true, matchedHash, remainingHashes };
 }

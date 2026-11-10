@@ -76,8 +76,10 @@ describe('TOTP & Backup Code Utilities', () => {
         expect(encrypted.startsWith('enc:')).toBe(true);
         expect(encrypted).not.toContain(secret);
         expect(decryptTotpSecret(encrypted)).toBe(secret);
-        // Plaintext fallback compatibility
-        expect(decryptTotpSecret(secret)).toBe(secret);
+        // Rejects unencrypted plaintext
+        expect(() => decryptTotpSecret(secret)).toThrow(
+            'Invalid encrypted TOTP secret format'
+        );
     });
 
     it('generates, verifies, and consumes one-time backup codes', () => {
@@ -92,6 +94,7 @@ describe('TOTP & Backup Code Utilities', () => {
             .toLowerCase();
         const result1 = verifyBackupCode(firstCodeLowerNoHyphen, hashedCodes);
         expect(result1.valid).toBe(true);
+        expect(result1.matchedHash).toBe(hashedCodes[0]);
         expect(result1.remainingHashes).toHaveLength(7);
 
         // Reusing the same code against remainingHashes fails

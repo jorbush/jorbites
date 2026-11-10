@@ -276,4 +276,48 @@ describe('LoginModal', () => {
             expect(toast.success).toHaveBeenCalledWith('logged_in');
         });
     });
+
+    it('displays rate limit error toast when signIn returns TOO_MANY_2FA_ATTEMPTS', async () => {
+        const signIn = vi.mocked(await import('next-auth/react')).signIn;
+        const toast = vi.mocked(await import('react-hot-toast')).toast;
+
+        signIn
+            .mockResolvedValueOnce({
+                ok: false,
+                error: '2FA_REQUIRED',
+                status: 401,
+                url: null,
+            } as SignInResponse)
+            .mockResolvedValueOnce({
+                ok: false,
+                error: 'TOO_MANY_2FA_ATTEMPTS',
+                status: 429,
+                url: null,
+            } as SignInResponse);
+
+        render(<LoginModal />);
+
+        fireEvent.change(screen.getByLabelText('email'), {
+            target: { value: 'test@example.com' },
+        });
+        fireEvent.change(screen.getByLabelText('password'), {
+            target: { value: 'password123' },
+        });
+
+        fireEvent.click(screen.getByText('continue'));
+
+        await waitFor(() => {
+            expect(screen.getByTestId('login-2fa-step')).toBeDefined();
+        });
+
+        fireEvent.change(screen.getByTestId('login-2fa-code-input'), {
+            target: { value: '654321' },
+        });
+
+        fireEvent.click(screen.getByText('verify'));
+
+        await waitFor(() => {
+            expect(toast.error).toHaveBeenCalledWith('too_many_2fa_attempts');
+        });
+    });
 });

@@ -76,6 +76,14 @@ const LoginModal = () => {
             return;
         }
 
+        if (callback?.error === 'TOO_MANY_2FA_ATTEMPTS') {
+            toast.error(
+                t('too_many_2fa_attempts') ||
+                    'Too many verification attempts. Please try again later.'
+            );
+            return;
+        }
+
         const errorMessage =
             callback?.error === 'INVALID_2FA_CODE'
                 ? t('invalid_2fa_code') || 'Invalid verification code'

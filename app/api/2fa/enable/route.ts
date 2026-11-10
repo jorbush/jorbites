@@ -57,6 +57,10 @@ export async function POST(request: Request) {
             );
         }
 
+        if (user.twoFactorEnabled) {
+            return badRequest('Two-factor authentication is already enabled');
+        }
+
         const secret = decryptTotpSecret(user.twoFactorSecret);
         const isValid = verifyTotpCode(code, secret);
 

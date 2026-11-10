@@ -1681,5 +1681,6 @@
     "disable_2fa_prompt": "Confirma tu contraseña actual para desactivar la autenticación de dos factores en tu cuenta.",
     "enter_2fa_code_subtitle": "Introduce el código de 6 dígitos de tu aplicación de autenticación o un código de recuperación.",
     "enter_2fa_code_error": "Por favor, introduce tu código de verificación",
-    "invalid_2fa_code": "Código de verificación no válido"
+    "invalid_2fa_code": "Código de verificación no válido",
+    "too_many_2fa_attempts": "Demasiados intentos de verificación. Por favor, inténtalo más tarde."
 }

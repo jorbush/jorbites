@@ -125,6 +125,30 @@ describe('2FA API Routes (/api/2fa/*)', () => {
             expect(data.error).toBe('Invalid verification code');
         });
 
+        it('returns 400 when 2FA is already enabled', async () => {
+            const secret = generateTotpSecret();
+            jest.mocked(getCurrentUser).mockResolvedValue({
+                id: 'user-1',
+            } as any);
+            jest.mocked(prisma.user.findUnique).mockResolvedValue({
+                id: 'user-1',
+                twoFactorSecret: encryptTotpSecret(secret),
+                twoFactorEnabled: true,
+            } as any);
+
+            const req = new Request('http://localhost/api/2fa/enable', {
+                method: 'POST',
+                body: JSON.stringify({ code: '123456' }),
+            });
+            const res = await EnablePOST(req);
+            const data = await res.json();
+
+            expect(res.status).toBe(400);
+            expect(data.error).toBe(
+                'Two-factor authentication is already enabled'
+            );
+        });
+
         it('enables 2FA and returns 8 backup codes when TOTP code is valid', async () => {
             const secret = generateTotpSecret();
             const validCode = generateTotpCode(secret);
