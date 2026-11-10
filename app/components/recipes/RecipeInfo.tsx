@@ -18,10 +18,6 @@ import { RecipeGanttTable } from './RecipeGanttTable';
 import RecipeIngredients from './RecipeIngredients';
 import RecipeSteps from './RecipeSteps';
 import useIsMounted from '@/app/hooks/useIsMounted';
-import useCooksnapModal from '@/app/hooks/useCooksnapModal';
-import useLoginModal from '@/app/hooks/useLoginModal';
-import Button from '@/app/components/buttons/Button';
-import { TbPhotoPlus, TbGitFork } from 'react-icons/tb';
 import RemixAttributionBanner from '@/app/components/recipes/RemixAttributionBanner';
 
 interface RecipeInfoProps {
@@ -136,8 +132,6 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     const coCooks = coCooksData || [];
     const linkedRecipes = linkedRecipesData || [];
     const isLoadingRelatedData = isCoCooksLoading || isLinkedRecipesLoading;
-    const cooksnapModal = useCooksnapModal();
-    const loginModal = useLoginModal();
 
     return (
         <div className="col-span-4 flex flex-col gap-8 pr-2 pl-2">
@@ -194,50 +188,6 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                 RenderSteps={RecipeSteps}
                 RenderGanttTable={RecipeGanttTable}
             />
-
-            {/* Post-steps Cooksnap and Remix Buttons */}
-            <div className="flex w-full flex-wrap items-center justify-center gap-4 pt-2">
-                <div className="w-[220px]">
-                    <Button
-                        label={
-                            mounted
-                                ? String(
-                                      t('i_made_this', {
-                                          defaultValue: 'I Made This!',
-                                      })
-                                  )
-                                : 'I Made This!'
-                        }
-                        icon={TbPhotoPlus}
-                        onClick={() => {
-                            if (!currentUser) return loginModal.onOpen();
-                            cooksnapModal.onOpen(id, recipeTitle);
-                        }}
-                        dataTestId="post-steps-cooksnap-btn"
-                    />
-                </div>
-                <div className="w-[220px]">
-                    <Button
-                        label={
-                            mounted
-                                ? String(
-                                      t('remix_recipe', {
-                                          defaultValue: 'Remix Recipe',
-                                      })
-                                  )
-                                : 'Remix Recipe'
-                        }
-                        icon={TbGitFork}
-                        outline
-                        onClick={() => {
-                            if (!currentUser) return loginModal.onOpen();
-                            push(`/recipes/create?forkFrom=${id}`);
-                        }}
-                        dataTestId="remix-recipe-btn"
-                        dataCy="remix-recipe-btn"
-                    />
-                </div>
-            </div>
 
             {/* YouTube video section */}
             {youtubeUrl && (

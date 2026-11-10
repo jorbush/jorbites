@@ -22,6 +22,7 @@ import RecipeSchema from '@/app/components/recipes/RecipeSchema';
 import CookedGallery from '@/app/components/recipes/CookedGallery';
 import RecipeRemixesSection from '@/app/components/recipes/RecipeRemixesSection';
 import RecipeInclusions from '@/app/components/recipes/RecipeInclusions';
+import RecipeActionButtons from '@/app/components/recipes/RecipeActionButtons';
 
 interface RecipeClientProps {
     comments?: SafeComment[];
@@ -190,6 +191,11 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                     )}
                     <RecipeInclusions
                         recipeId={recipe.id}
+                        currentUser={currentUser}
+                    />
+                    <RecipeActionButtons
+                        recipeId={recipe.id}
+                        recipeTitle={recipe.title}
                         currentUser={currentUser}
                     />
                     <div id="comments-section">
