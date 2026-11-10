@@ -95,7 +95,7 @@ export const ListCard: React.FC<ListCardProps> = ({
                             push(`/lists/${list.id}`);
                         }}
                         data-cy="list-card-title"
-                        className="hover:text-green-450 line-clamp-1 cursor-pointer text-left font-bold transition-colors duration-200 focus:outline-hidden"
+                        className="decoration-green-450 line-clamp-1 cursor-pointer text-left font-bold decoration-2 underline-offset-4 transition-colors duration-200 group-hover:underline hover:underline focus:outline-hidden"
                     >
                         {list.isDefault ? t('to_cook_later') : list.name}
                     </Link>

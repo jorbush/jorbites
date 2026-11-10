@@ -62,7 +62,7 @@ export const PlanningCard: React.FC<PlanningCardProps> = ({
                                 push(`/plannings/${plan.id}`);
                             }}
                             data-cy="planning-card-title"
-                            className="hover:text-green-450 cursor-pointer text-left font-bold transition-colors duration-200 after:absolute after:inset-0 after:rounded-2xl after:content-[''] focus:outline-hidden"
+                            className="decoration-green-450 cursor-pointer text-left font-bold decoration-2 underline-offset-4 transition-colors duration-200 group-hover:underline after:absolute after:inset-0 after:rounded-2xl after:content-[''] hover:underline focus:outline-hidden"
                         >
                             {plan.name}
                         </button>
