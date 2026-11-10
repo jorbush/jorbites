@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import getListsAndPlanningsByRecipeId from '@/app/actions/getListsAndPlanningsByRecipeId';
+import getRecipeInclusions from '@/app/actions/getRecipeInclusions';
 import { badRequest, internalServerError } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
 
@@ -24,19 +24,19 @@ export async function GET(
             return badRequest('Invalid recipe ID');
         }
 
-        logger.info('GET /api/recipes/[id]/lists-and-plannings - start', {
+        logger.info('GET /api/recipes/[id]/inclusions - start', {
             recipeId,
             userId: currentUser?.id,
         });
 
-        const data = await getListsAndPlanningsByRecipeId({
+        const data = await getRecipeInclusions({
             recipeId,
             userId: currentUser?.id,
         });
 
         return NextResponse.json(data);
     } catch (error: any) {
-        logger.error('GET /api/recipes/[id]/lists-and-plannings - error', {
+        logger.error('GET /api/recipes/[id]/inclusions - error', {
             error: error.message,
         });
         return internalServerError('Internal Error');

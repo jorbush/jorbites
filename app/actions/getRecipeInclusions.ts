@@ -174,7 +174,7 @@ const mapToSafeQuest = (quest: any): SafeQuest => ({
         : [],
 });
 
-export default async function getListsAndPlanningsByRecipeId({
+export default async function getRecipeInclusions({
     recipeId,
     userId,
 }: IParams): Promise<RecipeInclusionsResult> {
@@ -193,26 +193,20 @@ export default async function getListsAndPlanningsByRecipeId({
         try {
             const cachedPublic = await redisCache.get(publicCacheKey);
             if (cachedPublic) {
-                logger.info(
-                    'getListsAndPlanningsByRecipeId - public cache hit',
-                    {
-                        recipeId,
-                    }
-                );
+                logger.info('getRecipeInclusions - public cache hit', {
+                    recipeId,
+                });
                 publicInclusions = JSON.parse(cachedPublic);
             }
         } catch (cacheError: any) {
-            logger.error(
-                'getListsAndPlanningsByRecipeId - public cache get error',
-                {
-                    error: cacheError.message,
-                    recipeId,
-                }
-            );
+            logger.error('getRecipeInclusions - public cache get error', {
+                error: cacheError.message,
+                recipeId,
+            });
         }
 
         if (!publicInclusions) {
-            logger.info('getListsAndPlanningsByRecipeId - public cache miss', {
+            logger.info('getRecipeInclusions - public cache miss', {
                 recipeId,
             });
 
@@ -311,13 +305,10 @@ export default async function getListsAndPlanningsByRecipeId({
                     CACHE_TTL_SECONDS
                 );
             } catch (cacheError: any) {
-                logger.error(
-                    'getListsAndPlanningsByRecipeId - public cache set error',
-                    {
-                        error: cacheError.message,
-                        recipeId,
-                    }
-                );
+                logger.error('getRecipeInclusions - public cache set error', {
+                    error: cacheError.message,
+                    recipeId,
+                });
             }
         }
 
@@ -330,24 +321,18 @@ export default async function getListsAndPlanningsByRecipeId({
             try {
                 const cachedUser = await redisCache.get(userCacheKey);
                 if (cachedUser) {
-                    logger.info(
-                        'getListsAndPlanningsByRecipeId - user cache hit',
-                        {
-                            recipeId,
-                            userId,
-                        }
-                    );
+                    logger.info('getRecipeInclusions - user cache hit', {
+                        recipeId,
+                        userId,
+                    });
                     userInclusions = JSON.parse(cachedUser);
                 }
             } catch (cacheError: any) {
-                logger.error(
-                    'getListsAndPlanningsByRecipeId - user cache get error',
-                    {
-                        error: cacheError.message,
-                        recipeId,
-                        userId,
-                    }
-                );
+                logger.error('getRecipeInclusions - user cache get error', {
+                    error: cacheError.message,
+                    recipeId,
+                    userId,
+                });
             }
 
             if (
@@ -425,14 +410,11 @@ export default async function getListsAndPlanningsByRecipeId({
                         CACHE_TTL_SECONDS
                     );
                 } catch (cacheError: any) {
-                    logger.error(
-                        'getListsAndPlanningsByRecipeId - user cache set error',
-                        {
-                            error: cacheError.message,
-                            recipeId,
-                            userId,
-                        }
-                    );
+                    logger.error('getRecipeInclusions - user cache set error', {
+                        error: cacheError.message,
+                        recipeId,
+                        userId,
+                    });
                 }
             }
         }
@@ -449,7 +431,7 @@ export default async function getListsAndPlanningsByRecipeId({
             quests: publicInclusions?.quests || [],
         };
     } catch (error: any) {
-        logger.error('getListsAndPlanningsByRecipeId - error', {
+        logger.error('getRecipeInclusions - error', {
             error: error.message,
             recipeId,
             userId,

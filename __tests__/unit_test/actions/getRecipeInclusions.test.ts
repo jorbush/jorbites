@@ -1,4 +1,4 @@
-import getListsAndPlanningsByRecipeId from '@/app/actions/getListsAndPlanningsByRecipeId';
+import getRecipeInclusions from '@/app/actions/getRecipeInclusions';
 import prisma from '@/app/lib/prismadb';
 import { redisCache } from '@/app/lib/redis';
 import { invalidateRecipeInclusionsCache } from '@/app/lib/recipeInclusionsCache';
@@ -26,13 +26,13 @@ jest.mock('@/app/lib/redis', () => ({
     },
 }));
 
-describe('getListsAndPlanningsByRecipeId Server Action', () => {
+describe('getRecipeInclusions Server Action', () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
 
     it('returns empty lists, plannings, and quests when recipeId is missing', async () => {
-        const result = await getListsAndPlanningsByRecipeId({ recipeId: '' });
+        const result = await getRecipeInclusions({ recipeId: '' });
         expect(result).toEqual({ lists: [], plannings: [], quests: [] });
         expect(redisCache.get).not.toHaveBeenCalled();
         expect(prisma.list.findMany).not.toHaveBeenCalled();
@@ -89,7 +89,7 @@ describe('getListsAndPlanningsByRecipeId Server Action', () => {
             JSON.stringify(mockPublicCached)
         );
 
-        const result = await getListsAndPlanningsByRecipeId({
+        const result = await getRecipeInclusions({
             recipeId: 'recipe-1',
         });
 
@@ -185,7 +185,7 @@ describe('getListsAndPlanningsByRecipeId Server Action', () => {
             mockDbQuest,
         ] as any);
 
-        const result = await getListsAndPlanningsByRecipeId({
+        const result = await getRecipeInclusions({
             recipeId: 'recipe-1',
         });
 
@@ -268,7 +268,7 @@ describe('getListsAndPlanningsByRecipeId Server Action', () => {
         // Quest call: empty for this test
         jest.mocked(prisma.quest.findMany).mockResolvedValueOnce([]);
 
-        const result = await getListsAndPlanningsByRecipeId({
+        const result = await getRecipeInclusions({
             recipeId: 'recipe-1',
             userId: 'user-me',
         });

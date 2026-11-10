@@ -14,7 +14,7 @@ const EMPTY_QUESTS: SafeQuest[] = [];
 
 export function useRecipeInclusions(recipeId?: string) {
     const { data, error, isLoading, mutate } = useSWR<RecipeInclusionsData>(
-        recipeId ? `/api/recipes/${recipeId}/lists-and-plannings` : null,
+        recipeId ? `/api/recipes/${recipeId}/inclusions` : null,
         axiosFetcher,
         {
             revalidateOnFocus: false,
