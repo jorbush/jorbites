@@ -16,6 +16,8 @@ import {
 export type SafeQuest = Omit<Quest, 'createdAt' | 'updatedAt'> & {
     createdAt: string;
     updatedAt: string;
+    user?: SafeUser;
+    recipes?: Array<SafeRecipe & { user?: SafeUser }>;
 };
 
 export type SafeWeeklyChallenge = Omit<

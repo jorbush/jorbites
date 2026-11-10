@@ -9,6 +9,7 @@ import {
     badRequest,
     notFoundResponse,
 } from '@/app/utils/apiErrors';
+import { invalidateRecipeInclusionsCache } from '@/app/lib/recipeInclusionsCache';
 
 interface IParams {
     listId?: string;
@@ -77,6 +78,8 @@ export async function POST(
             listId,
             recipeId,
         });
+
+        void invalidateRecipeInclusionsCache(recipeId, currentUser.id);
 
         const safeList = {
             ...updatedList,
@@ -154,6 +157,8 @@ export async function DELETE(
             listId,
             recipeId,
         });
+
+        void invalidateRecipeInclusionsCache(recipeId, currentUser.id);
 
         const safeList = {
             ...updatedList,

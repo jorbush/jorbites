@@ -10,6 +10,7 @@ import {
     notFoundResponse,
 } from '@/app/utils/apiErrors';
 import { toSafeRecipe } from '@/app/utils/toSafeRecipe';
+import { invalidateRecipeInclusionsCache } from '@/app/lib/recipeInclusionsCache';
 
 interface IParams {
     planningId?: string;
@@ -177,6 +178,7 @@ export async function PATCH(
 
         const existingPlanning = await prisma.planning.findUnique({
             where: { id: planningId },
+            include: { meals: true },
         });
 
         if (!existingPlanning || existingPlanning.userId !== currentUser.id) {
@@ -258,6 +260,21 @@ export async function PATCH(
             planningId: updatedPlanning.id,
         });
 
+        const touchedRecipeIds = new Set<string>();
+        if (existingPlanning.meals) {
+            for (const m of existingPlanning.meals) {
+                if (m.recipeId) touchedRecipeIds.add(m.recipeId);
+            }
+        }
+        if (updatedPlanning.meals) {
+            for (const m of updatedPlanning.meals) {
+                if (m.recipeId) touchedRecipeIds.add(m.recipeId);
+            }
+        }
+        Array.from(touchedRecipeIds).forEach((rId) => {
+            void invalidateRecipeInclusionsCache(rId, currentUser.id);
+        });
+
         const safePlanning = {
             ...updatedPlanning,
             createdAt: updatedPlanning.createdAt.toISOString(),
@@ -328,6 +345,7 @@ export async function DELETE(
 
         const existingPlanning = await prisma.planning.findUnique({
             where: { id: planningId },
+            include: { meals: true },
         });
 
         if (!existingPlanning || existingPlanning.userId !== currentUser.id) {
@@ -341,6 +359,17 @@ export async function DELETE(
         logger.info('DELETE /api/plannings/[planningId] - success', {
             planningId,
         });
+
+        if (existingPlanning.meals && existingPlanning.meals.length > 0) {
+            for (const meal of existingPlanning.meals) {
+                if (meal.recipeId) {
+                    void invalidateRecipeInclusionsCache(
+                        meal.recipeId,
+                        currentUser.id
+                    );
+                }
+            }
+        }
         return NextResponse.json({ message: 'Planning deleted' });
     } catch (error: any) {
         logger.error('DELETE /api/plannings/[planningId] - error', {

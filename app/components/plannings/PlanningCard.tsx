@@ -13,8 +13,8 @@ interface PlanningCardProps {
     currentUser?: SafeUser | null;
     showDelete?: boolean;
     isSavedTab?: boolean;
-    onUnsave: (planId: string) => void;
-    onDeleteClick: (planId: string) => void;
+    onUnsave?: (planId: string) => void;
+    onDeleteClick?: (planId: string) => void;
     push: (url: string) => void;
     t: any;
     language: string;
@@ -76,9 +76,9 @@ export const PlanningCard: React.FC<PlanningCardProps> = ({
                                     isSavedTab &&
                                     plan.userId !== currentUser?.id
                                 ) {
-                                    onUnsave(plan.id);
+                                    onUnsave?.(plan.id);
                                 } else {
-                                    onDeleteClick(plan.id);
+                                    onDeleteClick?.(plan.id);
                                 }
                             }}
                             data-cy="delete-planning-button"

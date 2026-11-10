@@ -1,5 +1,6 @@
 import prisma from '@/app/lib/prismadb';
 import { triggerBadgeForgeEvaluation } from '@/app/lib/badgeForge';
+import { invalidateRecipeInclusionsCache } from '@/app/lib/recipeInclusionsCache';
 import {
     badRequest,
     notFoundResponse,
@@ -174,6 +175,10 @@ export async function completeQuest(options: CompleteQuestOptions) {
                 updatedQuest.badgeEvaluated = true;
             }
         }
+    }
+
+    if (updatedQuest?.acceptedRecipeId) {
+        void invalidateRecipeInclusionsCache(updatedQuest.acceptedRecipeId);
     }
 
     return { quest: updatedQuest! };

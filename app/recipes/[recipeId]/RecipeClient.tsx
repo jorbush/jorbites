@@ -21,6 +21,8 @@ import { formatText } from '@/app/utils/textFormatting';
 import RecipeSchema from '@/app/components/recipes/RecipeSchema';
 import CookedGallery from '@/app/components/recipes/CookedGallery';
 import RecipeRemixesSection from '@/app/components/recipes/RecipeRemixesSection';
+import RecipeInclusions from '@/app/components/recipes/RecipeInclusions';
+import RecipeActionButtons from '@/app/components/recipes/RecipeActionButtons';
 
 interface RecipeClientProps {
     comments?: SafeComment[];
@@ -41,7 +43,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
     cooksnaps,
     remixes,
 }) => {
-    const { refresh } = useRouter() || {};
+    const router = useRouter();
     const loginModal = useLoginModal();
     const { t } = useTranslation();
     const [isPending, startTransition] = useTransition();
@@ -89,11 +91,11 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                 } catch {
                     toast.error(t('something_went_wrong'));
                 } finally {
-                    refresh();
+                    router.refresh();
                 }
             });
         },
-        [recipe?.id, refresh, currentUser, loginModal, t]
+        [recipe?.id, router, currentUser, loginModal, t]
     );
 
     const formattedDescription = useMemo(() => {
@@ -187,6 +189,15 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             />
                         </div>
                     )}
+                    <RecipeInclusions
+                        recipeId={recipe.id}
+                        currentUser={currentUser}
+                    />
+                    <RecipeActionButtons
+                        recipeId={recipe.id}
+                        recipeTitle={recipe.title}
+                        currentUser={currentUser}
+                    />
                     <div id="comments-section">
                         <Comments
                             currentUser={currentUser}

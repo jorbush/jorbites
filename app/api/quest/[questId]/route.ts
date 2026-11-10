@@ -16,6 +16,7 @@ import {
     QUEST_DESCRIPTION_MAX_LENGTH,
 } from '@/app/utils/constants';
 import { authenticatedRatelimit } from '@/app/lib/ratelimit';
+import { invalidateRecipeInclusionsCache } from '@/app/lib/recipeInclusionsCache';
 
 export async function GET(
     request: Request,
@@ -285,6 +286,7 @@ export async function DELETE(
 
         const existingQuest = await prisma.quest.findUnique({
             where: { id: questId },
+            include: { recipes: { select: { id: true } } },
         });
 
         if (!existingQuest) {
@@ -297,6 +299,15 @@ export async function DELETE(
 
         const quest = await prisma.quest.delete({
             where: { id: questId },
+        });
+
+        const touchedRecipeIds = new Set<string>();
+        if (existingQuest.acceptedRecipeId) {
+            touchedRecipeIds.add(existingQuest.acceptedRecipeId);
+        }
+        existingQuest.recipes?.forEach((r) => touchedRecipeIds.add(r.id));
+        Array.from(touchedRecipeIds).forEach((rId) => {
+            void invalidateRecipeInclusionsCache(rId);
         });
 
         logger.info('DELETE /api/quest/[questId] - success', {
