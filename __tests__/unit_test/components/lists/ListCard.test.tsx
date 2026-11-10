@@ -123,9 +123,10 @@ describe('ListCard', () => {
         );
 
         const titleLink = screen.getByText('My Special List');
-        expect(titleLink.className).toContain('hover:text-green-450');
-        expect(titleLink.className).toContain('dark:hover:text-green-450');
+        expect(titleLink.className).not.toContain('hover:text-green-450');
+        expect(titleLink.className).not.toContain('group-hover:text-green-450');
         expect(titleLink.className).toContain('hover:underline');
+        expect(titleLink.className).toContain('group-hover:underline');
         expect(titleLink.className).toContain('decoration-green-450');
         expect(titleLink.className).toContain('decoration-2');
         expect(titleLink.className).toContain('underline-offset-4');

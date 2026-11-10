@@ -99,9 +99,12 @@ describe('<RecipeCard />', () => {
 
     it('applies updated link styling and hover effect on title button', () => {
         const titleButton = screen.getByText('Test Recipe');
-        expect(titleButton.className).toContain('hover:text-green-450');
-        expect(titleButton.className).toContain('dark:hover:text-green-450');
+        expect(titleButton.className).not.toContain('hover:text-green-450');
+        expect(titleButton.className).not.toContain(
+            'group-hover:text-green-450'
+        );
         expect(titleButton.className).toContain('hover:underline');
+        expect(titleButton.className).toContain('group-hover:underline');
         expect(titleButton.className).toContain('decoration-green-450');
         expect(titleButton.className).toContain('decoration-2');
         expect(titleButton.className).toContain('underline-offset-4');

@@ -178,9 +178,12 @@ describe('<QuestsClient />', () => {
         );
 
         const titleButton = screen.getByText('Test Quest 1');
-        expect(titleButton.className).toContain('hover:text-green-450');
-        expect(titleButton.className).toContain('dark:hover:text-green-450');
+        expect(titleButton.className).not.toContain('hover:text-green-450');
+        expect(titleButton.className).not.toContain(
+            'group-hover:text-green-450'
+        );
         expect(titleButton.className).toContain('hover:underline');
+        expect(titleButton.className).toContain('group-hover:underline');
         expect(titleButton.className).toContain('decoration-green-450');
         expect(titleButton.className).toContain('decoration-2');
         expect(titleButton.className).toContain('underline-offset-4');
