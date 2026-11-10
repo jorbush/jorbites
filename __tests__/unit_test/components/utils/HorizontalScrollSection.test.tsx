@@ -109,4 +109,19 @@ describe('HorizontalScrollSection', () => {
         );
         expect(scrollContainer?.classList.contains('scroll-smooth')).toBe(true);
     });
+
+    it('uses scoped group/scroll class to avoid polluting child card hover states', () => {
+        const { container } = render(
+            <HorizontalScrollSection
+                title="Test Title"
+                hasItems={true}
+            >
+                <div>Item 1</div>
+            </HorizontalScrollSection>
+        );
+
+        const groupWrapper = container.querySelector('.group\\/scroll');
+        expect(groupWrapper).not.toBeNull();
+        expect(groupWrapper?.classList.contains('group')).toBe(false);
+    });
 });
