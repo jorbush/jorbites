@@ -9,15 +9,18 @@ vi.mock('@/app/components/plannings/PlanningCard', () => ({
         plan,
         showDelete,
         isSavedTab,
+        showPublicBadge,
     }: {
         plan: any;
         showDelete?: boolean;
         isSavedTab?: boolean;
+        showPublicBadge?: boolean;
     }) => (
         <div data-testid={`planning-card-${plan.id}`}>
             <span>{plan.name}</span>
             {showDelete && <span data-testid="show-delete-badge" />}
             {isSavedTab && <span data-testid="is-saved-badge" />}
+            {showPublicBadge && <span data-testid="show-public-badge" />}
         </div>
     ),
 }));
@@ -126,5 +129,23 @@ describe('PlanningsGrid', () => {
 
         const savedBadges = screen.getAllByTestId('is-saved-badge');
         expect(savedBadges.length).toBe(2);
+    });
+
+    it('passes showPublicBadge flag correctly to cards', () => {
+        render(
+            <PlanningsGrid
+                plans={mockPlans}
+                currentUser={mockUser}
+                showPublicBadge={true}
+                onUnsave={onUnsave}
+                onDeleteClick={onDeleteClick}
+                push={push}
+                t={t}
+                language="en"
+            />
+        );
+
+        const publicBadges = screen.getAllByTestId('show-public-badge');
+        expect(publicBadges.length).toBe(2);
     });
 });

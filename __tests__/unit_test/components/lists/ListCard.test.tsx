@@ -65,11 +65,27 @@ describe('ListCard', () => {
         );
 
         expect(screen.getByText('My Special List')).toBeDefined();
-        expect(screen.getByText('public')).toBeDefined();
+        expect(screen.queryByText('public')).toBeNull();
         expect(screen.getByText('2 recipes')).toBeDefined();
         expect(screen.getByText('John Doe')).toBeDefined();
         expect(screen.getByAltText('Recipe 1')).toBeDefined();
         expect(screen.getByAltText('Recipe 2')).toBeDefined();
+    });
+
+    it('renders public badge when showPublicBadge is true', () => {
+        render(
+            <ListCard
+                list={mockList}
+                showPublicBadge={true}
+                showDelete={false}
+                onDeleteClick={onDeleteClick}
+                push={push}
+                t={t}
+                language="en"
+            />
+        );
+
+        expect(screen.getByText('public')).toBeDefined();
     });
 
     it('renders fallback when list has no preview recipes', () => {

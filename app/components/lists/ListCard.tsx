@@ -12,6 +12,7 @@ import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 export interface ListCardProps {
     list: SafeList;
     showDelete?: boolean;
+    showPublicBadge?: boolean;
     onDeleteClick?: (listId: string) => void;
     push: (url: string) => void;
     t: any;
@@ -34,12 +35,15 @@ const getPreviewRecipes = (list: SafeList) => {
 export const ListCard: React.FC<ListCardProps> = ({
     list,
     showDelete = false,
+    showPublicBadge = false,
     onDeleteClick,
     push,
     t,
     language,
 }) => {
     const previews = getPreviewRecipes(list);
+    const showPrivacyBadge = list.isPrivate || showPublicBadge;
+    const hasTopBar = showPrivacyBadge || showDelete;
 
     return (
         <div
@@ -48,42 +52,48 @@ export const ListCard: React.FC<ListCardProps> = ({
         >
             <div>
                 {/* Card Top: Privacy Pill & Actions */}
-                <div className="mb-3 flex items-center justify-between gap-2">
-                    <span
-                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                            list.isPrivate
-                                ? 'border border-neutral-200/80 bg-neutral-100 text-neutral-700 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300'
-                                : 'border-green-450/40 bg-green-450/15 dark:text-green-450 border text-neutral-800'
-                        }`}
-                    >
-                        {list.isPrivate ? (
-                            <>
-                                <GiPadlock size={11} />
-                                <span>{t('private') || 'Private'}</span>
-                            </>
+                {hasTopBar && (
+                    <div className="mb-3 flex items-center justify-between gap-2">
+                        {showPrivacyBadge ? (
+                            <span
+                                className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                                    list.isPrivate
+                                        ? 'border border-neutral-200/80 bg-neutral-100 text-neutral-700 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300'
+                                        : 'border-green-450/40 bg-green-450/15 dark:text-green-450 border text-neutral-800'
+                                }`}
+                            >
+                                {list.isPrivate ? (
+                                    <>
+                                        <GiPadlock size={11} />
+                                        <span>{t('private') || 'Private'}</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <GiPadlockOpen size={11} />
+                                        <span>{t('public') || 'Public'}</span>
+                                    </>
+                                )}
+                            </span>
                         ) : (
-                            <>
-                                <GiPadlockOpen size={11} />
-                                <span>{t('public') || 'Public'}</span>
-                            </>
+                            <span />
                         )}
-                    </span>
 
-                    {showDelete && (
-                        <button
-                            type="button"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onDeleteClick?.(list.id);
-                            }}
-                            data-cy="delete-list-button"
-                            className="z-10 flex size-8 cursor-pointer items-center justify-center rounded-lg border border-red-200/80 bg-red-50 text-red-600 shadow-2xs transition-colors duration-200 hover:bg-red-100 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-900/60"
-                            title={t('delete_list') || 'Delete list'}
-                        >
-                            <AiOutlineDelete size={16} />
-                        </button>
-                    )}
-                </div>
+                        {showDelete && (
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onDeleteClick?.(list.id);
+                                }}
+                                data-cy="delete-list-button"
+                                className="z-10 flex size-8 cursor-pointer items-center justify-center rounded-lg border border-red-200/80 bg-red-50 text-red-600 shadow-2xs transition-colors duration-200 hover:bg-red-100 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-900/60"
+                                title={t('delete_list') || 'Delete list'}
+                            >
+                                <AiOutlineDelete size={16} />
+                            </button>
+                        )}
+                    </div>
+                )}
 
                 {/* Card Title */}
                 <h2 className="mb-2 text-lg font-bold text-neutral-900 dark:text-white">

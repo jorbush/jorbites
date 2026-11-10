@@ -189,4 +189,73 @@ describe('PlanningCard', () => {
         expect(card?.className).toContain('dark:border-neutral-800');
         expect(card?.className).not.toContain('neutral-850');
     });
+
+    it('does not render GiPadlockOpen when public and showPublicBadge is false', () => {
+        const { container } = render(
+            <PlanningCard
+                plan={mockPlan}
+                currentUser={null}
+                showDelete={false}
+                isSavedTab={false}
+                showPublicBadge={false}
+                onUnsave={onUnsave}
+                onDeleteClick={onDeleteClick}
+                push={push}
+                t={t}
+                language="en"
+            />
+        );
+
+        // Meals count should be rendered with no lock svg next to it
+        expect(screen.getByText('2 meals')).toBeDefined();
+        const footerSpan = screen.getByText('2 meals').parentElement;
+        expect(footerSpan?.querySelector('svg')).toBeNull();
+    });
+
+    it('renders GiPadlockOpen when public and showPublicBadge is true', () => {
+        const { container } = render(
+            <PlanningCard
+                plan={mockPlan}
+                currentUser={null}
+                showDelete={false}
+                isSavedTab={false}
+                showPublicBadge={true}
+                onUnsave={onUnsave}
+                onDeleteClick={onDeleteClick}
+                push={push}
+                t={t}
+                language="en"
+            />
+        );
+
+        expect(screen.getByText('2 meals')).toBeDefined();
+        const footerSpan = screen.getByText('2 meals').parentElement;
+        expect(footerSpan?.querySelector('svg')).not.toBeNull();
+    });
+
+    it('renders GiPadlock when isPrivate is true even if showPublicBadge is false', () => {
+        const privatePlan = {
+            ...mockPlan,
+            isPrivate: true,
+        };
+
+        const { container } = render(
+            <PlanningCard
+                plan={privatePlan}
+                currentUser={null}
+                showDelete={false}
+                isSavedTab={false}
+                showPublicBadge={false}
+                onUnsave={onUnsave}
+                onDeleteClick={onDeleteClick}
+                push={push}
+                t={t}
+                language="en"
+            />
+        );
+
+        expect(screen.getByText('2 meals')).toBeDefined();
+        const footerSpan = screen.getByText('2 meals').parentElement;
+        expect(footerSpan?.querySelector('svg')).not.toBeNull();
+    });
 });

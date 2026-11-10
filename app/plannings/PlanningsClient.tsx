@@ -59,6 +59,7 @@ const PlanningsClient: React.FC<PlanningsClientProps> = (props) => {
                         currentUser={currentUser}
                         showDelete={activeTab !== 'community'}
                         isSavedTab={activeTab === 'saved'}
+                        showPublicBadge={activeTab === 'my'}
                         onUnsave={onUnsave}
                         onDeleteClick={setDeletePlanId}
                         push={push}

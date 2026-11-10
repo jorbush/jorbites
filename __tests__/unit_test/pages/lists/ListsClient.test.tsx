@@ -224,4 +224,24 @@ describe('ListsClient', () => {
 
         expect(screen.getByAltText('Delicious Pasta')).toBeDefined();
     });
+
+    it('shows public badge on My Lists tab and hides it on Community Lists tab', () => {
+        render(
+            <ListsClient
+                initialMyLists={mockMyLists}
+                initialCommunityLists={mockCommunityLists}
+                currentUser={mockUser}
+            />
+        );
+
+        // On My Lists tab by default: list-2 is public, so 'public' badge should be visible
+        expect(screen.getByText('public')).toBeDefined();
+
+        // Switch to Community tab: list-3 is public, but 'public' badge should NOT be rendered
+        const communityTab = screen.getByText('community_lists');
+        fireEvent.click(communityTab);
+
+        expect(screen.getByText('Awesome Desserts')).toBeDefined();
+        expect(screen.queryByText('public')).toBeNull();
+    });
 });
