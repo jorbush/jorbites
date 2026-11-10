@@ -21,10 +21,7 @@ import { formatText } from '@/app/utils/textFormatting';
 import RecipeSchema from '@/app/components/recipes/RecipeSchema';
 import CookedGallery from '@/app/components/recipes/CookedGallery';
 import RecipeRemixesSection from '@/app/components/recipes/RecipeRemixesSection';
-import RecipeListsSection from '@/app/components/recipes/RecipeListsSection';
-import RecipePlanningsSection from '@/app/components/recipes/RecipePlanningsSection';
-import RecipeQuestsSection from '@/app/components/recipes/RecipeQuestsSection';
-import { useRecipeInclusions } from '@/app/hooks/useRecipeInclusions';
+import RecipeInclusions from '@/app/components/recipes/RecipeInclusions';
 
 interface RecipeClientProps {
     comments?: SafeComment[];
@@ -45,11 +42,10 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
     cooksnaps,
     remixes,
 }) => {
-    const { refresh } = useRouter() || {};
+    const router = useRouter();
     const loginModal = useLoginModal();
     const { t } = useTranslation();
     const [isPending, startTransition] = useTransition();
-    const { lists, plannings, quests } = useRecipeInclusions(recipe.id);
 
     const recipeCategories = useMemo(() => {
         return recipe.categories || [];
@@ -94,11 +90,11 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                 } catch {
                     toast.error(t('something_went_wrong'));
                 } finally {
-                    refresh();
+                    router.refresh();
                 }
             });
         },
-        [recipe?.id, refresh, currentUser, loginModal, t]
+        [recipe?.id, router, currentUser, loginModal, t]
     );
 
     const formattedDescription = useMemo(() => {
@@ -192,24 +188,10 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             />
                         </div>
                     )}
-                    {lists && lists.length > 0 && (
-                        <div className="mt-2">
-                            <RecipeListsSection lists={lists} />
-                        </div>
-                    )}
-                    {plannings && plannings.length > 0 && (
-                        <div className="mt-2">
-                            <RecipePlanningsSection
-                                plannings={plannings}
-                                currentUser={currentUser}
-                            />
-                        </div>
-                    )}
-                    {quests && quests.length > 0 && (
-                        <div className="mt-2">
-                            <RecipeQuestsSection quests={quests} />
-                        </div>
-                    )}
+                    <RecipeInclusions
+                        recipeId={recipe.id}
+                        currentUser={currentUser}
+                    />
                     <div id="comments-section">
                         <Comments
                             currentUser={currentUser}
