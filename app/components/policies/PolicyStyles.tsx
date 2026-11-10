@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Components } from 'react-markdown';
 
 export const PolicyStyles: Components = {
@@ -26,16 +27,16 @@ export const PolicyStyles: Components = {
         </p>
     ),
     a: ({ node: _node, children, href, ...props }) => (
-        <a
-            className="text-green-450 font-medium transition-colors hover:underline"
-            href={href}
+        <Link
+            href={href || '#'}
+            className="decoration-green-450 hover:text-green-450 dark:hover:text-green-450 font-medium text-neutral-900 underline decoration-2 underline-offset-4 transition-colors duration-200 dark:text-neutral-100"
             {...(href?.startsWith('http')
                 ? { target: '_blank', rel: 'noopener noreferrer' }
                 : {})}
             {...props}
         >
             {children}
-        </a>
+        </Link>
     ),
     ul: ({ node: _node, ...props }) => (
         <ul

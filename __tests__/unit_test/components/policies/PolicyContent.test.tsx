@@ -75,4 +75,46 @@ describe('PolicyContent', () => {
                 screen.queryByText('Título de la Política')
         ).not.toBeNull();
     });
+
+    it('renders links matching the comments and blog styling', () => {
+        const mockPolicyWithLinks: Policy = {
+            frontmatter: {
+                title: 'Policy with Links',
+                description: 'Testing link styling',
+            },
+            content:
+                'Read our [Privacy Policy](/policies/privacy) or visit [Jorbites](https://jorbites.com).',
+            slug: 'terms',
+            language: 'en',
+        };
+
+        const { container } = render(
+            <PolicyContent policy={mockPolicyWithLinks} />
+        );
+
+        const internalLink = container.querySelector(
+            'a[href="/policies/privacy"]'
+        );
+        expect(internalLink).toBeDefined();
+        expect(internalLink?.className).toContain('decoration-green-450');
+        expect(internalLink?.className).toContain('hover:text-green-450');
+        expect(internalLink?.className).toContain('dark:hover:text-green-450');
+        expect(internalLink?.className).toContain('font-medium');
+        expect(internalLink?.className).toContain('text-neutral-900');
+        expect(internalLink?.className).toContain('underline');
+        expect(internalLink?.className).toContain('decoration-2');
+        expect(internalLink?.className).toContain('underline-offset-4');
+        expect(internalLink?.className).toContain('transition-colors');
+        expect(internalLink?.className).toContain('duration-200');
+        expect(internalLink?.className).toContain('dark:text-neutral-100');
+        expect(internalLink?.getAttribute('target')).toBeNull();
+
+        const externalLink = container.querySelector(
+            'a[href="https://jorbites.com"]'
+        );
+        expect(externalLink).toBeDefined();
+        expect(externalLink?.className).toContain('decoration-green-450');
+        expect(externalLink?.getAttribute('target')).toBe('_blank');
+        expect(externalLink?.getAttribute('rel')).toBe('noopener noreferrer');
+    });
 });
