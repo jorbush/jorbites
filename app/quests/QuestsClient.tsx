@@ -230,7 +230,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                     {quests.map((quest) => (
                         <div
                             key={quest.id}
-                            className="flex flex-col justify-between overflow-hidden rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-xs transition-colors duration-200 hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900/90 dark:hover:border-neutral-700"
+                            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-xs transition-colors duration-200 hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900/90 dark:hover:border-neutral-700"
                         >
                             <div>
                                 {/* Quest Header */}
@@ -238,7 +238,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                     <h2 className="text-base font-bold text-neutral-900 sm:text-lg dark:text-white">
                                         <button
                                             type="button"
-                                            className="hover:text-green-450 dark:hover:text-green-450 line-clamp-1 cursor-pointer border-0 bg-transparent p-0 text-left text-base font-bold text-neutral-900 transition-colors duration-200 focus:outline-hidden sm:text-lg dark:text-white"
+                                            className="hover:text-green-450 dark:hover:text-green-450 group-hover:text-green-450 dark:group-hover:text-green-450 decoration-green-450 line-clamp-1 cursor-pointer border-0 bg-transparent p-0 text-left text-base font-bold text-neutral-900 decoration-2 underline-offset-4 transition-colors duration-200 group-hover:underline hover:underline focus:outline-hidden sm:text-lg dark:text-white"
                                             onClick={() =>
                                                 navigateToQuest(quest.id)
                                             }

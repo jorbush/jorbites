@@ -110,6 +110,27 @@ describe('ListCard', () => {
         expect(push).toHaveBeenCalledWith('/lists/list-123');
     });
 
+    it('applies updated link styling and hover effect on title link', () => {
+        render(
+            <ListCard
+                list={mockList}
+                showDelete={false}
+                onDeleteClick={onDeleteClick}
+                push={push}
+                t={t}
+                language="en"
+            />
+        );
+
+        const titleLink = screen.getByText('My Special List');
+        expect(titleLink.className).toContain('hover:text-green-450');
+        expect(titleLink.className).toContain('dark:hover:text-green-450');
+        expect(titleLink.className).toContain('hover:underline');
+        expect(titleLink.className).toContain('decoration-green-450');
+        expect(titleLink.className).toContain('decoration-2');
+        expect(titleLink.className).toContain('underline-offset-4');
+    });
+
     it('calls onDeleteClick when delete button is clicked', () => {
         render(
             <ListCard

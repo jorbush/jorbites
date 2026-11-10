@@ -78,7 +78,7 @@ const RecipeCard = memo(function RecipeCard({
                             alt="recipe"
                             fill
                             priority={isFirstCard}
-                            className="size-full object-cover transition group-hover:scale-110"
+                            className="size-full object-cover transition-transform duration-300 ease-out group-hover:scale-102"
                             width={209}
                             height={209}
                             sizes="(max-width: 640px) 150px, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1536px) 209px, 250px"
@@ -135,7 +135,7 @@ const RecipeCard = memo(function RecipeCard({
                             e.stopPropagation();
                             push(`/recipes/${data.id}`);
                         }}
-                        className="cursor-pointer text-left font-semibold after:absolute after:inset-0 after:rounded-xl after:content-[''] hover:underline focus:outline-hidden"
+                        className="hover:text-green-450 dark:hover:text-green-450 group-hover:text-green-450 dark:group-hover:text-green-450 decoration-green-450 cursor-pointer text-left font-semibold decoration-2 underline-offset-4 transition-colors duration-200 group-hover:underline after:absolute after:inset-0 after:rounded-xl after:content-[''] hover:underline focus:outline-hidden"
                         data-cy="recipe-card-title"
                     >
                         {data.title}
