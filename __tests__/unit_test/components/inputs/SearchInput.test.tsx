@@ -221,4 +221,59 @@ describe('<SearchInput />', () => {
             expect(mockSelectedIsSelected).toHaveBeenCalled();
         });
     });
+
+    it('displays quest search results when provided', async () => {
+        const mockQuests = [
+            {
+                id: 'quest1',
+                title: 'Quest 1',
+                description: 'First quest description',
+            },
+        ];
+
+        render(
+            <SearchInput
+                id="search"
+                label="Search Quests"
+                value="te"
+                onChange={mockOnChange}
+                searchType="quests"
+                results={{ quests: mockQuests }}
+                onSelectResult={mockOnSelectResult}
+                emptyMessage="No quests found"
+            />
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText('Quest 1')).toBeDefined();
+            expect(screen.getByText('First quest description')).toBeDefined();
+        });
+    });
+
+    it('disables remaining items when maxSelected limit is reached', async () => {
+        const mockSelectedIsSelected = vi
+            .fn()
+            .mockImplementation((id) => id === 'user1');
+
+        render(
+            <SearchInput
+                id="search"
+                label="Search Users"
+                value="te"
+                onChange={mockOnChange}
+                searchType="users"
+                results={mockResults}
+                onSelectResult={mockOnSelectResult}
+                isSelected={mockSelectedIsSelected}
+                maxSelected={1}
+                emptyMessage="No users found"
+            />
+        );
+
+        await waitFor(() => {
+            const buttons = screen.getAllByRole('button');
+            expect(buttons[0].hasAttribute('disabled')).toBe(true);
+            expect(buttons[1].hasAttribute('disabled')).toBe(true);
+        });
+    });
 });

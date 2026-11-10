@@ -1,11 +1,8 @@
 'use client';
 
+import React from 'react';
 import { IconType } from 'react-icons';
-import { Fragment } from 'react';
-import Avatar from '@/app/components/utils/Avatar';
-import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
-import { AiOutlinePlus } from 'react-icons/ai';
-import VerificationBadge from '@/app/components/VerificationBadge';
+import SearchResultsDropdown from './SearchResultsDropdown';
 
 export interface SearchResult {
     id: string;
@@ -22,7 +19,7 @@ export interface SearchResult {
     level?: number;
 }
 
-interface SearchInputProps {
+export interface SearchInputProps {
     id: string;
     label: string;
     type?: string;
@@ -43,6 +40,28 @@ interface SearchInputProps {
     emptyMessage?: string;
 }
 
+const DEFAULT_RESULTS: NonNullable<SearchInputProps['results']> = {
+    users: [],
+    recipes: [],
+    quests: [],
+};
+
+const getSearchResults = (
+    results: SearchInputProps['results'] = DEFAULT_RESULTS,
+    searchType: SearchInputProps['searchType']
+): SearchResult[] => {
+    switch (searchType) {
+        case 'users':
+            return results.users ?? [];
+        case 'recipes':
+            return results.recipes ?? [];
+        case 'quests':
+            return results.quests ?? [];
+        default:
+            return [];
+    }
+};
+
 const SearchInput: React.FC<SearchInputProps> = ({
     id,
     label,
@@ -52,28 +71,21 @@ const SearchInput: React.FC<SearchInputProps> = ({
     onChange,
     icon: Icon,
     dataCy,
-    results = { users: [], recipes: [], quests: [] },
+    results = DEFAULT_RESULTS,
     onSelectResult,
     searchType,
     maxSelected = 0,
     isSelected,
     emptyMessage = 'No results found',
 }) => {
-    const hasResults =
-        searchType === 'users'
-            ? results.users && results.users.length > 0
-            : searchType === 'recipes'
-              ? results.recipes && results.recipes.length > 0
-              : results.quests && results.quests.length > 0;
-
-    const searchResults =
-        searchType === 'users'
-            ? results.users || []
-            : searchType === 'recipes'
-              ? results.recipes || []
-              : results.quests || [];
-
+    const searchResults = getSearchResults(results, searchType);
+    const hasResults = searchResults.length > 0;
     const showResults = value.length >= 2;
+
+    const inputPadding = Icon ? 'pl-9' : 'pl-4';
+    const labelPadding = Icon ? 'left-9' : 'left-4';
+    const bottomBorderClass =
+        showResults && hasResults ? 'rounded-b-none border-b-0' : '';
 
     return (
         <div className="relative w-full">
@@ -93,12 +105,12 @@ const SearchInput: React.FC<SearchInputProps> = ({
                     onChange={onChange}
                     placeholder=" "
                     type={type}
-                    className={`peer w-full rounded-md border-2 bg-white p-4 pt-6 font-light outline-hidden transition disabled:cursor-not-allowed disabled:opacity-70 dark:bg-neutral-800 dark:text-neutral-100 ${Icon ? 'pl-9' : 'pl-4'} border-neutral-300 focus:border-black dark:border-neutral-600 dark:focus:border-white ${showResults && hasResults ? 'rounded-b-none border-b-0' : ''}`}
+                    className={`peer w-full rounded-md border-2 bg-white p-4 pt-6 font-light outline-hidden transition disabled:cursor-not-allowed disabled:opacity-70 dark:bg-neutral-800 dark:text-neutral-100 ${inputPadding} border-neutral-300 focus:border-black dark:border-neutral-600 dark:focus:border-white ${bottomBorderClass}`}
                     data-cy={dataCy}
                 />
                 <label
                     htmlFor={id}
-                    className={`text-md absolute top-5 z-10 origin-[0] -translate-y-3 transform duration-150 ${Icon ? 'left-9' : 'left-4'} text-neutral-400 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 dark:text-neutral-500`}
+                    className={`text-md absolute top-5 z-10 origin-[0] -translate-y-3 transform duration-150 ${labelPadding} text-neutral-400 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 dark:text-neutral-500`}
                 >
                     {label}
                 </label>
@@ -106,108 +118,15 @@ const SearchInput: React.FC<SearchInputProps> = ({
 
             {/* Dropdown results */}
             {showResults && (
-                <div
-                    className={`absolute z-20 w-full rounded-b-md border-2 border-t-0 bg-white shadow-md dark:border-neutral-600 dark:bg-neutral-800 ${!hasResults ? 'border-t-2' : ''}`}
-                    style={{ maxHeight: '300px', overflowY: 'auto' }}
-                >
-                    {hasResults
-                        ? searchResults.map((result) => {
-                              const isResultDisabled = !!(
-                                  (isSelected && isSelected(result.id)) ||
-                                  (maxSelected > 0 &&
-                                      isSelected &&
-                                      searchResults.filter((r) =>
-                                          isSelected(r.id)
-                                      ).length >= maxSelected)
-                              );
-                              return (
-                                  <button
-                                      key={result.id}
-                                      type="button"
-                                      disabled={isResultDisabled}
-                                      className={`flex w-full cursor-pointer items-center justify-between gap-2 border-t border-neutral-100 p-3 text-left hover:bg-neutral-50 focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-700 dark:hover:bg-neutral-700 ${isSelected && isSelected(result.id) ? 'bg-neutral-100 dark:bg-neutral-700' : ''}`}
-                                      onClick={() => {
-                                          if (onSelectResult) {
-                                              onSelectResult(result);
-                                          }
-                                      }}
-                                  >
-                                      {searchType === 'users' ? (
-                                          <Fragment>
-                                              <div className="flex items-center gap-2">
-                                                  <Avatar
-                                                      src={result.image}
-                                                      size={32}
-                                                  />
-                                                  <div className="flex items-center">
-                                                      <span className="font-medium text-neutral-900 dark:text-neutral-100">
-                                                          {result.name}
-                                                      </span>
-                                                      {result.verified && (
-                                                          <VerificationBadge className="ml-1" />
-                                                      )}
-                                                  </div>
-                                                  <span className="text-xs text-neutral-500 dark:text-neutral-400">
-                                                      Level {result.level}
-                                                  </span>
-                                              </div>
-                                          </Fragment>
-                                      ) : searchType === 'recipes' ? (
-                                          <Fragment>
-                                              <div className="flex items-center gap-3">
-                                                  <div className="relative size-10 overflow-hidden rounded-md">
-                                                      <CustomProxyImage
-                                                          src={
-                                                              result.imageSrc ||
-                                                              '/avocado.webp'
-                                                          }
-                                                          fill
-                                                          className="object-cover"
-                                                          alt={
-                                                              result.title ||
-                                                              'Recipe'
-                                                          }
-                                                          quality="auto:eco"
-                                                      />
-                                                  </div>
-                                                  <div className="flex flex-col">
-                                                      <span className="font-medium text-neutral-900 dark:text-neutral-100">
-                                                          {result.title}
-                                                      </span>
-                                                      <span className="text-xs text-neutral-500 dark:text-neutral-400">
-                                                          {result.user?.name}
-                                                      </span>
-                                                  </div>
-                                              </div>
-                                          </Fragment>
-                                      ) : (
-                                          <Fragment>
-                                              <div className="flex flex-1 flex-col gap-1">
-                                                  <span className="font-medium text-neutral-900 dark:text-neutral-100">
-                                                      {result.title}
-                                                  </span>
-                                                  <span className="line-clamp-1 text-xs text-neutral-500 dark:text-neutral-400">
-                                                      {result.description}
-                                                  </span>
-                                              </div>
-                                          </Fragment>
-                                      )}
-                                      {onSelectResult && (
-                                          <div
-                                              className={`rounded-full p-1 ${isSelected && isSelected(result.id) ? 'text-neutral-400 dark:text-neutral-500' : 'text-green-450'}`}
-                                          >
-                                              <AiOutlinePlus size={20} />
-                                          </div>
-                                      )}
-                                  </button>
-                              );
-                          })
-                        : value.length >= 2 && (
-                              <div className="p-4 text-center text-neutral-500 dark:text-neutral-400">
-                                  {emptyMessage}
-                              </div>
-                          )}
-                </div>
+                <SearchResultsDropdown
+                    searchResults={searchResults}
+                    searchType={searchType}
+                    hasResults={hasResults}
+                    emptyMessage={emptyMessage}
+                    isSelected={isSelected}
+                    maxSelected={maxSelected}
+                    onSelectResult={onSelectResult}
+                />
             )}
         </div>
     );
