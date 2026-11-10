@@ -50,7 +50,7 @@ export const PlanningCard: React.FC<PlanningCardProps> = ({
     return (
         <div
             data-cy="planning-card"
-            className="group dark:bg-neutral-850 relative flex w-full flex-col justify-between rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-xs transition-colors duration-200 hover:border-neutral-300 dark:border-neutral-800 dark:hover:border-neutral-700"
+            className="group relative flex w-full flex-col justify-between rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-xs transition-colors duration-200 hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900/90 dark:hover:border-neutral-700"
         >
             <div className="flex w-full flex-col gap-2">
                 <div className="flex items-start justify-between gap-3">
@@ -102,14 +102,14 @@ export const PlanningCard: React.FC<PlanningCardProps> = ({
                         key={recipe.id}
                         src={recipe.imageSrc}
                         alt={recipe.title}
-                        className="dark:ring-neutral-850 -ml-2.5 inline-block size-8 rounded-full object-cover ring-2 ring-white transition-transform duration-200 first:ml-0"
+                        className="-ml-2.5 inline-block size-8 rounded-full object-cover ring-2 ring-white transition-transform duration-200 first:ml-0 dark:ring-neutral-900"
                         width={32}
                         height={32}
                         circular={true}
                     />
                 ))}
                 {previews.length === 0 && (
-                    <span className="text-xs text-neutral-400 italic">
+                    <span className="text-xs text-neutral-400 italic dark:text-neutral-500">
                         {t('no_recipes_yet') || 'No recipes yet'}
                     </span>
                 )}
@@ -148,12 +148,12 @@ export const PlanningCard: React.FC<PlanningCardProps> = ({
                             {plan.isPrivate ? (
                                 <GiPadlock
                                     size={13}
-                                    className="text-neutral-400"
+                                    className="text-neutral-400 dark:text-neutral-500"
                                 />
                             ) : (
                                 <GiPadlockOpen
                                     size={13}
-                                    className="text-neutral-400"
+                                    className="text-neutral-400 dark:text-neutral-500"
                                 />
                             )}
                             <span>

@@ -123,7 +123,7 @@ const WeeklyShoppingListModal: React.FC<WeeklyShoppingListModalProps> = ({
                                                     className={`flex size-4 items-center justify-center rounded-sm border transition-colors duration-200 ${
                                                         isChecked
                                                             ? 'border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900'
-                                                            : 'dark:border-neutral-750 border-neutral-300'
+                                                            : 'border-neutral-300 dark:border-neutral-700'
                                                     }`}
                                                 >
                                                     {isChecked && (

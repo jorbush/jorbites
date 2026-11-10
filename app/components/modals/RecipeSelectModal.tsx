@@ -105,7 +105,7 @@ const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
                                     handleClose();
                                 }}
                                 data-cy="recipe-select-option"
-                                className="dark:hover:bg-neutral-850 flex w-full cursor-pointer flex-row items-center gap-3 rounded-xl p-2 text-left transition-colors duration-200 hover:bg-neutral-100 focus:outline-hidden"
+                                className="flex w-full cursor-pointer flex-row items-center gap-3 rounded-xl p-2 text-left transition-colors duration-200 hover:bg-neutral-100 focus:outline-hidden dark:hover:bg-neutral-800"
                             >
                                 {recipe.imageSrc && (
                                     <CustomProxyImage
