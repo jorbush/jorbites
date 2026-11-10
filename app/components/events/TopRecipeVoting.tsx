@@ -162,7 +162,7 @@ const TopRecipeVoting: React.FC<TopRecipeVotingProps> = ({
                                 <div className="min-w-0 flex-1">
                                     <Link
                                         href={`/recipes/${candidate.id}`}
-                                        className="hover:text-green-450 dark:hover:text-green-450 block truncate font-semibold text-neutral-800 dark:text-neutral-100"
+                                        className="decoration-green-450 block truncate font-semibold text-neutral-800 decoration-2 underline-offset-4 transition-colors duration-200 hover:underline dark:text-neutral-100"
                                     >
                                         {candidate.title}
                                     </Link>

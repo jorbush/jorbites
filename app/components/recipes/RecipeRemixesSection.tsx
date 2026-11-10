@@ -87,7 +87,7 @@ export const RecipeRemixesSection: React.FC<RecipeRemixesSectionProps> = ({
                             )}
                         </div>
 
-                        <div className="group-hover:text-green-450 dark:group-hover:text-green-450 mt-2 line-clamp-1 font-bold text-neutral-900 transition-colors duration-200 dark:text-white">
+                        <div className="decoration-green-450 mt-2 line-clamp-1 font-bold text-neutral-900 decoration-2 underline-offset-4 transition-colors duration-200 group-hover:underline dark:text-white">
                             {item.title}
                         </div>
 

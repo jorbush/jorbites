@@ -72,14 +72,14 @@ const WorkshopCard = memo(function WorkshopCard({
                 </div>
 
                 <div>
-                    <h3 className="group-hover:text-green-450 dark:group-hover:text-green-450 line-clamp-1 text-lg font-bold text-neutral-900 transition-colors duration-200 dark:text-white">
+                    <h3 className="line-clamp-1 text-lg font-bold text-neutral-900 transition-colors duration-200 dark:text-white">
                         <button
                             type="button"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 push(`/workshops/${data.id}`);
                             }}
-                            className="cursor-pointer text-left after:absolute after:inset-0 after:rounded-2xl after:content-[''] focus:outline-hidden"
+                            className="decoration-green-450 cursor-pointer text-left decoration-2 underline-offset-4 transition-colors duration-200 group-hover:underline after:absolute after:inset-0 after:rounded-2xl after:content-[''] hover:underline focus:outline-hidden"
                             data-cy="workshop-card-title"
                         >
                             {data.title}

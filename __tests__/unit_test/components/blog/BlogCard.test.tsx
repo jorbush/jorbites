@@ -98,6 +98,21 @@ describe('BlogCard', () => {
         expect(screen.getByText('read_more')).toBeDefined();
     });
 
+    it('applies updated link styling and hover effect on title button', () => {
+        render(<BlogCard blog={mockBlog} />);
+
+        const titleButton = screen.getByText('Test Blog Post');
+        expect(titleButton.className).not.toContain('hover:text-green-450');
+        expect(titleButton.className).not.toContain(
+            'group-hover:text-green-450'
+        );
+        expect(titleButton.className).toContain('hover:underline');
+        expect(titleButton.className).toContain('group-hover:underline');
+        expect(titleButton.className).toContain('decoration-green-450');
+        expect(titleButton.className).toContain('decoration-2');
+        expect(titleButton.className).toContain('underline-offset-4');
+    });
+
     it('displays the date correctly', () => {
         render(<BlogCard blog={mockBlog} />);
 

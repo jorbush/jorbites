@@ -68,7 +68,7 @@ export const PlanningMealSlot: React.FC<PlanningMealSlotProps> = ({
                                 className="flex-1 cursor-pointer truncate border-0 bg-transparent pr-6 text-left focus:outline-hidden"
                             >
                                 <div
-                                    className="truncate text-xs font-semibold text-neutral-800 hover:underline dark:text-neutral-200"
+                                    className="decoration-green-450 truncate text-xs font-semibold text-neutral-800 decoration-2 underline-offset-4 transition-colors duration-200 group-hover/recipe:underline hover:underline dark:text-neutral-200"
                                     data-cy="slot-recipe-title"
                                 >
                                     {recipe.title}

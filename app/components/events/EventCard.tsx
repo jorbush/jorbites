@@ -78,7 +78,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, priority = false }) => {
                                 e.stopPropagation();
                                 navigateToEvent();
                             }}
-                            className="cursor-pointer text-left text-xl font-semibold after:absolute after:inset-0 after:rounded-2xl after:content-[''] hover:underline focus:outline-hidden"
+                            className="decoration-green-450 cursor-pointer text-left text-xl font-semibold decoration-2 underline-offset-4 transition-colors duration-200 group-hover:underline after:absolute after:inset-0 after:rounded-2xl after:content-[''] hover:underline focus:outline-hidden"
                         >
                             {event.frontmatter.title}
                         </button>

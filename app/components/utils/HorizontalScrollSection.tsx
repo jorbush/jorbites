@@ -95,13 +95,13 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
                     {emptyMessage}
                 </p>
             ) : (
-                <div className="group relative">
+                <div className="group/scroll relative">
                     {/* Left scroll button */}
                     {showLeftArrow && (
                         <button
                             type="button"
                             onClick={() => scroll('left')}
-                            className="absolute top-1/2 left-0 z-10 hidden -translate-y-1/2 cursor-pointer rounded-full bg-white/90 p-2 shadow-lg transition-[opacity,background-color] duration-200 ease-in-out group-hover:block hover:bg-white dark:bg-neutral-800/90 dark:hover:bg-neutral-800"
+                            className="absolute top-1/2 left-0 z-10 hidden -translate-y-1/2 cursor-pointer rounded-full bg-white/90 p-2 shadow-lg transition-[opacity,background-color] duration-200 ease-in-out group-hover/scroll:block hover:bg-white dark:bg-neutral-800/90 dark:hover:bg-neutral-800"
                             aria-label="Scroll left"
                         >
                             <FiChevronLeft className="size-6 text-neutral-700 dark:text-neutral-200" />
@@ -132,7 +132,7 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
                         <button
                             type="button"
                             onClick={() => scroll('right')}
-                            className="absolute top-1/2 right-0 z-10 hidden -translate-y-1/2 cursor-pointer rounded-full bg-white/90 p-2 shadow-lg transition-[opacity,background-color] duration-200 ease-in-out group-hover:block hover:bg-white dark:bg-neutral-800/90 dark:hover:bg-neutral-800"
+                            className="absolute top-1/2 right-0 z-10 hidden -translate-y-1/2 cursor-pointer rounded-full bg-white/90 p-2 shadow-lg transition-[opacity,background-color] duration-200 ease-in-out group-hover/scroll:block hover:bg-white dark:bg-neutral-800/90 dark:hover:bg-neutral-800"
                             aria-label="Scroll right"
                         >
                             <FiChevronRight className="size-6 text-neutral-700 dark:text-neutral-200" />

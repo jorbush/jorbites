@@ -37,7 +37,7 @@ const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
 
     return (
         <div
-            className={`relative overflow-hidden rounded-2xl p-4 shadow-xs transition-colors duration-200 sm:p-5 ${getPodiumStyles()}`}
+            className={`group relative overflow-hidden rounded-2xl p-4 shadow-xs transition-colors duration-200 sm:p-5 ${getPodiumStyles()}`}
         >
             <div className="flex flex-col gap-3.5 md:flex-row md:items-center md:justify-between md:gap-4">
                 {/* Left section - Rank, Avatar and Basic Info */}
@@ -63,7 +63,7 @@ const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
                                         e.stopPropagation();
                                         push('/profile/' + jorbiter.id);
                                     }}
-                                    className="hover:text-green-450 dark:hover:text-green-450 cursor-pointer text-left transition-colors duration-200 after:absolute after:inset-0 after:rounded-2xl after:content-[''] focus:outline-hidden"
+                                    className="decoration-green-450 cursor-pointer text-left decoration-2 underline-offset-4 transition-colors duration-200 group-hover:underline after:absolute after:inset-0 after:rounded-2xl after:content-[''] hover:underline focus:outline-hidden"
                                 >
                                     {getUserDisplayName(
                                         jorbiter,

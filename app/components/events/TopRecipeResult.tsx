@@ -87,7 +87,7 @@ const TopRecipeResult: React.FC<TopRecipeResultProps> = ({
                         <div className="min-w-0 flex-1 text-left">
                             <Link
                                 href={`/recipes/${winner.id}`}
-                                className="hover:text-green-450 dark:hover:text-green-450 block truncate font-semibold text-neutral-800 transition-colors duration-200 dark:text-neutral-100"
+                                className="decoration-green-450 block truncate font-semibold text-neutral-800 decoration-2 underline-offset-4 transition-colors duration-200 hover:underline dark:text-neutral-100"
                             >
                                 {winner.title}
                             </Link>

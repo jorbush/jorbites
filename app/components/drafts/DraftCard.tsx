@@ -129,7 +129,7 @@ const DraftCard: React.FC<DraftCardProps> = ({
                         type="button"
                         data-testid="draft-card-title"
                         onClick={handleOpen}
-                        className="cursor-pointer text-left font-semibold after:absolute after:inset-0 after:rounded-xl after:content-[''] hover:underline focus:outline-hidden"
+                        className="decoration-green-450 cursor-pointer text-left font-semibold decoration-2 underline-offset-4 transition-colors duration-200 group-hover:underline after:absolute after:inset-0 after:rounded-xl after:content-[''] hover:underline focus:outline-hidden"
                         title={title}
                     >
                         {title}

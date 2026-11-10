@@ -61,14 +61,14 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
                 )}
 
                 {/* Title */}
-                <h3 className="group-hover:text-green-450 dark:group-hover:text-green-450 line-clamp-2 text-lg leading-snug font-bold tracking-tight text-neutral-900 transition-colors duration-200 dark:text-white">
+                <h3 className="line-clamp-2 text-lg leading-snug font-bold tracking-tight text-neutral-900 transition-colors duration-200 dark:text-white">
                     <button
                         type="button"
                         onClick={(e) => {
                             e.stopPropagation();
                             navigateToBlog();
                         }}
-                        className="cursor-pointer text-left after:absolute after:inset-0 after:rounded-2xl after:content-[''] focus:outline-hidden"
+                        className="decoration-green-450 cursor-pointer text-left decoration-2 underline-offset-4 transition-colors duration-200 group-hover:underline after:absolute after:inset-0 after:rounded-2xl after:content-[''] hover:underline focus:outline-hidden"
                     >
                         {blog.frontmatter.title}
                     </button>
