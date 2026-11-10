@@ -3,7 +3,7 @@ import { redisCache } from '@/app/lib/redis';
 import { logger } from '@/app/lib/axiom/server';
 import { USER_SELECT_FIELDS } from '@/app/utils/constants';
 import { toSafeRecipe } from '@/app/utils/toSafeRecipe';
-import { SafeList, SafePlanning } from '@/app/types';
+import { SafeList, SafePlanning, SafeQuest } from '@/app/types';
 
 interface IParams {
     recipeId: string;
@@ -13,6 +13,7 @@ interface IParams {
 export interface RecipeInclusionsResult {
     lists: SafeList[];
     plannings: SafePlanning[];
+    quests: SafeQuest[];
 }
 
 const CACHE_TTL_SECONDS = 86400; // 24 hours
@@ -113,12 +114,72 @@ const mapToSafePlanning = (plan: any): SafePlanning => ({
         : [],
 });
 
+const mapToSafeQuest = (quest: any): SafeQuest => ({
+    ...quest,
+    createdAt:
+        typeof quest.createdAt?.toISOString === 'function'
+            ? quest.createdAt.toISOString()
+            : String(quest.createdAt),
+    updatedAt:
+        typeof quest.updatedAt?.toISOString === 'function'
+            ? quest.updatedAt.toISOString()
+            : String(quest.updatedAt),
+    user: quest.user
+        ? {
+              ...quest.user,
+              createdAt:
+                  typeof quest.user.createdAt?.toISOString === 'function'
+                      ? quest.user.createdAt.toISOString()
+                      : String(quest.user.createdAt),
+              updatedAt:
+                  typeof quest.user.updatedAt?.toISOString === 'function'
+                      ? quest.user.updatedAt.toISOString()
+                      : String(quest.user.updatedAt),
+              emailVerified:
+                  typeof quest.user.emailVerified?.toISOString === 'function'
+                      ? quest.user.emailVerified.toISOString()
+                      : quest.user.emailVerified || null,
+          }
+        : undefined,
+    recipes: quest.recipes
+        ? quest.recipes.map((r: any) => ({
+              id: r.id,
+              title: r.title,
+              imageSrc: r.imageSrc,
+              ...(r.createdAt && {
+                  createdAt:
+                      typeof r.createdAt?.toISOString === 'function'
+                          ? r.createdAt.toISOString()
+                          : String(r.createdAt),
+              }),
+              ...(r.user && {
+                  user: {
+                      ...r.user,
+                      createdAt:
+                          typeof r.user.createdAt?.toISOString === 'function'
+                              ? r.user.createdAt.toISOString()
+                              : String(r.user.createdAt),
+                      updatedAt:
+                          typeof r.user.updatedAt?.toISOString === 'function'
+                              ? r.user.updatedAt.toISOString()
+                              : String(r.user.updatedAt),
+                      emailVerified:
+                          typeof r.user.emailVerified?.toISOString ===
+                          'function'
+                              ? r.user.emailVerified.toISOString()
+                              : r.user.emailVerified || null,
+                  },
+              }),
+          }))
+        : [],
+});
+
 export default async function getListsAndPlanningsByRecipeId({
     recipeId,
     userId,
 }: IParams): Promise<RecipeInclusionsResult> {
     if (!recipeId) {
-        return { lists: [], plannings: [] };
+        return { lists: [], plannings: [], quests: [] };
     }
 
     try {
@@ -155,65 +216,91 @@ export default async function getListsAndPlanningsByRecipeId({
                 recipeId,
             });
 
-            const [publicLists, publicPlannings] = await Promise.all([
-                prisma.list.findMany({
-                    where: {
-                        isPrivate: false,
-                        recipeIds: {
-                            has: recipeId,
-                        },
-                    },
-                    include: {
-                        user: {
-                            select: USER_SELECT_FIELDS,
-                        },
-                        recipes: {
-                            select: {
-                                id: true,
-                                title: true,
-                                imageSrc: true,
-                            },
-                            take: 4,
-                        },
-                    },
-                    orderBy: {
-                        createdAt: 'desc',
-                    },
-                }),
-                prisma.planning.findMany({
-                    where: {
-                        isPrivate: false,
-                        meals: {
-                            some: {
-                                recipeId: recipeId,
+            const [publicLists, publicPlannings, publicQuests] =
+                await Promise.all([
+                    prisma.list.findMany({
+                        where: {
+                            isPrivate: false,
+                            recipeIds: {
+                                has: recipeId,
                             },
                         },
-                    },
-                    include: {
-                        user: {
-                            select: USER_SELECT_FIELDS,
+                        include: {
+                            user: {
+                                select: USER_SELECT_FIELDS,
+                            },
+                            recipes: {
+                                select: {
+                                    id: true,
+                                    title: true,
+                                    imageSrc: true,
+                                },
+                                take: 4,
+                            },
                         },
-                        meals: {
-                            include: {
-                                recipe: {
-                                    include: {
-                                        user: {
-                                            select: USER_SELECT_FIELDS,
+                        orderBy: {
+                            createdAt: 'desc',
+                        },
+                    }),
+                    prisma.planning.findMany({
+                        where: {
+                            isPrivate: false,
+                            meals: {
+                                some: {
+                                    recipeId: recipeId,
+                                },
+                            },
+                        },
+                        include: {
+                            user: {
+                                select: USER_SELECT_FIELDS,
+                            },
+                            meals: {
+                                include: {
+                                    recipe: {
+                                        include: {
+                                            user: {
+                                                select: USER_SELECT_FIELDS,
+                                            },
                                         },
                                     },
                                 },
                             },
                         },
-                    },
-                    orderBy: {
-                        createdAt: 'desc',
-                    },
-                }),
-            ]);
+                        orderBy: {
+                            createdAt: 'desc',
+                        },
+                    }),
+                    prisma.quest.findMany({
+                        where: {
+                            OR: [
+                                { acceptedRecipeId: recipeId },
+                                { recipes: { some: { id: recipeId } } },
+                            ],
+                        },
+                        include: {
+                            user: {
+                                select: USER_SELECT_FIELDS,
+                            },
+                            recipes: {
+                                where: { id: recipeId },
+                                select: {
+                                    id: true,
+                                    title: true,
+                                    imageSrc: true,
+                                },
+                            },
+                        },
+                        orderBy: {
+                            createdAt: 'desc',
+                        },
+                    }),
+                ]);
 
             publicInclusions = {
                 lists: publicLists.map(mapToSafeList),
                 plannings: publicPlannings.map(mapToSafePlanning),
+                quests: publicQuests.map(mapToSafeQuest),
             };
 
             try {
@@ -235,7 +322,7 @@ export default async function getListsAndPlanningsByRecipeId({
         }
 
         // 2. Fetch user's private inclusions if authenticated
-        let userInclusions: RecipeInclusionsResult = {
+        let userInclusions: { lists: SafeList[]; plannings: SafePlanning[] } = {
             lists: [],
             plannings: [],
         };
@@ -359,6 +446,7 @@ export default async function getListsAndPlanningsByRecipeId({
                 ...(publicInclusions?.plannings || []),
                 ...userInclusions.plannings,
             ],
+            quests: publicInclusions?.quests || [],
         };
     } catch (error: any) {
         logger.error('getListsAndPlanningsByRecipeId - error', {
@@ -366,6 +454,6 @@ export default async function getListsAndPlanningsByRecipeId({
             recipeId,
             userId,
         });
-        return { lists: [], plannings: [] };
+        return { lists: [], plannings: [], quests: [] };
     }
 }

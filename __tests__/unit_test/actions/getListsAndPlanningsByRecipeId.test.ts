@@ -12,6 +12,9 @@ jest.mock('@/app/lib/prismadb', () => ({
         planning: {
             findMany: jest.fn(),
         },
+        quest: {
+            findMany: jest.fn(),
+        },
     },
 }));
 
@@ -28,12 +31,13 @@ describe('getListsAndPlanningsByRecipeId Server Action', () => {
         jest.clearAllMocks();
     });
 
-    it('returns empty lists and plannings when recipeId is missing', async () => {
+    it('returns empty lists, plannings, and quests when recipeId is missing', async () => {
         const result = await getListsAndPlanningsByRecipeId({ recipeId: '' });
-        expect(result).toEqual({ lists: [], plannings: [] });
+        expect(result).toEqual({ lists: [], plannings: [], quests: [] });
         expect(redisCache.get).not.toHaveBeenCalled();
         expect(prisma.list.findMany).not.toHaveBeenCalled();
         expect(prisma.planning.findMany).not.toHaveBeenCalled();
+        expect(prisma.quest.findMany).not.toHaveBeenCalled();
     });
 
     it('returns cached public inclusions on Redis public cache hit without querying DB', async () => {
@@ -67,6 +71,18 @@ describe('getListsAndPlanningsByRecipeId Server Action', () => {
                     meals: [],
                 },
             ],
+            quests: [
+                {
+                    id: 'quest-1',
+                    title: 'Best Taco Recipe',
+                    description: 'Need a great taco',
+                    status: 'completed',
+                    userId: 'user-1',
+                    createdAt: '2026-06-01T12:00:00.000Z',
+                    updatedAt: '2026-06-01T12:00:00.000Z',
+                    acceptedRecipeId: 'recipe-1',
+                },
+            ],
         };
 
         jest.mocked(redisCache.get).mockResolvedValue(
@@ -82,6 +98,7 @@ describe('getListsAndPlanningsByRecipeId Server Action', () => {
         );
         expect(prisma.list.findMany).not.toHaveBeenCalled();
         expect(prisma.planning.findMany).not.toHaveBeenCalled();
+        expect(prisma.quest.findMany).not.toHaveBeenCalled();
         expect(result).toEqual(mockPublicCached);
     });
 
@@ -132,11 +149,40 @@ describe('getListsAndPlanningsByRecipeId Server Action', () => {
             meals: [],
         };
 
+        const mockDbQuest = {
+            id: 'quest-public-1',
+            title: 'Need Pasta Ideas',
+            description: 'Looking for easy vegetarian pasta',
+            status: 'completed',
+            acceptedRecipeId: 'recipe-1',
+            userId: 'user-3',
+            createdAt: new Date('2026-06-03T12:00:00.000Z'),
+            updatedAt: new Date('2026-06-03T12:00:00.000Z'),
+            user: {
+                id: 'user-3',
+                name: 'Chef Sam',
+                image: null,
+                createdAt: new Date('2026-01-01T00:00:00.000Z'),
+                updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+                emailVerified: null,
+            },
+            recipes: [
+                {
+                    id: 'recipe-1',
+                    title: 'Pasta Primavera',
+                    imageSrc: 'pasta.jpg',
+                },
+            ],
+        };
+
         jest.mocked(prisma.list.findMany).mockResolvedValue([
             mockDbList,
         ] as any);
         jest.mocked(prisma.planning.findMany).mockResolvedValue([
             mockDbPlanning,
+        ] as any);
+        jest.mocked(prisma.quest.findMany).mockResolvedValue([
+            mockDbQuest,
         ] as any);
 
         const result = await getListsAndPlanningsByRecipeId({
@@ -159,11 +205,23 @@ describe('getListsAndPlanningsByRecipeId Server Action', () => {
                 },
             })
         );
+        expect(prisma.quest.findMany).toHaveBeenCalledWith(
+            expect.objectContaining({
+                where: {
+                    OR: [
+                        { acceptedRecipeId: 'recipe-1' },
+                        { recipes: { some: { id: 'recipe-1' } } },
+                    ],
+                },
+            })
+        );
 
         expect(result.lists.length).toBe(1);
         expect(result.lists[0].id).toBe('list-public-1');
         expect(result.plannings.length).toBe(1);
         expect(result.plannings[0].id).toBe('plan-public-1');
+        expect(result.quests.length).toBe(1);
+        expect(result.quests[0].id).toBe('quest-public-1');
 
         expect(redisCache.set).toHaveBeenCalledWith(
             'recipe:inclusions:public:recipe-1',
@@ -206,6 +264,9 @@ describe('getListsAndPlanningsByRecipeId Server Action', () => {
         jest.mocked(prisma.planning.findMany)
             .mockResolvedValueOnce([])
             .mockResolvedValueOnce([]);
+
+        // Quest call: empty for this test
+        jest.mocked(prisma.quest.findMany).mockResolvedValueOnce([]);
 
         const result = await getListsAndPlanningsByRecipeId({
             recipeId: 'recipe-1',

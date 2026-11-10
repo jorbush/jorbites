@@ -40,6 +40,7 @@ describe('GET /api/recipes/[id]/lists-and-plannings', () => {
                 },
             ],
             plannings: [],
+            quests: [],
         };
         jest.mocked(getListsAndPlanningsByRecipeId).mockResolvedValue(
             mockResult as any
@@ -80,6 +81,7 @@ describe('GET /api/recipes/[id]/lists-and-plannings', () => {
                     meals: [],
                 },
             ],
+            quests: [],
         };
         jest.mocked(getListsAndPlanningsByRecipeId).mockResolvedValue(
             mockResult as any
