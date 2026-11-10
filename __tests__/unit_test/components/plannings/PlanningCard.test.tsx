@@ -168,4 +168,25 @@ describe('PlanningCard', () => {
         expect(onUnsave).toHaveBeenCalledWith('plan-123');
         expect(onDeleteClick).not.toHaveBeenCalled();
     });
+
+    it('applies dark theme styling to card container and preview avatar rings', () => {
+        const { container } = render(
+            <PlanningCard
+                plan={mockPlan}
+                currentUser={null}
+                showDelete={false}
+                isSavedTab={false}
+                onUnsave={onUnsave}
+                onDeleteClick={onDeleteClick}
+                push={push}
+                t={t}
+                language="en"
+            />
+        );
+
+        const card = container.querySelector('[data-cy="planning-card"]');
+        expect(card?.className).toContain('dark:bg-neutral-900/90');
+        expect(card?.className).toContain('dark:border-neutral-800');
+        expect(card?.className).not.toContain('neutral-850');
+    });
 });
