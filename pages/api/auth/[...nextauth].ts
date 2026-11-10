@@ -10,7 +10,6 @@ import {
     verifyTotpCode,
     verifyBackupCode,
 } from '@/app/utils/totp';
-import { twoFactorRatelimit } from '@/app/lib/ratelimit';
 
 export const authOptions: AuthOptions = {
     adapter: PrismaAdapter(prisma),
@@ -67,14 +66,30 @@ export const authOptions: AuthOptions = {
                     }
 
                     if (
-                        process.env.NODE_ENV === 'production' ||
-                        process.env.ENV === 'production'
+                        (process.env.NODE_ENV === 'production' ||
+                            process.env.ENV === 'production') &&
+                        process.env.UPSTASH_REDIS_REST_URL &&
+                        process.env.UPSTASH_REDIS_REST_TOKEN
                     ) {
-                        const { success } = await twoFactorRatelimit.limit(
-                            `2fa_login:${user.id}`
-                        );
-                        if (!success) {
-                            throw new Error('TOO_MANY_2FA_ATTEMPTS');
+                        try {
+                            const { Ratelimit } =
+                                await import('@upstash/ratelimit');
+                            const { Redis } = await import('@upstash/redis');
+                            const limiter = new Ratelimit({
+                                redis: Redis.fromEnv(),
+                                limiter: Ratelimit.slidingWindow(10, '15 m'),
+                                prefix: '@upstash/ratelimit/two-factor-login',
+                            });
+                            const { success } = await limiter.limit(
+                                `2fa_login:${user.id}`
+                            );
+                            if (!success) {
+                                throw new Error('TOO_MANY_2FA_ATTEMPTS');
+                            }
+                        } catch (err: any) {
+                            if (err.message === 'TOO_MANY_2FA_ATTEMPTS') {
+                                throw err;
+                            }
                         }
                     }
 
