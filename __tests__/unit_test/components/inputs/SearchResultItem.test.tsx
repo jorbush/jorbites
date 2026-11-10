@@ -65,7 +65,21 @@ describe('<SearchResultItem />', () => {
         expect(screen.getByText('Level 5')).toBeDefined();
     });
 
-    it('renders recipe result with user name and fallback image', () => {
+    it('renders recipe result with user name and imageSrc', () => {
+        render(
+            <SearchResultItem
+                result={mockRecipeResult}
+                searchType="recipes"
+                isDisabled={false}
+                isSelected={false}
+            />
+        );
+
+        expect(screen.getByText('Recipe 1')).toBeDefined();
+        expect(screen.getByText('Chef 1')).toBeDefined();
+    });
+
+    it('renders recipe result with user name and fallback image when imageSrc is missing', () => {
         const recipeWithoutImage = {
             id: 'recipe2',
             title: 'Recipe 2',
