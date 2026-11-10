@@ -107,6 +107,21 @@ describe('EventCard', () => {
         expect(screen.getByTestId('event-image')).toBeDefined();
     });
 
+    it('applies updated link styling and hover effect on title button', () => {
+        render(<EventCard event={mockEvent} />);
+
+        const titleButton = screen.getByText('Test Event');
+        expect(titleButton.className).not.toContain('hover:text-green-450');
+        expect(titleButton.className).not.toContain(
+            'group-hover:text-green-450'
+        );
+        expect(titleButton.className).toContain('hover:underline');
+        expect(titleButton.className).toContain('group-hover:underline');
+        expect(titleButton.className).toContain('decoration-green-450');
+        expect(titleButton.className).toContain('decoration-2');
+        expect(titleButton.className).toContain('underline-offset-4');
+    });
+
     it('formats multi-day date range correctly', () => {
         render(<EventCard event={mockEvent} />);
 

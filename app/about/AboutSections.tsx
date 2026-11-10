@@ -36,7 +36,7 @@ export const WhyJorbitesSection: React.FC<SectionProps> = ({ t }) => (
         </p>
         <Link
             href="/recipes/68b194a84e84cb9eabfb4350"
-            className="text-green-450 dark:text-green-450 inline-flex items-center hover:underline"
+            className="decoration-green-450 hover:text-green-450 dark:hover:text-green-450 inline-flex items-center font-medium text-neutral-900 underline decoration-2 underline-offset-4 transition-colors duration-200 dark:text-neutral-100"
             target="_blank"
             rel="noopener noreferrer"
             prefetch={false}
@@ -117,7 +117,7 @@ export const ArchitectureSection: React.FC<SectionProps> = ({ t }) => (
                     <li>
                         <a
                             href="https://github.com/jorbush/jorbites-notifier"
-                            className="text-green-450 dark:text-green-450 hover:underline"
+                            className="decoration-green-450 hover:text-green-450 dark:hover:text-green-450 font-medium text-neutral-900 underline decoration-2 underline-offset-4 transition-colors duration-200 dark:text-neutral-100"
                             target="_blank"
                             rel="noopener noreferrer"
                         >
@@ -128,7 +128,7 @@ export const ArchitectureSection: React.FC<SectionProps> = ({ t }) => (
                     <li>
                         <a
                             href="https://github.com/jorbush/badge_forge"
-                            className="text-green-450 dark:text-green-450 hover:underline"
+                            className="decoration-green-450 hover:text-green-450 dark:hover:text-green-450 font-medium text-neutral-900 underline decoration-2 underline-offset-4 transition-colors duration-200 dark:text-neutral-100"
                             target="_blank"
                             rel="noopener noreferrer"
                         >
@@ -139,7 +139,7 @@ export const ArchitectureSection: React.FC<SectionProps> = ({ t }) => (
                     <li>
                         <a
                             href="https://github.com/jorbush/pantry_keeper"
-                            className="text-green-450 dark:text-green-450 hover:underline"
+                            className="decoration-green-450 hover:text-green-450 dark:hover:text-green-450 font-medium text-neutral-900 underline decoration-2 underline-offset-4 transition-colors duration-200 dark:text-neutral-100"
                             target="_blank"
                             rel="noopener noreferrer"
                         >
@@ -157,7 +157,7 @@ export const ArchitectureSection: React.FC<SectionProps> = ({ t }) => (
                     <li>
                         <a
                             href="https://paltin-dash.vercel.app/"
-                            className="text-green-450 dark:text-green-450 hover:underline"
+                            className="decoration-green-450 hover:text-green-450 dark:hover:text-green-450 font-medium text-neutral-900 underline decoration-2 underline-offset-4 transition-colors duration-200 dark:text-neutral-100"
                             target="_blank"
                             rel="noopener noreferrer"
                         >

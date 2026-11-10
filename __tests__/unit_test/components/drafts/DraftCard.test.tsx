@@ -47,6 +47,28 @@ describe('DraftCard', () => {
         expect(screen.getByTestId('draft-card-ttl')).toBeInTheDocument();
     });
 
+    it('applies updated link styling and hover effect on title button', () => {
+        render(
+            <DraftCard
+                draft={mockDraft}
+                onOpen={vi.fn()}
+                onDelete={vi.fn()}
+                onDuplicate={vi.fn()}
+            />
+        );
+
+        const titleButton = screen.getByTestId('draft-card-title');
+        expect(titleButton.className).not.toContain('hover:text-green-450');
+        expect(titleButton.className).not.toContain(
+            'group-hover:text-green-450'
+        );
+        expect(titleButton.className).toContain('hover:underline');
+        expect(titleButton.className).toContain('group-hover:underline');
+        expect(titleButton.className).toContain('decoration-green-450');
+        expect(titleButton.className).toContain('decoration-2');
+        expect(titleButton.className).toContain('underline-offset-4');
+    });
+
     it('renders shared badge and co-cook avatars for shared drafts', () => {
         const sharedDraft: DraftSummary = {
             ...mockDraft,

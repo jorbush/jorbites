@@ -55,7 +55,7 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
                                 e.stopPropagation();
                                 navigateToProfile();
                             }}
-                            className="hover:text-green-450 dark:hover:text-green-450 cursor-pointer text-left transition-colors duration-200 after:absolute after:inset-0 after:rounded-2xl after:content-[''] focus:outline-hidden"
+                            className="decoration-green-450 cursor-pointer text-left decoration-2 underline-offset-4 transition-colors duration-200 group-hover:underline after:absolute after:inset-0 after:rounded-2xl after:content-[''] hover:underline focus:outline-hidden"
                             data-cy="chef-card-name"
                             data-testid="chef-card-name"
                         >
