@@ -84,13 +84,18 @@ const LoginModal = () => {
             return;
         }
 
-        const errorMessage =
-            callback?.error === 'INVALID_2FA_CODE'
-                ? t('invalid_2fa_code') || 'Invalid verification code'
-                : callback?.error;
+        if (callback?.error === 'INVALID_2FA_CODE') {
+            toast.error(t('invalid_2fa_code') || 'Invalid verification code');
+            return;
+        }
 
-        if (errorMessage) {
-            toast.error(errorMessage);
+        if (callback?.error === 'Invalid credentials') {
+            toast.error(callback.error);
+            return;
+        }
+
+        if (callback?.error) {
+            toast.error(t('something_went_wrong') || 'Something went wrong');
         }
     };
 

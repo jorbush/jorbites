@@ -93,7 +93,13 @@ export const authOptions: AuthOptions = {
                         }
                     }
 
-                    const secret = decryptTotpSecret(user.twoFactorSecret);
+                    let secret: string;
+                    try {
+                        secret = decryptTotpSecret(user.twoFactorSecret);
+                    } catch {
+                        throw new Error('INVALID_2FA_CODE');
+                    }
+
                     const isValidTotp = verifyTotpCode(submittedCode, secret);
 
                     if (!isValidTotp) {
@@ -110,12 +116,12 @@ export const authOptions: AuthOptions = {
                             throw new Error('INVALID_2FA_CODE');
                         }
 
-                        // Atomic check-and-update to prevent concurrent reuse of the same backup code
+                        // Atomic check-and-update with optimistic concurrency to prevent race conditions or reuse
                         const updateResult = await prisma.user.updateMany({
                             where: {
                                 id: user.id,
                                 twoFactorBackupCodes: {
-                                    has: matchedHash,
+                                    equals: user.twoFactorBackupCodes || [],
                                 },
                             },
                             data: {
