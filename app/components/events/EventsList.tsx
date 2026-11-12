@@ -26,7 +26,7 @@ const EventsList: React.FC<EventsListProps> = ({
             {events.map((event: Event, index: number) => (
                 <div
                     key={event.slug}
-                    className="min-w-[280px] flex-shrink-0 sm:min-w-[320px] md:min-w-[350px]"
+                    className="w-[80vw] max-w-[300px] flex-shrink-0 snap-start sm:w-[320px] sm:max-w-none md:w-[350px]"
                 >
                     <EventCard
                         event={event}

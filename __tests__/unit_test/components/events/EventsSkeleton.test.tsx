@@ -71,4 +71,34 @@ describe('EventsSkeleton', () => {
             expect(cards.length).toBe(4);
         });
     });
+
+    it('renders top recipe skeletons when active sessions are provided', () => {
+        const { container } = render(
+            <EventsSkeleton
+                topRecipeSessions={{
+                    week: {
+                        session: { status: 'voting' },
+                        userVote: null,
+                    },
+                    month: {
+                        session: {
+                            status: 'closed',
+                            winner: { id: 'recipe-1' },
+                        },
+                        userVote: null,
+                    },
+                    year: null,
+                }}
+            />
+        );
+
+        // Week voting skeleton renders a 2-column grid of candidate placeholders
+        const votingGrid = container.querySelector('.md\\:grid-cols-2');
+        expect(votingGrid).not.toBeNull();
+        expect(votingGrid?.children.length).toBe(4);
+
+        // Month winner skeleton renders a 20x20 badge placeholder
+        const badgePlaceholder = container.querySelector('.size-20');
+        expect(badgePlaceholder).not.toBeNull();
+    });
 });

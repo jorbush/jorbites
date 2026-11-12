@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
-import { categorizeEvents, Event } from '@/app/utils/markdownUtils';
+import {
+    categorizeEvents,
+    getEffectiveEventDate,
+    sortEventsByDate,
+    Event,
+} from '@/app/utils/markdownUtils';
 
 describe('categorizeEvents', () => {
     // Helper function to create mock events
@@ -244,5 +249,106 @@ describe('categorizeEvents', () => {
             expect(result.past).toHaveLength(1);
             expect(result.past[0].slug).toBe('past-event');
         });
+    });
+});
+
+describe('sortEventsByDate with recurrent events', () => {
+    const createEvent = (
+        slug: string,
+        options: {
+            date?: string;
+            endDate?: string;
+            recurrent?: boolean;
+            dayOfMonth?: number;
+        } = {}
+    ): Event => ({
+        slug,
+        frontmatter: {
+            title: `Event ${slug}`,
+            description: 'Test description',
+            date: options.date || '2024-01-01',
+            endDate: options.endDate || '2024-01-31',
+            image: '/test.jpg',
+            recurrent: options.recurrent,
+            dayOfMonth: options.dayOfMonth,
+        },
+        content: 'Test content',
+        language: 'en',
+    });
+
+    beforeEach(() => {
+        vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+        vi.useRealTimers();
+    });
+
+    it('sorts upcoming events chronologically so recurrent event does not always appear first', () => {
+        vi.setSystemTime(new Date('2026-11-12T12:00:00'));
+
+        const gnocchiEvent = createEvent('gnocchi-day', {
+            date: '2024-11-29',
+            endDate: '2024-11-29',
+            recurrent: true,
+            dayOfMonth: 29,
+        });
+        const soonerEvent = createEvent('thanksgiving-bake', {
+            date: '2026-11-20',
+            endDate: '2026-11-22',
+        });
+
+        const sorted = sortEventsByDate([gnocchiEvent, soonerEvent], true);
+
+        expect(sorted.map((e) => e.slug)).toEqual([
+            'thanksgiving-bake',
+            'gnocchi-day',
+        ]);
+    });
+
+    it('places recurrent event in next month when dayOfMonth has already passed', () => {
+        vi.setSystemTime(new Date('2026-11-30T12:00:00'));
+
+        const gnocchiEvent = createEvent('gnocchi-day', {
+            date: '2024-11-29',
+            endDate: '2024-11-29',
+            recurrent: true,
+            dayOfMonth: 29,
+        });
+        const decEvent = createEvent('winter-special', {
+            date: '2026-12-15',
+            endDate: '2026-12-20',
+        });
+
+        const sorted = sortEventsByDate([gnocchiEvent, decEvent], true);
+
+        expect(sorted.map((e) => e.slug)).toEqual([
+            'winter-special',
+            'gnocchi-day',
+        ]);
+        expect(getEffectiveEventDate(gnocchiEvent).getMonth()).toBe(11); // December (0-indexed)
+        expect(getEffectiveEventDate(gnocchiEvent).getDate()).toBe(29);
+    });
+
+    it('places recurrent event first when its next occurrence is genuinely sooner', () => {
+        vi.setSystemTime(new Date('2026-11-25T12:00:00'));
+
+        const gnocchiEvent = createEvent('gnocchi-day', {
+            date: '2024-11-29',
+            endDate: '2024-11-29',
+            recurrent: true,
+            dayOfMonth: 29,
+        });
+        const decEvent = createEvent('winter-special', {
+            date: '2026-12-05',
+            endDate: '2026-12-10',
+        });
+
+        const sorted = sortEventsByDate([decEvent, gnocchiEvent], true);
+
+        expect(sorted.map((e) => e.slug)).toEqual([
+            'gnocchi-day',
+            'winter-special',
+        ]);
     });
 });

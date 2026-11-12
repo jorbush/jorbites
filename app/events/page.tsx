@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import ClientOnly from '@/app/components/utils/ClientOnly';
 import EventsClient from './events-client';
 import { getCurrentChallenge } from '@/app/actions/weekly-challenge';
+import { getTopRecipeSessions } from '@/app/actions/top-recipe-vote';
 import EventsSkeleton from '@/app/components/events/EventsSkeleton';
 
 export const metadata: Metadata = {
@@ -21,11 +22,24 @@ export const metadata: Metadata = {
 };
 
 const EventsPage = async () => {
-    const challenge = await getCurrentChallenge();
+    const [challenge, topRecipeSessions] = await Promise.all([
+        getCurrentChallenge(),
+        getTopRecipeSessions(),
+    ]);
 
     return (
-        <ClientOnly fallback={<EventsSkeleton weeklyChallenge={challenge} />}>
-            <EventsClient weeklyChallenge={challenge} />
+        <ClientOnly
+            fallback={
+                <EventsSkeleton
+                    weeklyChallenge={challenge}
+                    topRecipeSessions={topRecipeSessions}
+                />
+            }
+        >
+            <EventsClient
+                weeklyChallenge={challenge}
+                initialTopRecipes={topRecipeSessions}
+            />
         </ClientOnly>
     );
 };
