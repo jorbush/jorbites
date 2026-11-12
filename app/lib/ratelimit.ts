@@ -99,3 +99,14 @@ export const recipeBookRatelimit = hasUpstashConfig
           prefix: '@upstash/ratelimit/recipe-book',
       })
     : createMockRatelimit('recipeBookRatelimit');
+
+// Rate limiting for 2FA verification and management attempts
+// 10 requests per 15 minutes per user/IP - prevents brute-forcing 6-digit TOTP codes
+export const twoFactorRatelimit = hasUpstashConfig
+    ? new Ratelimit({
+          redis: Redis.fromEnv(),
+          limiter: Ratelimit.slidingWindow(10, '15 m'),
+          analytics: true,
+          prefix: '@upstash/ratelimit/two-factor',
+      })
+    : createMockRatelimit('twoFactorRatelimit');

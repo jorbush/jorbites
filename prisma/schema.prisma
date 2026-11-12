@@ -31,6 +31,9 @@ model User {
   badges              String[]  @default([])
   resetToken          String?
   resetTokenExpiry    DateTime?
+  twoFactorEnabled    Boolean   @default(false)
+  twoFactorSecret     String?
+  twoFactorBackupCodes String[] @default([])
   bio                 String?
   websiteUrl          String?
   instagram           String?

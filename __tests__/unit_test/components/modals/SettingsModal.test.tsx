@@ -64,6 +64,12 @@ vi.mock('@/app/components/settings/ChangePassword', () => ({
     ),
 }));
 
+vi.mock('@/app/components/settings/TwoFactorAuth', () => ({
+    default: () => (
+        <div data-testid="two-factor-auth-selector">TwoFactorAuth</div>
+    ),
+}));
+
 vi.mock('@/app/components/settings/ChangeProfileDetails', () => ({
     default: () => (
         <div data-testid="change-profile-details">ChangeProfileDetails</div>
