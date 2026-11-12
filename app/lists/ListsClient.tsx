@@ -98,6 +98,7 @@ const ListsClient: React.FC<ListsClientProps> = ({
                                 showDelete={
                                     activeTab === 'my' && !list.isDefault
                                 }
+                                showPublicBadge={activeTab === 'my'}
                                 onDeleteClick={(id) => setDeleteListId(id)}
                                 push={push}
                                 t={t}

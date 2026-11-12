@@ -8,11 +8,12 @@ import Avatar from '@/app/components/utils/Avatar';
 import { formatDate } from '@/app/utils/date-utils';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 
-interface PlanningCardProps {
+export interface PlanningCardProps {
     plan: SafePlanning;
     currentUser?: SafeUser | null;
     showDelete?: boolean;
     isSavedTab?: boolean;
+    showPublicBadge?: boolean;
     onUnsave?: (planId: string) => void;
     onDeleteClick?: (planId: string) => void;
     push: (url: string) => void;
@@ -38,6 +39,7 @@ export const PlanningCard: React.FC<PlanningCardProps> = ({
     currentUser,
     showDelete = false,
     isSavedTab = false,
+    showPublicBadge = false,
     onUnsave,
     onDeleteClick,
     push,
@@ -150,12 +152,12 @@ export const PlanningCard: React.FC<PlanningCardProps> = ({
                                     size={13}
                                     className="text-neutral-400 dark:text-neutral-500"
                                 />
-                            ) : (
+                            ) : showPublicBadge ? (
                                 <GiPadlockOpen
                                     size={13}
                                     className="text-neutral-400 dark:text-neutral-500"
                                 />
-                            )}
+                            ) : null}
                             <span>
                                 {totalMealsCount} {t('meals')}
                             </span>

@@ -11,6 +11,7 @@ export interface PlanningsGridProps {
     currentUser?: SafeUser | null;
     showDelete?: boolean;
     isSavedTab?: boolean;
+    showPublicBadge?: boolean;
     onUnsave: (planId: string) => Promise<void>;
     onDeleteClick: (planId: string) => void;
     push?: (url: string) => void;
@@ -23,6 +24,7 @@ export const PlanningsGrid: React.FC<PlanningsGridProps> = ({
     currentUser,
     showDelete = false,
     isSavedTab = false,
+    showPublicBadge = false,
     onUnsave,
     onDeleteClick,
     push = noopPush,
@@ -46,6 +48,7 @@ export const PlanningsGrid: React.FC<PlanningsGridProps> = ({
                     currentUser={currentUser}
                     showDelete={showDelete}
                     isSavedTab={isSavedTab}
+                    showPublicBadge={showPublicBadge}
                     onUnsave={onUnsave}
                     onDeleteClick={onDeleteClick}
                     push={push}
