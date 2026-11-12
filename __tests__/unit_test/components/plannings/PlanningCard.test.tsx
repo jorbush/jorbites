@@ -191,7 +191,7 @@ describe('PlanningCard', () => {
     });
 
     it('does not render GiPadlockOpen when public and showPublicBadge is false', () => {
-        const { container } = render(
+        render(
             <PlanningCard
                 plan={mockPlan}
                 currentUser={null}
@@ -213,7 +213,7 @@ describe('PlanningCard', () => {
     });
 
     it('renders GiPadlockOpen when public and showPublicBadge is true', () => {
-        const { container } = render(
+        render(
             <PlanningCard
                 plan={mockPlan}
                 currentUser={null}
@@ -239,7 +239,7 @@ describe('PlanningCard', () => {
             isPrivate: true,
         };
 
-        const { container } = render(
+        render(
             <PlanningCard
                 plan={privatePlan}
                 currentUser={null}
