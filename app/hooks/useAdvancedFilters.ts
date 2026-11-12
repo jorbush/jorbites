@@ -1,48 +1,145 @@
 'use client';
 
-import { useReducer, useRef, useEffect } from 'react';
+import { useReducer, useRef, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { advancedFiltersReducer } from '@/app/components/navbar/advancedFiltersReducer';
+
+export interface AdvancedFilterValues {
+    minCalories: string;
+    maxCalories: string;
+    minYield: string;
+    maxYield: string;
+    recipeCuisine: string;
+    startDate: string;
+    endDate: string;
+}
+
+export const EMPTY_ADVANCED_FILTERS: AdvancedFilterValues = {
+    minCalories: '',
+    maxCalories: '',
+    minYield: '',
+    maxYield: '',
+    recipeCuisine: '',
+    startDate: '',
+    endDate: '',
+};
+
+export const FILTER_KEY_MAP: Array<{
+    key: keyof AdvancedFilterValues;
+    param: string;
+}> = [
+    { key: 'minCalories', param: 'minCalories' },
+    { key: 'maxCalories', param: 'maxCalories' },
+    { key: 'minYield', param: 'minYield' },
+    { key: 'maxYield', param: 'maxYield' },
+    { key: 'recipeCuisine', param: 'recipeCuisine' },
+    { key: 'startDate', param: 'startDate' },
+    { key: 'endDate', param: 'endDate' },
+];
+
+export const extractFilterValues = (
+    searchParams: ReturnType<typeof useSearchParams>
+): AdvancedFilterValues => {
+    const get = (key: string) => searchParams?.get(key) || '';
+    return {
+        minCalories: get('minCalories'),
+        maxCalories: get('maxCalories'),
+        minYield: get('minYield'),
+        maxYield: get('maxYield'),
+        recipeCuisine: get('recipeCuisine'),
+        startDate: get('startDate'),
+        endDate: get('endDate'),
+    };
+};
+
+export const hasAnyFilterSet = (
+    filters: Partial<AdvancedFilterValues>
+): boolean => {
+    return Object.values(filters).some(Boolean);
+};
+
+export const isFilterablePath = (pathname: string | null): boolean => {
+    return pathname === '/' || pathname === '/favorites';
+};
+
+export const getNextCuisine = (
+    currentCuisine: string,
+    selectedCuisine: string
+): string => {
+    return currentCuisine.toLowerCase() === selectedCuisine.toLowerCase()
+        ? ''
+        : selectedCuisine;
+};
+
+export const buildFilterUrl = (
+    pathname: string | null,
+    currentSearchParams: ReturnType<typeof useSearchParams>,
+    filters: AdvancedFilterValues
+): string => {
+    const validPathname = pathname || '/';
+    const params = new URLSearchParams(currentSearchParams?.toString() || '');
+
+    for (const { key, param } of FILTER_KEY_MAP) {
+        const val = filters[key];
+        if (val) {
+            params.set(param, val);
+        } else {
+            params.delete(param);
+        }
+    }
+
+    params.delete('page'); // Reset pagination to page 1
+
+    const queryString = params.toString();
+    if (validPathname === '/') {
+        return queryString ? `/?${queryString}` : '/';
+    }
+
+    return queryString ? `${validPathname}?${queryString}` : validPathname;
+};
+
+export const useDropdownOutsideClick = (
+    ref: React.RefObject<HTMLDivElement | null>,
+    isOpen: boolean,
+    onClose: () => void
+) => {
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (ref.current && !ref.current.contains(event.target as Node)) {
+                onClose();
+            }
+        };
+
+        if (isOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isOpen, ref, onClose]);
+};
 
 export const useAdvancedFilters = (
     searchParams: ReturnType<typeof useSearchParams>
 ) => {
     const { replace } = useRouter() || {};
-    const get = searchParams ? searchParams.get.bind(searchParams) : () => null;
     const pathname = usePathname();
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    const isMainPage = pathname === '/';
-    const isFavoritesPage = pathname === '/favorites';
-    const isFilterablePage = isMainPage || isFavoritesPage;
-
-    const currentMinCalories = get('minCalories') || '';
-    const currentMaxCalories = get('maxCalories') || '';
-    const currentMinYield = get('minYield') || '';
-    const currentMaxYield = get('maxYield') || '';
-    const currentCuisine = get('recipeCuisine') || '';
-    const currentStartDate = get('startDate') || '';
-    const currentEndDate = get('endDate') || '';
-
-    const hasActiveFilters = !!(
-        currentMinCalories ||
-        currentMaxCalories ||
-        currentMinYield ||
-        currentMaxYield ||
-        currentCuisine ||
-        currentStartDate ||
-        currentEndDate
-    );
+    const isFilterablePage = isFilterablePath(pathname);
+    const currentFilters = extractFilterValues(searchParams);
+    const hasActiveFilters = hasAnyFilterSet(currentFilters);
 
     const [state, dispatch] = useReducer(advancedFiltersReducer, {
         isOpen: false,
-        tempMinCalories: currentMinCalories,
-        tempMaxCalories: currentMaxCalories,
-        tempMinYield: currentMinYield,
-        tempMaxYield: currentMaxYield,
-        tempCuisine: currentCuisine,
-        tempStartDate: currentStartDate,
-        tempEndDate: currentEndDate,
+        tempMinCalories: currentFilters.minCalories,
+        tempMaxCalories: currentFilters.maxCalories,
+        tempMinYield: currentFilters.minYield,
+        tempMaxYield: currentFilters.maxYield,
+        tempCuisine: currentFilters.recipeCuisine,
+        tempStartDate: currentFilters.startDate,
+        tempEndDate: currentFilters.endDate,
     });
 
     const {
@@ -61,129 +158,88 @@ export const useAdvancedFilters = (
         dispatch({
             type: 'SYNC_FILTERS',
             payload: {
-                minCalories: currentMinCalories,
-                maxCalories: currentMaxCalories,
-                minYield: currentMinYield,
-                maxYield: currentMaxYield,
-                recipeCuisine: currentCuisine,
-                startDate: currentStartDate,
-                endDate: currentEndDate,
+                minCalories: currentFilters.minCalories,
+                maxCalories: currentFilters.maxCalories,
+                minYield: currentFilters.minYield,
+                maxYield: currentFilters.maxYield,
+                recipeCuisine: currentFilters.recipeCuisine,
+                startDate: currentFilters.startDate,
+                endDate: currentFilters.endDate,
             },
         });
     }, [
         isOpen,
-        currentMinCalories,
-        currentMaxCalories,
-        currentMinYield,
-        currentMaxYield,
-        currentCuisine,
-        currentStartDate,
-        currentEndDate,
+        currentFilters.minCalories,
+        currentFilters.maxCalories,
+        currentFilters.minYield,
+        currentFilters.maxYield,
+        currentFilters.recipeCuisine,
+        currentFilters.startDate,
+        currentFilters.endDate,
     ]);
 
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (
-                dropdownRef.current &&
-                !dropdownRef.current.contains(event.target as Node)
-            ) {
-                dispatch({ type: 'SET_OPEN', payload: false });
-            }
-        };
-
-        if (isOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [isOpen]);
-
-    const updateUrlWithFilters = (
-        minCal: string,
-        maxCal: string,
-        minYld: string,
-        maxYld: string,
-        cuisine: string,
-        startDate: string,
-        endDate: string
-    ) => {
-        if (!isFilterablePage) return;
-
-        const params = new URLSearchParams(searchParams?.toString() || '');
-
-        if (minCal) params.set('minCalories', minCal);
-        else params.delete('minCalories');
-
-        if (maxCal) params.set('maxCalories', maxCal);
-        else params.delete('maxCalories');
-
-        if (minYld) params.set('minYield', minYld);
-        else params.delete('minYield');
-
-        if (maxYld) params.set('maxYield', maxYld);
-        else params.delete('maxYield');
-
-        if (cuisine) params.set('recipeCuisine', cuisine);
-        else params.delete('recipeCuisine');
-
-        if (startDate) params.set('startDate', startDate);
-        else params.delete('startDate');
-
-        if (endDate) params.set('endDate', endDate);
-        else params.delete('endDate');
-
-        params.delete('page'); // Reset pagination to page 1
-
-        const newUrl = isMainPage
-            ? params.toString()
-                ? `/?${params.toString()}`
-                : '/'
-            : params.toString()
-              ? `${pathname}?${params.toString()}`
-              : pathname;
-
-        replace(newUrl);
-    };
-
-    const handleApply = () => {
-        updateUrlWithFilters(
-            tempMinCalories,
-            tempMaxCalories,
-            tempMinYield,
-            tempMaxYield,
-            tempCuisine,
-            tempStartDate,
-            tempEndDate
-        );
+    const handleClose = useCallback(() => {
         dispatch({ type: 'SET_OPEN', payload: false });
-    };
+    }, [dispatch]);
 
-    const handleClear = () => {
-        dispatch({ type: 'CLEAR_FILTERS' });
-        if (isFilterablePage) {
-            updateUrlWithFilters('', '', '', '', '', '', '');
-        }
-    };
+    useDropdownOutsideClick(dropdownRef, isOpen, handleClose);
 
-    const handleCuisinePillClick = (cuisineName: string) => {
-        if (tempCuisine.toLowerCase() === cuisineName.toLowerCase()) {
-            dispatch({ type: 'SET_CUISINE', payload: '' });
-        } else {
-            dispatch({ type: 'SET_CUISINE', payload: cuisineName });
-        }
-    };
-
-    const isAnyTempFilterSet = !!(
-        tempMinCalories ||
-        tempMaxCalories ||
-        tempMinYield ||
-        tempMaxYield ||
-        tempCuisine ||
-        tempStartDate ||
-        tempEndDate
+    const applyFiltersToUrl = useCallback(
+        (filters: AdvancedFilterValues) => {
+            if (!isFilterablePage || !replace) return;
+            const newUrl = buildFilterUrl(pathname, searchParams, filters);
+            replace(newUrl);
+        },
+        [isFilterablePage, replace, pathname, searchParams]
     );
+
+    const handleApply = useCallback(() => {
+        applyFiltersToUrl({
+            minCalories: tempMinCalories,
+            maxCalories: tempMaxCalories,
+            minYield: tempMinYield,
+            maxYield: tempMaxYield,
+            recipeCuisine: tempCuisine,
+            startDate: tempStartDate,
+            endDate: tempEndDate,
+        });
+        handleClose();
+    }, [
+        applyFiltersToUrl,
+        tempMinCalories,
+        tempMaxCalories,
+        tempMinYield,
+        tempMaxYield,
+        tempCuisine,
+        tempStartDate,
+        tempEndDate,
+        handleClose,
+    ]);
+
+    const handleClear = useCallback(() => {
+        dispatch({ type: 'CLEAR_FILTERS' });
+        applyFiltersToUrl(EMPTY_ADVANCED_FILTERS);
+    }, [dispatch, applyFiltersToUrl]);
+
+    const handleCuisinePillClick = useCallback(
+        (cuisineName: string) => {
+            dispatch({
+                type: 'SET_CUISINE',
+                payload: getNextCuisine(tempCuisine, cuisineName),
+            });
+        },
+        [dispatch, tempCuisine]
+    );
+
+    const isAnyTempFilterSet = hasAnyFilterSet({
+        minCalories: tempMinCalories,
+        maxCalories: tempMaxCalories,
+        minYield: tempMinYield,
+        maxYield: tempMaxYield,
+        recipeCuisine: tempCuisine,
+        startDate: tempStartDate,
+        endDate: tempEndDate,
+    });
 
     return {
         dropdownRef,
