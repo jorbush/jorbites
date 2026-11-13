@@ -1,4 +1,5 @@
 import {
+    useCallback,
     useEffect,
     useMemo,
     useSyncExternalStore,
@@ -9,17 +10,355 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'react-hot-toast';
 import useIsMounted from '@/app/hooks/useIsMounted';
 import i18n from '@/app/i18n';
-import { translateableRecipeContentReducer } from '@/app/components/translation/translateableRecipeContentReducer';
+import {
+    TranslateableRecipeContentAction,
+    translateableRecipeContentReducer,
+} from '@/app/components/translation/translateableRecipeContentReducer';
 import { GanttTable } from '@/app/types';
+
+const EMPTY_ITEMS: string[] = [];
+const DEFAULT_LANGUAGE = 'es';
+const MIN_DETECTION_LENGTH = 10;
+const CONFIDENCE_THRESHOLD = 0.5;
+const SUPPORTED_LANGUAGES = ['en', 'ca', 'es'] as const;
+const LANGUAGE_MAP: Record<string, string> = {
+    'en-US': 'en',
+    'en-GB': 'en',
+    'es-ES': 'es',
+    'es-MX': 'es',
+    'ca-ES': 'ca',
+};
 
 const subscribe = () => () => {};
 
-interface UseRecipeTranslationProps {
+export interface UseRecipeTranslationProps {
     description: React.ReactNode;
     descriptionText?: string;
     ingredientsText?: string[];
     stepsText?: string[];
     ganttTable?: GanttTable | null;
+}
+
+function checkIsTranslatorAvailable(): boolean {
+    return (
+        typeof window !== 'undefined' &&
+        'Translator' in window &&
+        'LanguageDetector' in window
+    );
+}
+
+function getCurrentLanguage(): string {
+    return (
+        (typeof i18n.language === 'string'
+            ? i18n.language
+            : i18n.resolvedLanguage) || DEFAULT_LANGUAGE
+    );
+}
+
+function determineSourceLanguage(
+    detectedLanguage: string | null,
+    targetLanguage: string
+): string {
+    const sourceLanguage = detectedLanguage || DEFAULT_LANGUAGE;
+    if (sourceLanguage === targetLanguage) {
+        return targetLanguage === 'en' ? 'es' : 'en';
+    }
+    return sourceLanguage;
+}
+
+function getGanttTextJoined(ganttTable?: GanttTable | null): string {
+    if (!ganttTable) return '';
+    const pre = (ganttTable.preSteps || []).join('\n');
+    const rows = (ganttTable.rows || []).map((r) => r.ingredient).join('\n');
+    const cols = (ganttTable.columns || []).map((c) => c.action).join('\n');
+    return `${pre}\n${rows}\n${cols}`;
+}
+
+function extractSampleText(
+    descriptionText?: string,
+    ingredientsTextJoined?: string,
+    stepsTextJoined?: string,
+    ganttTextJoined?: string
+): string {
+    if (
+        descriptionText &&
+        descriptionText.trim().length >= MIN_DETECTION_LENGTH
+    ) {
+        return descriptionText;
+    }
+    if (ingredientsTextJoined) {
+        const firstIngredient = ingredientsTextJoined.split('\n')[0];
+        if (
+            firstIngredient &&
+            firstIngredient.trim().length >= MIN_DETECTION_LENGTH
+        ) {
+            return firstIngredient;
+        }
+    }
+    if (stepsTextJoined) {
+        const firstStep = stepsTextJoined.split('\n')[0];
+        if (firstStep && firstStep.trim().length >= MIN_DETECTION_LENGTH) {
+            return firstStep;
+        }
+    }
+    if (ganttTextJoined) {
+        const firstGanttLine = ganttTextJoined
+            .split('\n')
+            .find((line) => line.trim().length >= MIN_DETECTION_LENGTH);
+        if (firstGanttLine) {
+            return firstGanttLine;
+        }
+    }
+    return '';
+}
+
+function normalizeDetectedLanguage(
+    results?: Array<{ detectedLanguage: string; confidence: number }>
+): string | null | undefined {
+    if (!results || results.length === 0) {
+        return undefined;
+    }
+    const topResult = results[0];
+    if (topResult.confidence <= CONFIDENCE_THRESHOLD) {
+        return undefined;
+    }
+    const lang = topResult.detectedLanguage;
+    if ((SUPPORTED_LANGUAGES as readonly string[]).includes(lang)) {
+        return lang;
+    }
+    return LANGUAGE_MAP[lang] || null;
+}
+
+async function detectSampleLanguage(
+    sampleText: string
+): Promise<string | null | undefined> {
+    try {
+        const detector = await window.LanguageDetector.create();
+        const results = await detector.detect(sampleText);
+        return normalizeDetectedLanguage(results);
+    } catch (error) {
+        console.warn('Language detection failed:', error);
+        return undefined;
+    }
+}
+
+function shouldDetectLanguage(
+    isAvailable: boolean,
+    sampleText: string,
+    detectedLanguage: string | null
+): boolean {
+    if (!isAvailable) return false;
+    if (!sampleText || sampleText.trim().length < MIN_DETECTION_LENGTH) {
+        return false;
+    }
+    return detectedLanguage === null;
+}
+
+function checkHasRecipeContent(
+    descriptionText?: string,
+    ingredientsText?: string[],
+    stepsText?: string[],
+    ganttTable?: GanttTable | null
+): boolean {
+    return Boolean(
+        descriptionText ||
+        (ingredientsText && ingredientsText.length > 0) ||
+        (stepsText && stepsText.length > 0) ||
+        (ganttTable && (ganttTable.rows?.length || ganttTable.preSteps?.length))
+    );
+}
+
+function cleanTrimmedText(
+    originalText?: string,
+    translatedText?: string
+): string | null {
+    if (originalText && translatedText) {
+        return translatedText.trim();
+    }
+    return null;
+}
+
+function cleanTrimmedList(items: string[] | null | undefined): string[] | null {
+    if (!Array.isArray(items) || items.length === 0) {
+        return null;
+    }
+    const filtered = items.reduce<string[]>((acc, item) => {
+        const trimmed = item.trim();
+        if (trimmed.length > 0) {
+            acc.push(trimmed);
+        }
+        return acc;
+    }, []);
+    return filtered.length > 0 ? filtered : null;
+}
+
+function translateStringList(
+    items: string[] | undefined,
+    translator: any
+): Promise<string[]> {
+    if (!items || items.length === 0) {
+        return Promise.resolve([]);
+    }
+    return Promise.all(items.map((item) => translator.translate(item)));
+}
+
+function isGanttValid(
+    table?: GanttTable | null
+): table is GanttTable & { rows: any[]; columns: any[] } {
+    return Boolean(
+        table &&
+        Array.isArray(table.rows) &&
+        Array.isArray(table.columns) &&
+        (!table.preSteps || Array.isArray(table.preSteps))
+    );
+}
+
+async function translateGantt(
+    ganttTable: GanttTable | null | undefined,
+    translator: any
+): Promise<GanttTable | null> {
+    if (!isGanttValid(ganttTable)) {
+        return null;
+    }
+
+    const preStepsPromise = Promise.all(
+        (ganttTable.preSteps || []).map((step) =>
+            typeof step === 'string' && step.trim()
+                ? translator.translate(step)
+                : Promise.resolve(step || '')
+        )
+    );
+
+    const rowsPromise = Promise.all(
+        (ganttTable.rows || []).map((row) =>
+            typeof row?.ingredient === 'string' && row.ingredient.trim()
+                ? translator.translate(row.ingredient)
+                : Promise.resolve(row?.ingredient || '')
+        )
+    );
+
+    const colsPromise = Promise.all(
+        (ganttTable.columns || []).map((col) =>
+            typeof col?.action === 'string' && col.action.trim()
+                ? translator.translate(col.action)
+                : Promise.resolve(col?.action || '')
+        )
+    );
+
+    const [translatedPreSteps, translatedIngs, translatedActions] =
+        await Promise.all([preStepsPromise, rowsPromise, colsPromise]);
+
+    return {
+        preSteps: (translatedPreSteps || []).map((s) => s.trim()),
+        rows: (ganttTable.rows || []).map((row, idx) => ({
+            ...row,
+            ingredient: translatedIngs[idx]?.trim() || row.ingredient,
+        })),
+        columns: (ganttTable.columns || []).map((col, idx) => ({
+            ...col,
+            action: translatedActions[idx]?.trim() || col.action,
+        })),
+    };
+}
+
+interface TranslationParams {
+    descriptionText?: string;
+    ingredientsText?: string[];
+    stepsText?: string[];
+    ganttTable?: GanttTable | null;
+    detectedLanguage: string | null;
+}
+
+type TranslatedContentPayload = Extract<
+    TranslateableRecipeContentAction,
+    { type: 'SET_TRANSLATED_CONTENT' }
+>['payload'];
+
+async function translateRecipeContent({
+    descriptionText,
+    ingredientsText,
+    stepsText,
+    ganttTable,
+    detectedLanguage,
+}: TranslationParams): Promise<TranslatedContentPayload | null> {
+    if (!checkIsTranslatorAvailable()) {
+        console.warn('Translator API not available');
+        return null;
+    }
+
+    const targetLanguage = getCurrentLanguage();
+    const sourceLanguage = determineSourceLanguage(
+        detectedLanguage,
+        targetLanguage
+    );
+
+    const availability = await window.Translator.availability({
+        sourceLanguage,
+        targetLanguage,
+    });
+
+    if (availability !== 'available' && availability !== 'downloadable') {
+        console.warn('Translation not available for this language pair');
+        toast.error('Not available for this language');
+        return null;
+    }
+
+    const translator = await window.Translator.create({
+        sourceLanguage,
+        targetLanguage,
+    });
+
+    const [
+        translatedDesc,
+        translatedIngArray,
+        translatedStpsArray,
+        translatedGantt,
+    ] = await Promise.all([
+        descriptionText
+            ? translator.translate(descriptionText)
+            : Promise.resolve(''),
+        translateStringList(ingredientsText, translator),
+        translateStringList(stepsText, translator),
+        translateGantt(ganttTable, translator),
+    ]);
+
+    return {
+        description: cleanTrimmedText(descriptionText, translatedDesc),
+        ingredients: cleanTrimmedList(translatedIngArray),
+        steps: cleanTrimmedList(translatedStpsArray),
+        ganttTable: translatedGantt,
+    };
+}
+
+function resolveDisplayDescription(
+    isTranslated: boolean,
+    translatedDescription: string | null,
+    originalDescription: React.ReactNode
+): React.ReactNode {
+    return isTranslated && translatedDescription
+        ? translatedDescription
+        : originalDescription;
+}
+
+function resolveDisplayList(
+    isTranslated: boolean,
+    translatedList: string[] | null,
+    fallbackList?: string[]
+): string[] {
+    if (isTranslated && translatedList && translatedList.length > 0) {
+        return translatedList;
+    }
+    return fallbackList || EMPTY_ITEMS;
+}
+
+function resolveDisplayGantt(
+    isTranslated: boolean,
+    translatedGantt: GanttTable | null,
+    fallbackGantt?: GanttTable | null
+): GanttTable | null {
+    return isTranslated && translatedGantt
+        ? translatedGantt
+        : fallbackGantt || null;
 }
 
 export function useRecipeTranslation({
@@ -33,12 +372,10 @@ export function useRecipeTranslation({
     const isMounted = useIsMounted();
     const isAvailable = useSyncExternalStore(
         subscribe,
-        () =>
-            typeof window !== 'undefined' &&
-            'Translator' in window &&
-            'LanguageDetector' in window,
+        checkIsTranslatorAvailable,
         () => false
     );
+
     const [state, dispatch] = useReducer(translateableRecipeContentReducer, {
         detectedLanguage: null,
         isTranslated: false,
@@ -67,54 +404,29 @@ export function useRecipeTranslation({
         () => stepsText?.join('\n') || '',
         [stepsText]
     );
+    const ganttTextJoined = useMemo(
+        () => getGanttTextJoined(ganttTable),
+        [ganttTable]
+    );
 
-    const ganttTextJoined = useMemo(() => {
-        if (!ganttTable) return '';
-        const pre = (ganttTable.preSteps || []).join('\n');
-        const rows = (ganttTable.rows || [])
-            .map((r) => r.ingredient)
-            .join('\n');
-        const cols = (ganttTable.columns || []).map((c) => c.action).join('\n');
-        return `${pre}\n${rows}\n${cols}`;
-    }, [ganttTable]);
-
-    const sampleTextForDetection = useMemo(() => {
-        if (descriptionText && descriptionText.trim().length >= 10) {
-            return descriptionText;
-        }
-        if (ingredientsTextJoined) {
-            const firstIngredient = ingredientsTextJoined.split('\n')[0];
-            if (firstIngredient && firstIngredient.trim().length >= 10) {
-                return firstIngredient;
-            }
-        }
-        if (stepsTextJoined) {
-            const firstStep = stepsTextJoined.split('\n')[0];
-            if (firstStep && firstStep.trim().length >= 10) {
-                return firstStep;
-            }
-        }
-        if (ganttTextJoined) {
-            const firstGanttLine = ganttTextJoined
-                .split('\n')
-                .find((line) => line.trim().length >= 10);
-            if (firstGanttLine) {
-                return firstGanttLine;
-            }
-        }
-        return '';
-    }, [
-        descriptionText,
-        ingredientsTextJoined,
-        stepsTextJoined,
-        ganttTextJoined,
-    ]);
+    const sampleTextForDetection = useMemo(
+        () =>
+            extractSampleText(
+                descriptionText,
+                ingredientsTextJoined,
+                stepsTextJoined,
+                ganttTextJoined
+            ),
+        [
+            descriptionText,
+            ingredientsTextJoined,
+            stepsTextJoined,
+            ganttTextJoined,
+        ]
+    );
 
     const contentKey = useMemo(() => {
-        const currentLang =
-            (typeof i18n.language === 'string'
-                ? i18n.language
-                : i18n.resolvedLanguage) || 'es';
+        const currentLang = getCurrentLanguage();
         return `${descriptionText}|${ingredientsTextJoined}|${stepsTextJoined}|${ganttTextJoined}|${currentLang}`;
     }, [
         descriptionText,
@@ -132,274 +444,65 @@ export function useRecipeTranslation({
 
     // Scoped language detection effect
     useEffect(() => {
-        if (!isAvailable) {
-            return;
-        }
-
         if (
-            !sampleTextForDetection ||
-            sampleTextForDetection.trim().length < 10
+            !shouldDetectLanguage(
+                isAvailable,
+                sampleTextForDetection,
+                detectedLanguage
+            )
         ) {
-            return;
-        }
-
-        // Only run if we don't have a detected language yet
-        if (detectedLanguage !== null) {
             return;
         }
 
         let cancelled = false;
 
-        const detectLanguage = async () => {
-            try {
-                const detector = await window.LanguageDetector.create();
-                const results = await detector.detect(sampleTextForDetection);
-
-                if (cancelled) {
-                    return;
-                }
-
-                if (results && results.length > 0) {
-                    const topResult = results[0];
-                    if (topResult.confidence > 0.5) {
-                        if (cancelled) return;
-                        const lang = topResult.detectedLanguage;
-                        if (['en', 'ca', 'es'].includes(lang)) {
-                            dispatch({
-                                type: 'SET_DETECTED_LANGUAGE',
-                                payload: lang,
-                            });
-                        } else {
-                            const langMap: Record<string, string> = {
-                                'en-US': 'en',
-                                'en-GB': 'en',
-                                'es-ES': 'es',
-                                'es-MX': 'es',
-                                'ca-ES': 'ca',
-                            };
-                            dispatch({
-                                type: 'SET_DETECTED_LANGUAGE',
-                                payload: langMap[lang] || null,
-                            });
-                        }
-                    }
-                }
-            } catch (error) {
-                if (!cancelled) {
-                    console.warn('Language detection failed:', error);
-                }
+        detectSampleLanguage(sampleTextForDetection).then((lang) => {
+            if (!cancelled && lang !== undefined) {
+                dispatch({
+                    type: 'SET_DETECTED_LANGUAGE',
+                    payload: lang,
+                });
             }
-        };
-
-        detectLanguage();
+        });
 
         return () => {
             cancelled = true;
         };
     }, [sampleTextForDetection, detectedLanguage, isAvailable]);
 
-    const hasContent = Boolean(
-        descriptionText ||
-        (ingredientsText && ingredientsText.length > 0) ||
-        (stepsText && stepsText.length > 0) ||
-        (ganttTable && (ganttTable.rows?.length || ganttTable.preSteps?.length))
+    const hasContent = useMemo(
+        () =>
+            checkHasRecipeContent(
+                descriptionText,
+                ingredientsText,
+                stepsText,
+                ganttTable
+            ),
+        [descriptionText, ingredientsText, stepsText, ganttTable]
     );
 
-    const handleTranslate = async () => {
+    const handleTranslate = useCallback(async () => {
         if (isTranslating || !isAvailable) return;
-
-        if (
-            typeof window === 'undefined' ||
-            !('Translator' in window) ||
-            !('LanguageDetector' in window)
-        ) {
-            console.warn('Translator API not available');
-            return;
-        }
 
         dispatch({ type: 'START_TRANSLATING' });
 
         try {
-            const targetLanguage =
-                (typeof i18n.language === 'string'
-                    ? i18n.language
-                    : i18n.resolvedLanguage) || 'es';
-
-            // Reuse the already detected language from state
-            let sourceLanguage = detectedLanguage || 'es';
-
-            // If source matches target, use fallback
-            if (sourceLanguage === targetLanguage) {
-                sourceLanguage = targetLanguage === 'en' ? 'es' : 'en';
-            }
-
-            const availability = await window.Translator.availability({
-                sourceLanguage,
-                targetLanguage,
+            const payload = await translateRecipeContent({
+                descriptionText,
+                ingredientsText,
+                stepsText,
+                ganttTable,
+                detectedLanguage,
             });
 
-            if (
-                availability !== 'available' &&
-                availability !== 'downloadable'
-            ) {
-                console.warn(
-                    'Translation not available for this language pair'
-                );
+            if (payload) {
+                dispatch({
+                    type: 'SET_TRANSLATED_CONTENT',
+                    payload,
+                });
+            } else {
                 dispatch({ type: 'STOP_TRANSLATING' });
-                toast.error('Not available for this language');
-                return;
             }
-
-            const translator = await window.Translator.create({
-                sourceLanguage,
-                targetLanguage,
-            });
-
-            const descriptionPromise = descriptionText
-                ? translator.translate(descriptionText)
-                : Promise.resolve('');
-
-            const ingredientsPromise =
-                ingredientsText && ingredientsText.length > 0
-                    ? Promise.all(
-                          ingredientsText.map((item) =>
-                              translator.translate(item)
-                          )
-                      )
-                    : Promise.resolve([]);
-
-            const stepsPromise =
-                stepsText && stepsText.length > 0
-                    ? Promise.all(
-                          stepsText.map((item) => translator.translate(item))
-                      )
-                    : Promise.resolve([]);
-
-            const isGanttValid =
-                ganttTable &&
-                Array.isArray(ganttTable.rows) &&
-                Array.isArray(ganttTable.columns) &&
-                (!ganttTable.preSteps || Array.isArray(ganttTable.preSteps));
-
-            const ganttPromise = isGanttValid
-                ? Promise.all([
-                      Promise.all(
-                          (ganttTable.preSteps || []).map((step) =>
-                              typeof step === 'string' && step.trim()
-                                  ? translator.translate(step)
-                                  : Promise.resolve(step || '')
-                          )
-                      ),
-                      Promise.all(
-                          (ganttTable.rows || []).map((row) =>
-                              typeof row?.ingredient === 'string' &&
-                              row.ingredient.trim()
-                                  ? translator.translate(row.ingredient)
-                                  : Promise.resolve(row?.ingredient || '')
-                          )
-                      ),
-                      Promise.all(
-                          (ganttTable.columns || []).map((col) =>
-                              typeof col?.action === 'string' &&
-                              col.action.trim()
-                                  ? translator.translate(col.action)
-                                  : Promise.resolve(col?.action || '')
-                          )
-                      ),
-                  ]).then(
-                      ([
-                          translatedPreSteps,
-                          translatedIngs,
-                          translatedActions,
-                      ]) => ({
-                          preSteps: (translatedPreSteps || []).map((s) =>
-                              s.trim()
-                          ),
-                          rows: (ganttTable.rows || []).map((row, idx) => ({
-                              ...row,
-                              ingredient:
-                                  translatedIngs[idx]?.trim() || row.ingredient,
-                          })),
-                          columns: (ganttTable.columns || []).map(
-                              (col, idx) => ({
-                                  ...col,
-                                  action:
-                                      translatedActions[idx]?.trim() ||
-                                      col.action,
-                              })
-                          ),
-                      })
-                  )
-                : Promise.resolve(null);
-
-            const [
-                translatedDesc,
-                translatedIngArray,
-                translatedStpsArray,
-                translatedGantt,
-            ] = await Promise.all([
-                descriptionPromise,
-                ingredientsPromise,
-                stepsPromise,
-                ganttPromise,
-            ]);
-
-            let finalDesc = null;
-            if (descriptionText && translatedDesc) {
-                finalDesc = translatedDesc.trim();
-            }
-
-            let finalIng = null;
-            if (
-                Array.isArray(translatedIngArray) &&
-                translatedIngArray.length > 0
-            ) {
-                const translatedIngredientItems = translatedIngArray.reduce(
-                    (acc: string[], item) => {
-                        const trimmed = item.trim();
-                        if (trimmed.length > 0) {
-                            acc.push(trimmed);
-                        }
-                        return acc;
-                    },
-                    []
-                );
-
-                if (translatedIngredientItems.length > 0) {
-                    finalIng = translatedIngredientItems;
-                }
-            }
-
-            let finalSteps = null;
-            if (
-                Array.isArray(translatedStpsArray) &&
-                translatedStpsArray.length > 0
-            ) {
-                const translatedStepItems = translatedStpsArray.reduce(
-                    (acc: string[], item) => {
-                        const trimmed = item.trim();
-                        if (trimmed.length > 0) {
-                            acc.push(trimmed);
-                        }
-                        return acc;
-                    },
-                    []
-                );
-
-                if (translatedStepItems.length > 0) {
-                    finalSteps = translatedStepItems;
-                }
-            }
-
-            dispatch({
-                type: 'SET_TRANSLATED_CONTENT',
-                payload: {
-                    description: finalDesc,
-                    ingredients: finalIng,
-                    steps: finalSteps,
-                    ganttTable: translatedGantt,
-                },
-            });
         } catch (error) {
             console.error('Translation failed:', error);
             toast.error(
@@ -408,42 +511,51 @@ export function useRecipeTranslation({
             );
             dispatch({ type: 'STOP_TRANSLATING' });
         }
-    };
+    }, [
+        isTranslating,
+        isAvailable,
+        descriptionText,
+        ingredientsText,
+        stepsText,
+        ganttTable,
+        detectedLanguage,
+        t,
+    ]);
 
-    const handleShowOriginal = () => {
+    const handleShowOriginal = useCallback(() => {
         dispatch({ type: 'SHOW_ORIGINAL' });
-    };
+    }, []);
 
-    const displayDescription =
-        isTranslated && translatedDescription
-            ? translatedDescription
-            : description;
+    const displayDescription = resolveDisplayDescription(
+        isTranslated,
+        translatedDescription,
+        description
+    );
 
-    const displayIngredients =
-        isTranslated &&
-        translatedIngredients &&
-        translatedIngredients.length > 0
-            ? translatedIngredients
-            : ingredientsText || [];
+    const displayIngredients = resolveDisplayList(
+        isTranslated,
+        translatedIngredients,
+        ingredientsText
+    );
 
-    const displaySteps =
-        isTranslated && translatedSteps && translatedSteps.length > 0
-            ? translatedSteps
-            : stepsText || [];
+    const displaySteps = resolveDisplayList(
+        isTranslated,
+        translatedSteps,
+        stepsText
+    );
 
-    const displayGanttTable =
-        isTranslated && translatedGanttTable
-            ? translatedGanttTable
-            : ganttTable || null;
+    const displayGanttTable = resolveDisplayGantt(
+        isTranslated,
+        translatedGanttTable,
+        ganttTable
+    );
 
-    const targetLanguage =
-        (typeof i18n.language === 'string'
-            ? i18n.language
-            : i18n.resolvedLanguage) || 'es';
+    const targetLanguage = getCurrentLanguage();
     const needsTranslation =
-        !!detectedLanguage && detectedLanguage !== targetLanguage;
-    const showTranslateButton =
-        isMounted && hasContent && isAvailable && needsTranslation;
+        Boolean(detectedLanguage) && detectedLanguage !== targetLanguage;
+    const showTranslateButton = Boolean(
+        isMounted && hasContent && isAvailable && needsTranslation
+    );
 
     return {
         isTranslated,
