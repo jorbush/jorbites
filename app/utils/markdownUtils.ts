@@ -101,15 +101,48 @@ export function categorizeEvents(events: Event[]): {
 }
 
 /**
- * Sort events by date (newest first)
+ * Get the effective date for an event.
+ * For recurrent events, returns the next occurrence date (today if it matches dayOfMonth,
+ * this month if dayOfMonth is still ahead, or next month if dayOfMonth has passed).
+ */
+export function getEffectiveEventDate(
+    event: Event,
+    now: Date = new Date()
+): Date {
+    if (
+        event.frontmatter.recurrent === true &&
+        typeof event.frontmatter.dayOfMonth === 'number' &&
+        event.frontmatter.dayOfMonth >= 1 &&
+        event.frontmatter.dayOfMonth <= 31
+    ) {
+        const year = now.getFullYear();
+        const month = now.getMonth();
+        const currentDay = now.getDate();
+        const targetDay = event.frontmatter.dayOfMonth;
+
+        if (currentDay <= targetDay) {
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            return new Date(year, month, Math.min(targetDay, daysInMonth));
+        }
+
+        const daysInNextMonth = new Date(year, month + 2, 0).getDate();
+        return new Date(year, month + 1, Math.min(targetDay, daysInNextMonth));
+    }
+
+    return new Date(event.frontmatter.date);
+}
+
+/**
+ * Sort events by date (newest first by default, or earliest first when ascending=true)
  */
 export function sortEventsByDate(
     events: Event[],
     ascending: boolean = false
 ): Event[] {
+    const now = new Date();
     return events.toSorted((a, b) => {
-        const dateA = new Date(a.frontmatter.date).getTime();
-        const dateB = new Date(b.frontmatter.date).getTime();
+        const dateA = getEffectiveEventDate(a, now).getTime();
+        const dateB = getEffectiveEventDate(b, now).getTime();
 
         return ascending ? dateA - dateB : dateB - dateA;
     });
