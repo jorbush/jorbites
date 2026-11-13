@@ -15,7 +15,7 @@ module.exports = {
         dark: '#0F0F0F',
       },
       screens: {
-        sm: "375px",
+        sm: "380px",
       },
       keyframes: {
         'pulse-scale': {
