@@ -22,6 +22,13 @@ const EMPTY_SESSIONS: TopRecipeSessionsMap = {
     year: null,
 };
 
+function serializeRecipe<T extends { createdAt: Date }>(recipe: T) {
+    return {
+        ...recipe,
+        createdAt: recipe.createdAt.toISOString(),
+    };
+}
+
 async function getTopRecipeSessionForCategory(
     category: TopRecipeCategory,
     userId?: string
@@ -49,12 +56,22 @@ async function getTopRecipeSessionForCategory(
             : Promise.resolve(null),
     ]);
 
-    return JSON.parse(
-        JSON.stringify({
-            session: enrichedSession,
-            userVote,
-        })
-    );
+    const serializedSession = enrichedSession
+        ? {
+              ...enrichedSession,
+              startedAt: enrichedSession.startedAt.toISOString(),
+              closedAt: enrichedSession.closedAt?.toISOString() ?? null,
+              candidates: enrichedSession.candidates.map(serializeRecipe),
+              winner: enrichedSession.winner
+                  ? serializeRecipe(enrichedSession.winner)
+                  : null,
+          }
+        : null;
+
+    return {
+        session: serializedSession,
+        userVote,
+    };
 }
 
 /**

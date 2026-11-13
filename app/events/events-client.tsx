@@ -249,6 +249,41 @@ const EventsSearchBar: React.FC<EventsSearchBarProps> = ({
     </div>
 );
 
+interface EmptySearchResultsProps {
+    onClearSearch?: () => void;
+}
+
+const EmptySearchResults: React.FC<EmptySearchResultsProps> = ({
+    onClearSearch,
+}) => {
+    const { t } = useTranslation();
+
+    return (
+        <div
+            className="rounded-2xl border border-neutral-200/80 bg-white/80 px-6 py-10 text-center dark:border-neutral-800/80 dark:bg-neutral-900/60"
+            data-testid="events-search-empty"
+        >
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                {String(
+                    t(
+                        'no_events_matching_search',
+                        'No events match your search'
+                    )
+                )}
+            </p>
+            {onClearSearch && (
+                <button
+                    type="button"
+                    onClick={onClearSearch}
+                    className="mt-3 cursor-pointer text-sm font-medium text-neutral-900 underline decoration-neutral-300 underline-offset-4 transition-colors hover:decoration-neutral-900 dark:text-neutral-100 dark:decoration-neutral-600 dark:hover:decoration-neutral-100"
+                >
+                    {String(t('clear_search', 'Clear search'))}
+                </button>
+            )}
+        </div>
+    );
+};
+
 interface EventsCategoriesListsProps {
     events: CategorizedEvents;
     isSearching?: boolean;
@@ -262,76 +297,62 @@ const EventsCategoriesLists: React.FC<EventsCategoriesListsProps> = ({
 }) => {
     const { t } = useTranslation();
 
-    const totalMatches =
-        events.current.length +
-        events.upcoming.length +
-        events.permanent.length +
-        events.past.length;
+    const sections = [
+        {
+            key: 'current',
+            items: events.current,
+            title: String(t('current_events', 'Current Events')),
+            emptyMessage: String(
+                t('no_current_events', 'No current events found')
+            ),
+            priority: true,
+        },
+        {
+            key: 'upcoming',
+            items: events.upcoming,
+            title: String(t('upcoming_events', 'Upcoming Events')),
+            emptyMessage: String(
+                t('no_upcoming_events', 'No upcoming events found')
+            ),
+            priority: true,
+        },
+        {
+            key: 'permanent',
+            items: events.permanent,
+            title: String(t('permanent_events', 'Permanent Events')),
+            emptyMessage: String(
+                t('no_permanent_events', 'No permanent events found')
+            ),
+            priority: false,
+        },
+        {
+            key: 'past',
+            items: events.past,
+            title: String(t('past_events', 'Past Events')),
+            emptyMessage: String(t('no_past_events', 'No past events found')),
+            priority: false,
+        },
+    ];
 
-    if (isSearching && totalMatches === 0) {
-        return (
-            <div
-                className="rounded-2xl border border-neutral-200/80 bg-white/80 px-6 py-10 text-center dark:border-neutral-800/80 dark:bg-neutral-900/60"
-                data-testid="events-search-empty"
-            >
-                <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                    {t('no_events_matching_search') ||
-                        'No events match your search'}
-                </p>
-                {onClearSearch && (
-                    <button
-                        type="button"
-                        onClick={onClearSearch}
-                        className="mt-3 cursor-pointer text-sm font-medium text-neutral-900 underline decoration-neutral-300 underline-offset-4 transition-colors hover:decoration-neutral-900 dark:text-neutral-100 dark:decoration-neutral-600 dark:hover:decoration-neutral-100"
-                    >
-                        {t('clear_search') || 'Clear search'}
-                    </button>
-                )}
-            </div>
-        );
+    const visibleSections = isSearching
+        ? sections.filter((section) => section.items.length > 0)
+        : sections;
+
+    if (isSearching && visibleSections.length === 0) {
+        return <EmptySearchResults onClearSearch={onClearSearch} />;
     }
 
     return (
         <>
-            {(!isSearching || events.current.length > 0) && (
+            {visibleSections.map((section) => (
                 <EventsList
-                    events={events.current}
-                    title={t('current_events') || 'Current Events'}
-                    emptyMessage={
-                        t('no_current_events') || 'No current events found'
-                    }
-                    priority={true}
+                    key={section.key}
+                    events={section.items}
+                    title={section.title}
+                    emptyMessage={section.emptyMessage}
+                    priority={section.priority}
                 />
-            )}
-
-            {(!isSearching || events.upcoming.length > 0) && (
-                <EventsList
-                    events={events.upcoming}
-                    title={t('upcoming_events') || 'Upcoming Events'}
-                    emptyMessage={
-                        t('no_upcoming_events') || 'No upcoming events found'
-                    }
-                    priority={true}
-                />
-            )}
-
-            {(!isSearching || events.permanent.length > 0) && (
-                <EventsList
-                    events={events.permanent}
-                    title={t('permanent_events') || 'Permanent Events'}
-                    emptyMessage={
-                        t('no_permanent_events') || 'No permanent events found'
-                    }
-                />
-            )}
-
-            {(!isSearching || events.past.length > 0) && (
-                <EventsList
-                    events={events.past}
-                    title={t('past_events') || 'Past Events'}
-                    emptyMessage={t('no_past_events') || 'No past events found'}
-                />
-            )}
+            ))}
         </>
     );
 };
