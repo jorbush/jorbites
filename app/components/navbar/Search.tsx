@@ -1,12 +1,11 @@
 'use client';
 
-import { useState, useRef, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { Suspense } from 'react';
+import { usePathname } from 'next/navigation';
 import DesktopSearch from './DesktopSearch';
 import MobileSearch from './MobileSearch';
-import { useTranslation } from 'react-i18next';
-import useMediaQuery from '@/app/hooks/useMediaQuery';
 import Logo from './Logo';
+import { useNavbarSearch } from './useNavbarSearch';
 
 export const SearchFallback = () => {
     const pathname = usePathname();
@@ -35,154 +34,24 @@ const SearchComponent: React.FC<SearchProps> = ({
     onFilterToggle,
     isFilterOpen,
 }) => {
-    const { t } = useTranslation();
-    const { push, replace } = useRouter() || {};
-    const searchParams = useSearchParams();
-    const get = searchParams ? searchParams.get.bind(searchParams) : () => null;
-    const pathname = usePathname();
-    const currentSearch = get('search') || '';
-    const [isSearchMode, setIsSearchMode] = useState(Boolean(currentSearch));
-    const [searchQuery, setSearchQuery] = useState(currentSearch);
-    const inputRef = useRef<HTMLInputElement>(null);
-    const onSearchModeChangeRef = useRef(onSearchModeChange);
+    const {
+        isMobile,
+        isSearchMode,
+        searchQuery,
+        inputRef,
+        handleSearchToggle,
+        handleSearchSubmit,
+        handleSearchChange,
+        handleKeyDown,
+        filtersState,
+        isFilterablePage,
+        t,
+    } = useNavbarSearch({ onSearchModeChange, isFilterOpen });
 
-    useEffect(() => {
-        onSearchModeChangeRef.current = onSearchModeChange;
-    }, [onSearchModeChange]);
-
-    const isMobile = useMediaQuery('(max-width: 768px)');
-
-    const isMainPage = pathname === '/';
-    const isFavoritesPage = pathname === '/favorites';
-    const isFilterablePage = isMainPage || isFavoritesPage;
-    const isFiltering = get('category') || '';
-
-    const currentStartDate = get('startDate') || '';
-    const currentEndDate = get('endDate') || '';
-    const currentMinCalories = get('minCalories') || '';
-    const currentMaxCalories = get('maxCalories') || '';
-    const currentMinYield = get('minYield') || '';
-    const currentMaxYield = get('maxYield') || '';
-    const currentCuisine = get('recipeCuisine') || '';
-    const hasActiveFilters =
-        isFiltering ||
-        currentStartDate ||
-        currentEndDate ||
-        currentMinCalories ||
-        currentMaxCalories ||
-        currentMinYield ||
-        currentMaxYield ||
-        currentCuisine;
-
-    const prevCurrentSearchRef = useRef(currentSearch);
-
-    useEffect(() => {
-        if (currentSearch !== prevCurrentSearchRef.current) {
-            prevCurrentSearchRef.current = currentSearch;
-            setSearchQuery(currentSearch);
-            if (currentSearch) {
-                setIsSearchMode(true);
-                onSearchModeChangeRef.current?.(true);
-            } else {
-                setIsSearchMode(false);
-                onSearchModeChangeRef.current?.(false);
-            }
-        }
-    }, [currentSearch]);
-
-    const hasFiredInitialRef = useRef(false);
-    useEffect(() => {
-        if (!hasFiredInitialRef.current) {
-            hasFiredInitialRef.current = true;
-            if (currentSearch) {
-                onSearchModeChangeRef.current?.(true);
-            }
-        }
-    }, [currentSearch]);
-
-    const handleSearchSubmit = (e?: React.FormEvent) => {
-        if (e) {
-            e.preventDefault();
-        }
-        if (!isFilterablePage) return;
-        const params = new URLSearchParams(searchParams?.toString() || '');
-        if (searchQuery.trim()) {
-            params.set('search', searchQuery.trim());
-        } else {
-            params.delete('search');
-        }
-        params.delete('page');
-        const newUrl = isMainPage
-            ? params.toString()
-                ? `/?${params.toString()}`
-                : '/'
-            : params.toString()
-              ? `${pathname}?${params.toString()}`
-              : pathname;
-        replace(newUrl);
-    };
-
-    const handleSearchToggle = () => {
-        if (isSearchMode) {
-            setIsSearchMode(false);
-            onSearchModeChange?.(false);
-            if (isFilterablePage && currentSearch) {
-                const params = new URLSearchParams(
-                    searchParams?.toString() || ''
-                );
-                params.delete('search');
-                const newUrl = isMainPage
-                    ? params.toString()
-                        ? `/?${params.toString()}`
-                        : '/'
-                    : params.toString()
-                      ? `${pathname}?${params.toString()}`
-                      : pathname;
-                push(newUrl);
-            }
-        } else {
-            setIsSearchMode(true);
-            setTimeout(() => inputRef.current?.focus(), 200);
-            onSearchModeChange?.(true);
-        }
-    };
-
-    const handleSearchChange = (value: string) => {
-        setSearchQuery(value);
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Escape') {
-            handleSearchToggle();
-        }
-    };
-
-    const filtersState = {
-        isOpen: isFilterOpen,
-        isFiltering: !!isFiltering,
-        hasActive: !!hasActiveFilters,
-    };
-
-    if (!isMobile) {
-        return (
-            <DesktopSearch
-                isSearchMode={isSearchMode}
-                searchQuery={searchQuery}
-                onSearchToggle={handleSearchToggle}
-                onSubmit={handleSearchSubmit}
-                onChange={handleSearchChange}
-                onKeyDown={handleKeyDown}
-                inputRef={inputRef}
-                onFilterToggle={onFilterToggle}
-                filtersState={filtersState}
-                isFilterablePage={isFilterablePage}
-                t={t}
-            />
-        );
-    }
+    const SearchTarget = isMobile ? MobileSearch : DesktopSearch;
 
     return (
-        <MobileSearch
+        <SearchTarget
             isSearchMode={isSearchMode}
             searchQuery={searchQuery}
             onSearchToggle={handleSearchToggle}
