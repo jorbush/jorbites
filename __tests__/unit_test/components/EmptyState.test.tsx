@@ -1,6 +1,12 @@
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import {
+    render,
+    screen,
+    fireEvent,
+    cleanup,
+    renderHook,
+} from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import EmptyState from '@/app/components/utils/EmptyState';
+import EmptyState, { useEmptyState } from '@/app/components/utils/EmptyState';
 import React from 'react';
 
 const pushMock = vi.fn();
@@ -27,9 +33,10 @@ describe('<EmptyState />', () => {
     beforeEach(() => {
         // Clear all mocks before each test
         vi.clearAllMocks();
-        // Clear search params before each test
-        mockSearchParams.delete('search');
-        mockSearchParams.delete('category');
+        // Clear all search params before each test
+        Array.from(mockSearchParams.keys()).forEach((key) =>
+            mockSearchParams.delete(key)
+        );
     });
     afterEach(() => {
         cleanup();
@@ -63,6 +70,14 @@ describe('<EmptyState />', () => {
 
     it('renders reset button when showReset is true and filters are present', () => {
         mockSearchParams.set('category', 'desserts');
+        render(<EmptyState showReset={true} />);
+
+        const resetButton = screen.getByRole('button');
+        expect(resetButton).toBeDefined();
+    });
+
+    it('renders reset button for additional filter parameters', () => {
+        mockSearchParams.set('minCalories', '200');
         render(<EmptyState showReset={true} />);
 
         const resetButton = screen.getByRole('button');
@@ -109,5 +124,34 @@ describe('<EmptyState />', () => {
 
         const resetButton = screen.getByRole('button');
         expect(resetButton).toBeDefined();
+    });
+
+    it('renders recipe not found state when title is "Recipe not found"', () => {
+        render(<EmptyState title="Recipe not found" />);
+
+        expect(screen.getByText('recipe_not_found')).toBeDefined();
+        expect(screen.getByText('recipe_not_found_message')).toBeDefined();
+    });
+
+    it('renders recipe not found state when title is "recipe_not_found"', () => {
+        render(<EmptyState title="recipe_not_found" />);
+
+        expect(screen.getByText('recipe_not_found')).toBeDefined();
+        expect(screen.getByText('recipe_not_found_message')).toBeDefined();
+    });
+
+    it('returns expected values from useEmptyState hook', () => {
+        mockSearchParams.set('recipeCuisine', 'Italian');
+        const { result } = renderHook(() =>
+            useEmptyState('Custom Title', 'Custom Subtitle')
+        );
+
+        expect(result.current.hasFilters).toBe(true);
+        expect(result.current.displayTitle).toBe('Custom Title');
+        expect(result.current.displaySubtitle).toBe('Custom Subtitle');
+        expect(result.current.buttonLabel).toBe('remove_all_filters');
+
+        result.current.handleReset();
+        expect(pushMock).toHaveBeenCalledWith('/');
     });
 });
