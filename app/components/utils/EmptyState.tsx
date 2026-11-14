@@ -13,71 +13,132 @@ interface EmptyStateProps {
     height?: string;
 }
 
-const EmptyStateContent: React.FC<EmptyStateProps> = ({
-    title = 'No exact matches',
-    subtitle = 'Try changing or removing some of your filters.',
-    showReset,
-    height = 'h-[60vh]',
-}) => {
+const FILTER_QUERY_PARAMS = [
+    'search',
+    'category',
+    'startDate',
+    'endDate',
+    'minCalories',
+    'maxCalories',
+    'minYield',
+    'maxYield',
+    'recipeCuisine',
+] as const;
+
+const DEFAULT_TITLE = 'No exact matches';
+const DEFAULT_SUBTITLE = 'Try changing or removing some of your filters.';
+const DEFAULT_HEIGHT = 'h-[60vh]';
+
+interface EmptyStateTextConfig {
+    displayTitle: string;
+    displaySubtitle: string;
+    buttonLabel: string;
+}
+
+const isNotFoundTitle = (title: string): boolean =>
+    title === 'Recipe not found' || title === 'recipe_not_found';
+
+const getNotFoundContent = (
+    t: (key: string) => string
+): EmptyStateTextConfig => ({
+    displayTitle: t('recipe_not_found') || 'Recipe not found',
+    displaySubtitle:
+        t('recipe_not_found_message') ||
+        "Sorry, we couldn't find this recipe. It may have been removed or the link might be incorrect.",
+    buttonLabel: t('remove_all_filters'),
+});
+
+const getSearchContent = (
+    hasCategory: boolean,
+    t: (key: string) => string
+): EmptyStateTextConfig => {
+    if (!hasCategory) {
+        return {
+            displayTitle: t('no_recipes_found') || 'No recipes found',
+            displaySubtitle:
+                t('no_search_results_subtitle') ||
+                'Try searching with different keywords or check your spelling.',
+            buttonLabel: t('clear_search') || 'Clear search',
+        };
+    }
+
+    return {
+        displayTitle: t('no_recipes_found') || 'No recipes found',
+        displaySubtitle:
+            t('no_search_category_results') ||
+            'Try removing the category filter or changing your search terms.',
+        buttonLabel: t('remove_all_filters') || 'Remove all filters',
+    };
+};
+
+const resolveEmptyStateText = (
+    title: string,
+    subtitle: string,
+    searchQuery: string | null,
+    category: string | null,
+    t: (key: string) => string
+): EmptyStateTextConfig => {
+    if (isNotFoundTitle(title)) {
+        return getNotFoundContent(t);
+    }
+
+    if (searchQuery) {
+        return getSearchContent(Boolean(category), t);
+    }
+
+    return {
+        displayTitle: title,
+        displaySubtitle: subtitle,
+        buttonLabel: t('remove_all_filters'),
+    };
+};
+
+export const useEmptyState = (title: string, subtitle: string) => {
     const { push } = useRouter() || {};
-    const searchParamsVal = useSearchParams();
-    const get = searchParamsVal
-        ? searchParamsVal.get.bind(searchParamsVal)
-        : () => null;
+    const searchParams = useSearchParams();
     const { t } = useTranslation();
 
-    const searchQuery = get('search');
-    const category = get('category');
-    const startDate = get('startDate');
-    const endDate = get('endDate');
-    const minCalories = get('minCalories');
-    const maxCalories = get('maxCalories');
-    const minYield = get('minYield');
-    const maxYield = get('maxYield');
-    const recipeCuisine = get('recipeCuisine');
+    const searchQuery = searchParams?.get('search') ?? null;
+    const category = searchParams?.get('category') ?? null;
 
     // Note: orderBy is not a filter, it's a sorting option, so we don't include it
-    const hasFilters = !!(
-        searchQuery ||
-        category ||
-        startDate ||
-        endDate ||
-        minCalories ||
-        maxCalories ||
-        minYield ||
-        maxYield ||
-        recipeCuisine
+    const hasFilters = FILTER_QUERY_PARAMS.some((param) =>
+        Boolean(searchParams?.get(param))
     );
 
-    // Customize messages based on current filters
-    let displayTitle = title;
-    let displaySubtitle = subtitle;
-    let buttonLabel = t('remove_all_filters');
-
-    if (title === 'Recipe not found' || title === 'recipe_not_found') {
-        displayTitle = t('recipe_not_found') || 'Recipe not found';
-        displaySubtitle =
-            t('recipe_not_found_message') ||
-            "Sorry, we couldn't find this recipe. It may have been removed or the link might be incorrect.";
-    } else if (searchQuery && !category) {
-        displayTitle = t('no_recipes_found') || 'No recipes found';
-        displaySubtitle =
-            t('no_search_results_subtitle') ||
-            'Try searching with different keywords or check your spelling.';
-        buttonLabel = t('clear_search') || 'Clear search';
-    } else if (searchQuery && category) {
-        displayTitle = t('no_recipes_found') || 'No recipes found';
-        displaySubtitle =
-            t('no_search_category_results') ||
-            'Try removing the category filter or changing your search terms.';
-        buttonLabel = t('remove_all_filters') || 'Remove all filters';
-    }
+    const { displayTitle, displaySubtitle, buttonLabel } =
+        resolveEmptyStateText(title, subtitle, searchQuery, category, t);
 
     const handleReset = () => {
         // Use window.location.pathname to avoid re-rendering on every URL change
         // Navigate to the base path without any query parameters
-        push(window.location.pathname || '/');
+        push?.(window.location.pathname || '/');
     };
+
+    return {
+        displayTitle,
+        displaySubtitle,
+        buttonLabel,
+        hasFilters,
+        handleReset,
+    };
+};
+
+const EmptyStateContent: React.FC<EmptyStateProps> = ({
+    title = DEFAULT_TITLE,
+    subtitle = DEFAULT_SUBTITLE,
+    showReset,
+    height = DEFAULT_HEIGHT,
+}) => {
+    const {
+        displayTitle,
+        displaySubtitle,
+        buttonLabel,
+        hasFilters,
+        handleReset,
+    } = useEmptyState(title, subtitle);
+
+    const canReset = Boolean(showReset && hasFilters);
 
     return (
         <div
@@ -89,7 +150,7 @@ const EmptyStateContent: React.FC<EmptyStateProps> = ({
                 subtitle={displaySubtitle}
             />
             <div className="mt-4 w-48">
-                {showReset && hasFilters && (
+                {canReset && (
                     <Button
                         outline
                         label={buttonLabel}
