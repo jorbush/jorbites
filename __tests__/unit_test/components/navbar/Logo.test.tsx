@@ -90,6 +90,8 @@ describe('<Logo />', () => {
 
         expect(lightLogo).toHaveProperty('width', 128);
         expect(lightLogo).toHaveProperty('height', 29);
+        expect(lightLogo?.className).toContain('w-28');
+        expect(lightLogo?.className).toContain('md:w-32');
         const container =
             lightLogo?.closest('button') || lightLogo?.closest('div');
         expect(container?.className).toContain('cursor-pointer');

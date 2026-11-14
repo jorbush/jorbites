@@ -20,7 +20,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
     const [isSearchModeActive, setIsSearchModeActive] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [shouldRender, setShouldRender] = useState(false);
-    const isMobile = useMediaQuery('(max-width: 880px)');
+    const isMobile = useMediaQuery('(max-width: 768px)');
     const pathname = usePathname();
     useTheme();
     const isMainPage = pathname === '/';
@@ -60,7 +60,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
                     className="pwa-header-surface relative z-10 border-b border-neutral-200/40 bg-white/75 pt-[calc(0.75rem+env(safe-area-inset-top,0px))] pb-3 shadow-[0_2px_20px_rgba(0,0,0,0.03)] backdrop-blur-lg transition duration-300 sm:pt-[calc(1rem+env(safe-area-inset-top,0px))] sm:pb-4 dark:border-neutral-800/40 dark:bg-[#0F0F0F]/75 dark:shadow-[0_2px_20px_rgba(0,0,0,0.15)]"
                 >
                     <Container>
-                        <div className="flex min-h-[48px] flex-row items-center justify-between gap-3 md:gap-0">
+                        <div className="flex min-h-[48px] flex-row items-center justify-between gap-1.5 md:gap-0">
                             <Suspense fallback={<SearchFallback />}>
                                 <Search
                                     onSearchModeChange={handleSearchModeChange}

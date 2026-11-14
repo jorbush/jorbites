@@ -83,14 +83,14 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
 
     return (
         <div
-            className="relative z-50"
+            className="relative z-50 shrink-0"
             ref={menuRef}
         >
-            <div className="flex flex-row items-center gap-2 md:gap-3">
+            <div className="flex flex-row items-center gap-1.5 md:gap-3">
                 <button
                     type="button"
                     onClick={onPost}
-                    className="hidden cursor-pointer rounded-full border-[1px] bg-transparent px-3 py-2 text-xs font-semibold transition hover:bg-neutral-100 hover:text-black focus:outline-hidden sm:block sm:text-sm md:px-4 md:py-3 dark:text-neutral-100 dark:hover:text-black"
+                    className="hidden cursor-pointer rounded-full border-[1px] bg-transparent px-2.5 py-1.5 text-xs font-semibold tracking-tight transition hover:bg-neutral-100 hover:text-black focus:outline-hidden sm:block md:px-4 md:py-3 md:text-sm md:tracking-normal dark:text-neutral-100 dark:hover:text-black"
                     data-cy="post-recipe"
                 >
                     <span className="whitespace-nowrap">
@@ -100,12 +100,12 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                 <button
                     type="button"
                     onClick={toggleOpen}
-                    className="flex min-h-[40px] min-w-[40px] cursor-pointer flex-row items-center justify-center gap-3 rounded-full border-[1px] border-neutral-200 bg-transparent p-1 transition hover:shadow-md focus:outline-hidden"
+                    className="flex size-9 shrink-0 cursor-pointer flex-row items-center justify-center rounded-full border-[1px] border-neutral-200 bg-transparent p-0.5 transition hover:shadow-md focus:outline-hidden md:size-10 md:p-1"
                     data-cy="user-menu"
                 >
                     <Avatar
                         src={currentUser?.image}
-                        size={35}
+                        size={32}
                     />
                 </button>
             </div>
@@ -212,6 +212,15 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                             </>
                         ) : (
                             <>
+                                <MenuItem
+                                    onClick={() => {
+                                        onPost();
+                                        toggleOpen();
+                                    }}
+                                    label={t('post_recipe')}
+                                    extraClasses="sm:hidden"
+                                    icon={FcAddImage}
+                                />
                                 <MenuItem
                                     onClick={() => {
                                         push('/events');

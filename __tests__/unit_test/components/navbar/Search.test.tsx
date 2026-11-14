@@ -6,7 +6,7 @@ import {
     waitFor,
 } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
-import Search from '@/app/components/navbar/Search';
+import Search, { SearchFallback } from '@/app/components/navbar/Search';
 import React from 'react';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
 import { usePathname } from 'next/navigation';
@@ -402,6 +402,24 @@ describe('<Search />', () => {
             render(<Search onSearchModeChange={mockOnSearchModeChange} />);
             expect(screen.queryByTestId('search-icon')).toBeNull();
             expect(screen.queryByRole('button')).toBeNull();
+        });
+    });
+
+    describe('SearchFallback', () => {
+        it('renders logo and search button placeholder on main page', () => {
+            vi.mocked(usePathname).mockReturnValue('/');
+            render(<SearchFallback />);
+            expect(screen.getByTestId('mock-logo')).toBeDefined();
+            const placeholder = document.querySelector('.bg-green-450\\/10');
+            expect(placeholder).not.toBeNull();
+        });
+
+        it('renders logo without search button placeholder on non-filterable page', () => {
+            vi.mocked(usePathname).mockReturnValue('/recipes/123');
+            render(<SearchFallback />);
+            expect(screen.getByTestId('mock-logo')).toBeDefined();
+            const placeholder = document.querySelector('.bg-green-450\\/10');
+            expect(placeholder).toBeNull();
         });
     });
 });

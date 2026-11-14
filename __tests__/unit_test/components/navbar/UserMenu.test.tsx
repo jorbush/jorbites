@@ -149,4 +149,25 @@ describe('<UserMenu />', () => {
 
         expect(screen.queryByText('my_profile')).toBeNull();
     });
+
+    it('applies responsive display classes for post recipe button at sm breakpoint (380px)', () => {
+        const { container } = render(
+            <UserMenu currentUser={mockCurrentUser} />
+        );
+        const postButton = container.querySelector('[data-cy="post-recipe"]');
+        expect(postButton).not.toBeNull();
+        expect(postButton!.className).toContain('hidden');
+        expect(postButton!.className).toContain('sm:block');
+
+        // Open menu to inspect dropdown item
+        fireEvent.click(screen.getByTestId('mock-avatar').parentElement!);
+        const menuButtons = container.querySelectorAll(
+            '[data-cy="user-menu-panel"] button'
+        );
+        const postRecipeMenuItem = Array.from(menuButtons).find((btn) =>
+            btn.textContent?.includes('post_recipe')
+        );
+        expect(postRecipeMenuItem).toBeDefined();
+        expect(postRecipeMenuItem!.className).toContain('sm:hidden');
+    });
 });
