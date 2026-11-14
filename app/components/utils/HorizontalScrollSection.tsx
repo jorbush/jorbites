@@ -142,7 +142,7 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
                         <div
                             ref={scrollContainerRef}
                             onScroll={checkScrollPosition}
-                            className="scrollbar-hide flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-1 pb-2 sm:px-3"
+                            className="scrollbar-hide flex snap-x snap-mandatory scroll-px-1 gap-4 overflow-x-auto scroll-smooth px-1 pb-2 sm:scroll-px-3 sm:px-3"
                         >
                             {children}
                         </div>
@@ -150,14 +150,14 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
                         {/* Left fade overlay */}
                         {showLeftArrow && (
                             <div
-                                className={`pointer-events-none absolute top-0 left-0 h-full w-6 bg-gradient-to-r to-transparent ${fadeColorClassName}`}
+                                className={`pointer-events-none absolute top-0 left-0 hidden h-full w-6 bg-gradient-to-r to-transparent md:block ${fadeColorClassName}`}
                             />
                         )}
 
                         {/* Right fade overlay */}
                         {showRightArrow && (
                             <div
-                                className={`pointer-events-none absolute top-0 right-0 h-full w-10 bg-gradient-to-l to-transparent ${fadeColorClassName}`}
+                                className={`pointer-events-none absolute top-0 right-0 hidden h-full w-10 bg-gradient-to-l to-transparent md:block ${fadeColorClassName}`}
                             />
                         )}
 

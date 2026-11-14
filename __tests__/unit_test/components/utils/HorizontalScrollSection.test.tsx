@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import HorizontalScrollSection from '@/app/components/utils/HorizontalScrollSection';
 
@@ -108,6 +108,50 @@ describe('HorizontalScrollSection', () => {
             true
         );
         expect(scrollContainer?.classList.contains('scroll-smooth')).toBe(true);
+        expect(scrollContainer?.classList.contains('scroll-px-1')).toBe(true);
+        expect(scrollContainer?.classList.contains('sm:scroll-px-3')).toBe(
+            true
+        );
+    });
+
+    it('hides edge fade overlays below md screens when scrollable', () => {
+        const { container } = render(
+            <HorizontalScrollSection
+                title="Test Title"
+                hasItems={true}
+            >
+                <div>Item 1</div>
+            </HorizontalScrollSection>
+        );
+
+        const scrollContainer = container.querySelector(
+            '.overflow-x-auto'
+        ) as HTMLElement;
+
+        Object.defineProperty(scrollContainer, 'scrollWidth', {
+            configurable: true,
+            value: 1000,
+        });
+        Object.defineProperty(scrollContainer, 'clientWidth', {
+            configurable: true,
+            value: 300,
+        });
+        Object.defineProperty(scrollContainer, 'scrollLeft', {
+            configurable: true,
+            value: 100,
+        });
+
+        fireEvent.scroll(scrollContainer);
+
+        const leftFade = container.querySelector('.bg-gradient-to-r');
+        const rightFade = container.querySelector('.bg-gradient-to-l');
+
+        expect(leftFade).not.toBeNull();
+        expect(rightFade).not.toBeNull();
+        expect(leftFade?.classList.contains('hidden')).toBe(true);
+        expect(leftFade?.classList.contains('md:block')).toBe(true);
+        expect(rightFade?.classList.contains('hidden')).toBe(true);
+        expect(rightFade?.classList.contains('md:block')).toBe(true);
     });
 
     it('uses scoped group/scroll class to avoid polluting child card hover states', () => {
