@@ -100,4 +100,52 @@ describe('RecipeIngredients', () => {
         fireEvent.keyDown(secondItem, { key: 'Enter' });
         expect(secondItem.getAttribute('aria-checked')).toBe('false');
     });
+
+    it('does not render servings counter when recipeYield is not provided', () => {
+        render(
+            <RecipeIngredients
+                items={mockItems}
+                recipeId="rec-1"
+            />
+        );
+
+        expect(screen.queryByTestId('servings-counter')).toBeNull();
+    });
+
+    it('renders servings counter and scales ingredients when recipeYield is provided', () => {
+        render(
+            <RecipeIngredients
+                items={mockItems}
+                recipeId="rec-1"
+                recipeYield={2}
+            />
+        );
+
+        expect(screen.getByTestId('servings-counter')).toBeDefined();
+        expect(screen.getByTestId('counter-value').textContent).toBe('2');
+        expect(screen.getByText('2 cups flour')).toBeDefined();
+
+        const increaseBtn = screen.getByRole('button', {
+            name: /increase servings/i,
+        });
+        fireEvent.click(increaseBtn);
+        fireEvent.click(increaseBtn);
+
+        expect(screen.getByTestId('counter-value').textContent).toBe('4');
+        expect(screen.getByText('4 cups flour')).toBeDefined();
+        expect(screen.getByText('2 tsp salt')).toBeDefined();
+        expect(screen.getByText('2 egg')).toBeDefined();
+
+        const decreaseBtn = screen.getByRole('button', {
+            name: /decrease servings/i,
+        });
+        fireEvent.click(decreaseBtn);
+        fireEvent.click(decreaseBtn);
+        fireEvent.click(decreaseBtn);
+
+        expect(screen.getByTestId('counter-value').textContent).toBe('1');
+        expect(screen.getByText('1 cups flour')).toBeDefined();
+        expect(screen.getByText('0.5 tsp salt')).toBeDefined();
+        expect(screen.getByText('0.5 egg')).toBeDefined();
+    });
 });

@@ -5,10 +5,11 @@ import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
 
 interface CounterProps {
     title: string;
-    subtitle: string;
+    subtitle?: string | null;
     value: number;
     onChange: (_value: number) => void;
     minValue?: number;
+    compact?: boolean;
 }
 
 const Counter: React.FC<CounterProps> = ({
@@ -17,6 +18,7 @@ const Counter: React.FC<CounterProps> = ({
     value,
     onChange,
     minValue = 1,
+    compact = false,
 }) => {
     const isIncrementing = useRef(false);
     const isDecrementing = useRef(false);
@@ -105,13 +107,43 @@ const Counter: React.FC<CounterProps> = ({
         }
     }, [startUpdateLoop]);
 
+    const buttonClassName = compact
+        ? 'flex size-6 cursor-pointer items-center justify-center rounded-full border border-neutral-300 bg-white text-neutral-600 transition select-none hover:border-neutral-400 hover:bg-neutral-100 active:bg-neutral-200 dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:border-neutral-500 dark:hover:bg-neutral-700'
+        : 'flex size-10 cursor-pointer items-center justify-center rounded-full border-[1px] border-neutral-400 text-neutral-600 transition select-none hover:opacity-80 active:bg-neutral-100';
+
     return (
-        <div className="flex flex-row items-center justify-between">
-            <div className="flex flex-col">
-                <div className="font-medium">{title}</div>
-                <div className="font-light text-neutral-600">{subtitle}</div>
-            </div>
-            <div className="flex flex-row items-center gap-4">
+        <div
+            className={
+                compact
+                    ? 'inline-flex items-center gap-2 rounded-full border border-neutral-200/80 bg-neutral-50/80 px-1.5 py-1 md:px-2.5 dark:border-neutral-700/60 dark:bg-neutral-800/60'
+                    : 'flex flex-row items-center justify-between'
+            }
+            data-testid={compact ? 'servings-counter' : undefined}
+            data-cy={compact ? 'servings-counter' : undefined}
+        >
+            {compact ? (
+                title ? (
+                    <div className="hidden text-xs font-medium text-neutral-500 md:block dark:text-neutral-400">
+                        {title}
+                    </div>
+                ) : null
+            ) : (
+                <div className="flex flex-col">
+                    <div className="font-medium">{title}</div>
+                    {subtitle && (
+                        <div className="font-light text-neutral-600">
+                            {subtitle}
+                        </div>
+                    )}
+                </div>
+            )}
+            <div
+                className={
+                    compact
+                        ? 'flex flex-row items-center gap-1.5'
+                        : 'flex flex-row items-center gap-4'
+                }
+            >
                 <button
                     type="button"
                     aria-label={`Decrease ${title}`}
@@ -121,11 +153,21 @@ const Counter: React.FC<CounterProps> = ({
                     onMouseLeave={handleStop}
                     onTouchStart={handleDecrementStart}
                     onTouchEnd={handleStop}
-                    className="flex size-10 cursor-pointer items-center justify-center rounded-full border-[1px] border-neutral-400 text-neutral-600 transition select-none hover:opacity-80 active:bg-neutral-100"
+                    className={buttonClassName}
                 >
-                    <AiOutlineMinus data-testid="AiOutlineMinus" />
+                    <AiOutlineMinus
+                        size={compact ? 12 : undefined}
+                        data-testid="AiOutlineMinus"
+                    />
                 </button>
-                <div className="text-xl font-light text-neutral-600">
+                <div
+                    className={
+                        compact
+                            ? 'min-w-[1.25rem] text-center text-sm font-semibold text-neutral-900 dark:text-white'
+                            : 'text-xl font-light text-neutral-600'
+                    }
+                    data-testid="counter-value"
+                >
                     {value}
                 </div>
                 <button
@@ -137,9 +179,12 @@ const Counter: React.FC<CounterProps> = ({
                     onMouseLeave={handleStop}
                     onTouchStart={handleIncrementStart}
                     onTouchEnd={handleStop}
-                    className="flex size-10 cursor-pointer items-center justify-center rounded-full border-[1px] border-neutral-400 text-neutral-600 transition select-none hover:opacity-80 active:bg-neutral-100"
+                    className={buttonClassName}
                 >
-                    <AiOutlinePlus data-testid="AiOutlinePlus" />
+                    <AiOutlinePlus
+                        size={compact ? 12 : undefined}
+                        data-testid="AiOutlinePlus"
+                    />
                 </button>
             </div>
         </div>

@@ -183,6 +183,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                 ganttTable={ganttTable}
                 recipeTitle={recipeTitle}
                 recipeId={id}
+                recipeYield={recipeYield}
                 RenderDescription={RecipeDescription}
                 RenderIngredients={RecipeIngredients}
                 RenderSteps={RecipeSteps}
