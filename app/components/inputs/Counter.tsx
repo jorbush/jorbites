@@ -115,7 +115,7 @@ const Counter: React.FC<CounterProps> = ({
         <div
             className={
                 compact
-                    ? 'inline-flex items-center gap-2 rounded-full border border-neutral-200/80 bg-neutral-50/80 px-2.5 py-1 dark:border-neutral-700/60 dark:bg-neutral-800/60'
+                    ? 'inline-flex items-center gap-2 rounded-full border border-neutral-200/80 bg-neutral-50/80 px-1.5 py-1 md:px-2.5 dark:border-neutral-700/60 dark:bg-neutral-800/60'
                     : 'flex flex-row items-center justify-between'
             }
             data-testid={compact ? 'servings-counter' : undefined}
@@ -123,7 +123,7 @@ const Counter: React.FC<CounterProps> = ({
         >
             {compact ? (
                 title ? (
-                    <div className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
+                    <div className="hidden text-xs font-medium text-neutral-500 md:block dark:text-neutral-400">
                         {title}
                     </div>
                 ) : null
