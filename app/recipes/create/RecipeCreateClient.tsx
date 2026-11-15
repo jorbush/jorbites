@@ -31,7 +31,9 @@ export default function RecipeCreateClient({
                 {
                     title: forkFromRecipe.title,
                     description: forkFromRecipe.description,
-                    categories: forkFromRecipe.categories,
+                    categories: forkFromRecipe.categories?.filter(
+                        (cat) => cat.toLowerCase() !== 'award-winning'
+                    ),
                     method: forkFromRecipe.method,
                     ingredients: forkFromRecipe.ingredients,
                     steps: forkFromRecipe.steps,

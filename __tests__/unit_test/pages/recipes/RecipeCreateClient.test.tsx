@@ -125,4 +125,21 @@ describe('RecipeCreateClient', () => {
         expect(state.forkRecipeData?.title).toBe('Original Recipe');
         expect(mockPush).not.toHaveBeenCalled();
     });
+
+    it('removes Award-Winning category when opening modal in fork mode', () => {
+        const awardWinningRecipe: SafeRecipe = {
+            ...mockRecipe,
+            categories: ['Italian', 'Award-Winning', 'Pasta'],
+        };
+
+        render(
+            <RecipeCreateClient
+                forkFromRecipe={awardWinningRecipe}
+                forkFromId="recipe-123"
+            />
+        );
+
+        const state = useRecipeModal.getState();
+        expect(state.forkRecipeData?.categories).toEqual(['Italian', 'Pasta']);
+    });
 });

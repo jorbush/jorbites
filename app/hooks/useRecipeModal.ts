@@ -68,7 +68,14 @@ const useRecipeModal = create<RecipeModalStore>((set, get) => ({
             isOpen: true,
             isEditMode: false,
             editRecipeData: null,
-            forkRecipeData: forkData,
+            forkRecipeData: forkData.categories
+                ? {
+                      ...forkData,
+                      categories: forkData.categories.filter(
+                          (cat) => cat.toLowerCase() !== 'award-winning'
+                      ),
+                  }
+                : forkData,
             forkedFromRecipeId: forkedFromRecipeId,
             questId: forkData.questId || null,
             activeDraftId: null,

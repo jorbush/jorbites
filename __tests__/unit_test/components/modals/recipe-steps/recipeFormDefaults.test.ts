@@ -317,4 +317,50 @@ describe('buildInitialRecipeDefaultValues', () => {
         expect(defaults.forkedFromRecipeId).toBe('paella-999');
         expect(defaults.imageSrc).toBe('');
     });
+
+    it('removes the Award-Winning category (case-insensitive) when populating forkRecipeData defaults', () => {
+        const forkRecipeData: any = {
+            title: 'Winning Cheesecake',
+            categories: ['Desserts', 'Award-Winning', 'award-winning'],
+            method: 'Bake',
+            ingredients: ['Cream cheese', 'Sugar'],
+            steps: ['Mix', 'Bake'],
+            minutes: 50,
+        };
+
+        const defaults = buildInitialRecipeDefaultValues(
+            {
+                isOpen: true,
+                isEditMode: false,
+                forkRecipeData,
+                forkedFromRecipeId: 'cheesecake-1',
+            },
+            null
+        );
+
+        expect(defaults.categories).toEqual(['Desserts']);
+    });
+
+    it('preserves the Award-Winning category when editing an existing recipe', () => {
+        const editRecipeData: any = {
+            id: 'rec-award-1',
+            title: 'Winning Cheesecake',
+            categories: ['Desserts', 'Award-Winning'],
+            method: 'Bake',
+            ingredients: ['Cream cheese', 'Sugar'],
+            steps: ['Mix', 'Bake'],
+            minutes: 50,
+        };
+
+        const defaults = buildInitialRecipeDefaultValues(
+            {
+                isOpen: true,
+                isEditMode: true,
+                editRecipeData,
+            },
+            null
+        );
+
+        expect(defaults.categories).toEqual(['Desserts', 'Award-Winning']);
+    });
 });
