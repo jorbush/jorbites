@@ -33,7 +33,10 @@ export function useDraftPersistence({
     const lastSavedDraftIdRef = useRef<string | null>(null);
     const inSessionCreatedDraftIdsRef = useRef<Set<string>>(new Set());
     const forkBaselineRef = useRef(forkBaseline);
-    forkBaselineRef.current = forkBaseline;
+
+    useEffect(() => {
+        forkBaselineRef.current = forkBaseline;
+    }, [forkBaseline]);
 
     useEffect(() => {
         isMountedRef.current = true;

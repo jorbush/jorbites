@@ -4,6 +4,7 @@ import { useRef, useCallback, useState } from 'react';
 import useSWR from 'swr';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import {
     UseFormSetValue,
     UseFormGetValues,
@@ -43,6 +44,64 @@ interface UseDraftSyncReturn {
     ) => void;
 }
 
+function isDraftShared(draft: Partial<DraftData> | null | undefined): boolean {
+    if (!draft) return false;
+    const hasCoCooks =
+        Array.isArray(draft.coCooksIds) && draft.coCooksIds.length > 0;
+    return draft.type === 'shared' || Boolean(draft.inviteToken) || hasCoCooks;
+}
+
+function buildDraftEndpoint(activeDraftId: string | null | undefined): string {
+    return activeDraftId
+        ? `/api/draft?draftId=${encodeURIComponent(activeDraftId)}`
+        : `/api/draft`;
+}
+
+function resolveVisibleDraftData(
+    activeDraftId: string | null | undefined,
+    rawDraftData: Partial<DraftData> | null | undefined
+): Partial<DraftData> | null | undefined {
+    const isStaleDraft =
+        Boolean(activeDraftId) &&
+        Boolean(rawDraftData?.draftId) &&
+        rawDraftData?.draftId !== activeDraftId;
+    return isStaleDraft ? null : rawDraftData;
+}
+
+function notifyStepConflictIfNeeded(
+    step: number,
+    draftData: Partial<DraftData>,
+    prevDraft: Partial<DraftData> | null,
+    getValues: UseFormGetValues<FieldValues>,
+    userId: string | undefined,
+    lock: LockChecker | null | undefined,
+    t: TFunction
+) {
+    const conflict = detectStepConflict(
+        step,
+        draftData,
+        prevDraft,
+        getValues,
+        userId,
+        lock
+    );
+    if (!conflict.remoteChanged || typeof toast !== 'function') {
+        return;
+    }
+    const author = conflict.authorName || 'A co-cook';
+    const stepLabel = conflict.stepKey.replace('_', ' ');
+    const toastMessage =
+        t('step_conflict_toast', {
+            stepNumber: step + 1,
+        }) || `${author} updated ${stepLabel}`;
+
+    toast(toastMessage, {
+        icon: '👨‍🍳',
+        id: `step-sync-${step}`,
+        duration: 3000,
+    });
+}
+
 export function useDraftSync({
     activeDraftId,
     isEditMode,
@@ -53,39 +112,29 @@ export function useDraftSync({
     initialMutateDraft,
 }: UseDraftSyncOptions): UseDraftSyncReturn {
     const { t } = useTranslation();
-    const draftEndpoint = activeDraftId
-        ? `/api/draft?draftId=${encodeURIComponent(activeDraftId)}`
-        : `/api/draft`;
+    const draftEndpoint = buildDraftEndpoint(activeDraftId);
 
     const [isSharedDraft, setIsSharedDraft] = useState<boolean>(() =>
-        Boolean(
-            initialDraftData?.type === 'shared' ||
-            initialDraftData?.inviteToken ||
-            (Array.isArray(initialDraftData?.coCooksIds) &&
-                initialDraftData.coCooksIds.length > 0)
-        )
+        isDraftShared(initialDraftData)
     );
 
     const refreshInterval = useCallback(
         (latestData: Partial<DraftData> | undefined) => {
+            const fallback: Partial<DraftData> | undefined = isSharedDraft
+                ? { type: 'shared' }
+                : undefined;
             const effective =
                 initialDraftData !== undefined
                     ? initialDraftData
-                    : (latestData ??
-                      (isSharedDraft ? { type: 'shared' } : undefined));
-            const isShared =
-                effective?.type === 'shared' ||
-                Boolean(effective?.inviteToken) ||
-                (Array.isArray(effective?.coCooksIds) &&
-                    effective.coCooksIds.length > 0);
-            return isShared ? SHARED_DRAFT_POLL_INTERVAL_MS : 0;
+                    : (latestData ?? fallback);
+            return isDraftShared(effective) ? SHARED_DRAFT_POLL_INTERVAL_MS : 0;
         },
         [initialDraftData, isSharedDraft]
     );
 
+    const canSkipCheck = !skipDefaultDraftFetch || Boolean(activeDraftId);
     const shouldFetchDraft =
-        Boolean(isOpen && !isEditMode && currentUser) &&
-        (!skipDefaultDraftFetch || Boolean(activeDraftId));
+        Boolean(isOpen && !isEditMode && currentUser) && canSkipCheck;
 
     const {
         data: swrDraftData,
@@ -103,23 +152,12 @@ export function useDraftSync({
     const rawDraftData =
         initialDraftData !== undefined ? initialDraftData : swrDraftData;
 
-    const isCurrentShared = Boolean(
-        rawDraftData?.type === 'shared' ||
-        rawDraftData?.inviteToken ||
-        (Array.isArray(rawDraftData?.coCooksIds) &&
-            rawDraftData.coCooksIds.length > 0)
-    );
-
+    const isCurrentShared = isDraftShared(rawDraftData);
     if (rawDraftData && isCurrentShared !== isSharedDraft) {
         setIsSharedDraft(isCurrentShared);
     }
 
-    const draftData =
-        activeDraftId &&
-        rawDraftData?.draftId &&
-        rawDraftData.draftId !== activeDraftId
-            ? null
-            : rawDraftData;
+    const draftData = resolveVisibleDraftData(activeDraftId, rawDraftData);
     const mutateDraft =
         initialMutateDraft !== undefined ? initialMutateDraft : swrMutateDraft;
 
@@ -133,7 +171,7 @@ export function useDraftSync({
             step: number,
             lock: LockChecker | null | undefined
         ) => {
-            if (!draftData) {
+            if (!draftData || isEditMode) {
                 return;
             }
 
@@ -146,41 +184,24 @@ export function useDraftSync({
             prevDraftStrRef.current = serialized;
             prevDraftRef.current = draftData;
 
-            if (!isEditMode) {
-                // Check if a remote change on the active step conflicts with local edits (D-09)
-                const conflict = detectStepConflict(
-                    step,
-                    draftData,
-                    prevDraft,
-                    getValues,
-                    currentUser?.id,
-                    lock
-                );
+            notifyStepConflictIfNeeded(
+                step,
+                draftData,
+                prevDraft,
+                getValues,
+                currentUser?.id,
+                lock,
+                t
+            );
 
-                if (conflict.remoteChanged && typeof toast === 'function') {
-                    const author = conflict.authorName || 'A co-cook';
-                    const stepLabel = conflict.stepKey.replace('_', ' ');
-                    const toastMessage =
-                        t('step_conflict_toast', {
-                            stepNumber: step + 1,
-                        }) || `${author} updated ${stepLabel}`;
-
-                    toast(toastMessage, {
-                        icon: '👨‍🍳',
-                        id: `step-sync-${step}`,
-                        duration: 3000,
-                    });
-                }
-
-                syncRemoteDraftToForm(
-                    draftData,
-                    prevDraft,
-                    step,
-                    lock,
-                    getValues,
-                    setValue
-                );
-            }
+            syncRemoteDraftToForm(
+                draftData,
+                prevDraft,
+                step,
+                lock,
+                getValues,
+                setValue
+            );
         },
         [currentUser?.id, draftData, isEditMode, t]
     );
