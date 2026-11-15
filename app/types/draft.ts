@@ -25,6 +25,10 @@ export interface BaseDraft {
     linkedRecipeIds?: string[];
     youtubeUrl?: string | null;
     questId?: string | null;
+    forkedFromRecipeId?: string | null;
+    forkedFromTitle?: string | null;
+    forkedFromIngredients?: string[];
+    forkedFromSteps?: string[];
     currentStep?: number;
     createdAt?: string;
     updatedAt?: string;
@@ -72,6 +76,8 @@ export interface DraftSummary {
     ownerName?: string;
     updatedAt: string;
     imageSrc?: string;
+    forkedFromRecipeId?: string | null;
+    forkedFromTitle?: string | null;
 }
 
 /** TTL information for draft display */

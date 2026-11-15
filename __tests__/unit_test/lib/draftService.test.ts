@@ -772,5 +772,95 @@ describe('DraftService', () => {
             expect(ownerSave.ingredients).toEqual(['Rice', 'Saffron']);
             expect(ownerSave.coCooksIds).toContain(mockCoCook.id);
         });
+
+        it('should persist fork lineage fields in saveSharedDraft and saveSingleUserDraft', async () => {
+            const shared = await DraftService.saveSharedDraft(
+                'fork-shared-1',
+                {
+                    title: 'Remixed Paella',
+                    forkedFromRecipeId: 'orig-paella',
+                    forkedFromTitle: 'Original Paella',
+                    forkedFromIngredients: ['Rice', 'Saffron'],
+                    forkedFromSteps: ['Cook rice', 'Add broth'],
+                },
+                mockOwner
+            );
+
+            expect(shared.forkedFromRecipeId).toBe('orig-paella');
+            expect(shared.forkedFromTitle).toBe('Original Paella');
+            expect(shared.forkedFromIngredients).toEqual(['Rice', 'Saffron']);
+            expect(shared.forkedFromSteps).toEqual(['Cook rice', 'Add broth']);
+
+            const slotId = await DraftService.saveSingleUserDraft(
+                mockOwner.id,
+                {
+                    title: 'Solo Remix',
+                    forkedFromRecipeId: 'orig-soup',
+                    forkedFromTitle: 'Original Soup',
+                    forkedFromIngredients: ['Water', 'Carrot'],
+                    forkedFromSteps: ['Simmer'],
+                }
+            );
+            const fetched = await DraftService.getSingleUserDraft(
+                mockOwner.id,
+                slotId
+            );
+            expect(fetched?.forkedFromRecipeId).toBe('orig-soup');
+            expect(fetched?.forkedFromTitle).toBe('Original Soup');
+            expect(fetched?.forkedFromIngredients).toEqual(['Water', 'Carrot']);
+            expect(fetched?.forkedFromSteps).toEqual(['Simmer']);
+        });
+
+        it('should normalize cjson empty objects on forkedFromIngredients and forkedFromSteps', () => {
+            const corrupted: any = {
+                draftId: 'corrupted-fork-1',
+                categories: [],
+                ingredients: [],
+                steps: [],
+                coCooksIds: [],
+                linkedRecipeIds: [],
+                forkedFromRecipeId: 'orig-1',
+                forkedFromIngredients: {},
+                forkedFromSteps: {},
+            };
+            const normalized = DraftService.normalizeSharedDraft(corrupted);
+            expect(normalized.forkedFromIngredients).toEqual([]);
+            expect(normalized.forkedFromSteps).toEqual([]);
+        });
+
+        it('should include forkedFromRecipeId and forkedFromTitle in getAllUserDrafts summaries', async () => {
+            const soloSlotId = await DraftService.saveSingleUserDraft(
+                mockOwner.id,
+                {
+                    title: 'Remix Title',
+                    forkedFromRecipeId: 'orig-42',
+                    forkedFromTitle: 'Original 42',
+                },
+                'fork-summary-1'
+            );
+
+            await DraftService.saveSharedDraft(
+                'fork-shared-summary-1',
+                {
+                    title: 'Shared Remix Title',
+                    forkedFromRecipeId: 'orig-99',
+                    forkedFromTitle: 'Original 99',
+                },
+                mockOwner
+            );
+
+            const drafts = await DraftService.getAllUserDrafts(mockOwner.id);
+            const soloRemixDraft = drafts.find((d) => d.draftId === soloSlotId);
+            expect(soloRemixDraft).toBeDefined();
+            expect(soloRemixDraft?.forkedFromRecipeId).toBe('orig-42');
+            expect(soloRemixDraft?.forkedFromTitle).toBe('Original 42');
+
+            const sharedRemixDraft = drafts.find(
+                (d) => d.draftId === 'fork-shared-summary-1'
+            );
+            expect(sharedRemixDraft).toBeDefined();
+            expect(sharedRemixDraft?.forkedFromRecipeId).toBe('orig-99');
+            expect(sharedRemixDraft?.forkedFromTitle).toBe('Original 99');
+        });
     });
 });

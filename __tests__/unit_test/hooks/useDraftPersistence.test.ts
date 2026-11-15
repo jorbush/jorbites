@@ -324,4 +324,184 @@ describe('useDraftPersistence hook', () => {
 
         expect(mockOnOpenSharedDraft).toHaveBeenCalledWith('draft-shared-1');
     });
+
+    it('prefers bindDraftId over onOpenSharedDraft and tracks in-session created draft IDs', async () => {
+        const mockedAxios = vi.mocked(axios);
+        const mockBindDraftId = vi.fn();
+        mockedAxios.post.mockResolvedValueOnce({
+            data: { draftId: 'draft-remix-1', inviteToken: 'token-remix' },
+        });
+        mockedAxios.delete.mockResolvedValueOnce({ data: { success: true } });
+
+        const formValues: Record<string, unknown> = {
+            title: 'Remixed Pasta',
+        };
+        const form = {
+            getValues: vi.fn((key: string) => formValues[key]),
+            setValue: vi.fn((key: string, val: unknown) => {
+                formValues[key] = val;
+            }),
+        };
+
+        let modalState: any = {
+            isOpen: true,
+            activeDraftId: undefined,
+            onOpenSharedDraft: mockOnOpenSharedDraft,
+            bindDraftId: mockBindDraftId,
+        };
+
+        const { result, rerender } = renderHook(
+            ({ modal }) =>
+                useDraftPersistence({
+                    recipeModal: modal,
+                    mutateDraft: mockMutateDraft,
+                }),
+            { initialProps: { modal: modalState } }
+        );
+
+        await act(async () => {
+            await result.current.saveDraft(
+                form,
+                STEPS.DESCRIPTION,
+                null,
+                1,
+                1,
+                'list',
+                'list'
+            );
+        });
+
+        expect(mockBindDraftId).toHaveBeenCalledWith('draft-remix-1');
+        expect(mockOnOpenSharedDraft).not.toHaveBeenCalled();
+        expect(result.current.isInSessionCreatedDraft('draft-remix-1')).toBe(
+            true
+        );
+
+        await act(async () => {
+            await result.current.deleteDraft(form, null);
+        });
+        expect(result.current.isInSessionCreatedDraft('draft-remix-1')).toBe(
+            false
+        );
+
+        // Save another draft and verify closing the modal clears tracking
+        mockedAxios.post.mockResolvedValueOnce({
+            data: { draftId: 'draft-remix-2', inviteToken: 'token-remix-2' },
+        });
+        await act(async () => {
+            await result.current.saveDraft(
+                form,
+                STEPS.DESCRIPTION,
+                null,
+                1,
+                1,
+                'list',
+                'list'
+            );
+        });
+        expect(result.current.isInSessionCreatedDraft('draft-remix-2')).toBe(
+            true
+        );
+
+        modalState = {
+            ...modalState,
+            isOpen: false,
+        };
+        rerender({ modal: modalState });
+        expect(result.current.isInSessionCreatedDraft('draft-remix-2')).toBe(
+            false
+        );
+    });
+
+    it('forwards forkBaseline fields to /api/draft and /api/draft/invite', async () => {
+        const mockedAxios = vi.mocked(axios);
+        const mockBindDraftId = vi.fn();
+        mockedAxios.post
+            .mockResolvedValueOnce({
+                data: { draftId: 'draft-fork-1', inviteToken: 'tok-fork-1' },
+            })
+            .mockResolvedValueOnce({
+                data: { draftId: 'draft-fork-2', inviteToken: 'tok-fork-2' },
+            });
+
+        const writeTextMock = vi.fn().mockResolvedValue(undefined);
+        Object.assign(navigator, {
+            clipboard: {
+                writeText: writeTextMock,
+            },
+        });
+        delete (global as any).ClipboardItem;
+
+        const forkBaseline = {
+            forkedFromRecipeId: 'orig-123',
+            forkedFromTitle: 'Original Pasta',
+            forkedFromIngredients: ['Pasta', 'Salt'],
+            forkedFromSteps: ['Boil', 'Drain'],
+        };
+
+        const formValues: Record<string, unknown> = {
+            title: 'Remixed Pasta',
+            forkedFromRecipeId: 'orig-123',
+        };
+        const form = {
+            getValues: vi.fn((key: string) => formValues[key]),
+            setValue: vi.fn((key: string, val: unknown) => {
+                formValues[key] = val;
+            }),
+        };
+
+        const { result } = renderHook(() =>
+            useDraftPersistence({
+                recipeModal: {
+                    isOpen: true,
+                    activeDraftId: undefined,
+                    onOpenSharedDraft: mockOnOpenSharedDraft,
+                    bindDraftId: mockBindDraftId,
+                },
+                mutateDraft: mockMutateDraft,
+                forkBaseline,
+            })
+        );
+
+        await act(async () => {
+            await result.current.saveDraft(
+                form,
+                STEPS.DESCRIPTION,
+                null,
+                1,
+                1,
+                'list',
+                'list'
+            );
+        });
+
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
+            '/api/draft',
+            expect.objectContaining(forkBaseline)
+        );
+
+        // Reset draft identifiers before calling copyInviteLink
+        formValues.draftId = '';
+        formValues.inviteToken = '';
+
+        await act(async () => {
+            await result.current.copyInviteLink(
+                form,
+                STEPS.DESCRIPTION,
+                null,
+                1,
+                1,
+                'list',
+                'list'
+            );
+        });
+
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            2,
+            '/api/draft/invite',
+            expect.objectContaining(forkBaseline)
+        );
+        expect(mockBindDraftId).toHaveBeenCalledWith('draft-fork-2');
+    });
 });

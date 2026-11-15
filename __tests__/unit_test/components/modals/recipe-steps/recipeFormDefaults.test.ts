@@ -363,4 +363,23 @@ describe('buildInitialRecipeDefaultValues', () => {
 
         expect(defaults.categories).toEqual(['Desserts', 'Award-Winning']);
     });
+
+    it('preserves forkedFromRecipeId when restoring form defaults from a remix draft', () => {
+        const defaults = buildInitialRecipeDefaultValues(
+            {
+                isOpen: true,
+                isEditMode: false,
+            },
+            {
+                draftId: 'remix-draft-1',
+                title: 'Remix of Pizza',
+                ingredients: ['Dough', 'Basil'],
+                steps: ['Bake at 250C'],
+                forkedFromRecipeId: 'original-pizza-42',
+            }
+        );
+
+        expect(defaults.draftId).toBe('remix-draft-1');
+        expect(defaults.forkedFromRecipeId).toBe('original-pizza-42');
+    });
 });

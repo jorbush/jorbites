@@ -192,7 +192,7 @@ export function buildInitialRecipeDefaultValues(
             questId: draftData.questId || recipeModal.questId || '',
             draftId: draftData.draftId || '',
             inviteToken: draftData.inviteToken || '',
-            forkedFromRecipeId: '',
+            forkedFromRecipeId: draftData.forkedFromRecipeId || '',
             ...ingredientsObject,
             ...stepsObject,
         };

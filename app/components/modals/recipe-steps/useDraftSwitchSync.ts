@@ -8,6 +8,7 @@ import { STEPS, STEPS_LENGTH } from '@/app/utils/constants';
 export interface UseDraftSwitchSyncProps {
     isEditMode?: boolean;
     draftData?: Partial<DraftData> | null;
+    isInSessionCreatedDraft?: (draftId?: string | null) => boolean;
     setStep: Dispatch<SetStateAction<number>>;
     setNumIngredients: Dispatch<SetStateAction<number>>;
     setNumSteps: Dispatch<SetStateAction<number>>;
@@ -16,6 +17,7 @@ export interface UseDraftSwitchSyncProps {
 export function useDraftSwitchSync({
     isEditMode,
     draftData,
+    isInSessionCreatedDraft,
     setStep,
     setNumIngredients,
     setNumSteps,
@@ -26,8 +28,12 @@ export function useDraftSwitchSync({
 
     const currentDraftId = draftData?.draftId || null;
     if (!isEditMode && currentDraftId !== prevDraftId) {
+        const wasNullDraft = prevDraftId === null;
         setPrevDraftId(currentDraftId);
         if (draftData) {
+            if (wasNullDraft && isInSessionCreatedDraft?.(currentDraftId)) {
+                return;
+            }
             if (Array.isArray(draftData.ingredients)) {
                 setNumIngredients(Math.max(1, draftData.ingredients.length));
             }

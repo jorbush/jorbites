@@ -22,6 +22,7 @@ import { DraftData } from '@/app/types/draft';
 interface UseDraftSyncOptions {
     activeDraftId: string | null | undefined;
     isEditMode: boolean;
+    skipDefaultDraftFetch?: boolean;
     currentUser?: SafeUser | null;
     isOpen: boolean;
     initialDraftData?: Partial<DraftData> | null;
@@ -45,6 +46,7 @@ interface UseDraftSyncReturn {
 export function useDraftSync({
     activeDraftId,
     isEditMode,
+    skipDefaultDraftFetch = false,
     currentUser,
     isOpen,
     initialDraftData,
@@ -81,22 +83,22 @@ export function useDraftSync({
         [initialDraftData, isSharedDraft]
     );
 
+    const shouldFetchDraft =
+        Boolean(isOpen && !isEditMode && currentUser) &&
+        (!skipDefaultDraftFetch || Boolean(activeDraftId));
+
     const {
         data: swrDraftData,
         isLoading: isLoadingDraft,
         mutate: swrMutateDraft,
-    } = useSWR(
-        isOpen && !isEditMode && currentUser ? draftEndpoint : null,
-        axiosFetcher,
-        {
-            revalidateOnFocus: true,
-            revalidateOnReconnect: true,
-            refreshWhenHidden: true,
-            refreshInterval,
-            shouldRetryOnError: false,
-            keepPreviousData: true,
-        }
-    );
+    } = useSWR(shouldFetchDraft ? draftEndpoint : null, axiosFetcher, {
+        revalidateOnFocus: true,
+        revalidateOnReconnect: true,
+        refreshWhenHidden: true,
+        refreshInterval,
+        shouldRetryOnError: false,
+        keepPreviousData: true,
+    });
 
     const rawDraftData =
         initialDraftData !== undefined ? initialDraftData : swrDraftData;

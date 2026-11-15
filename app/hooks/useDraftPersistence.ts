@@ -5,7 +5,11 @@ import { mutate } from 'swr';
 import { toast } from 'react-hot-toast';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FormAccessor, collectDraftFormData } from '@/app/utils/draftFormUtils';
+import {
+    FormAccessor,
+    ForkDraftBaseline,
+    collectDraftFormData,
+} from '@/app/utils/draftFormUtils';
 import type { DraftData, RecipeModalDraftController } from '@/app/types';
 
 export type { RecipeModalDraftController };
@@ -13,11 +17,13 @@ export type { RecipeModalDraftController };
 interface UseDraftPersistenceOptions {
     recipeModal: RecipeModalDraftController;
     mutateDraft?: () => Promise<unknown>;
+    forkBaseline?: ForkDraftBaseline | null;
 }
 
 export function useDraftPersistence({
     recipeModal,
     mutateDraft,
+    forkBaseline,
 }: UseDraftPersistenceOptions) {
     const { t } = useTranslation();
     const [isSaving, setIsSaving] = useState(false);
@@ -25,6 +31,9 @@ export function useDraftPersistence({
     const pendingSavesRef = useRef(0);
     const saveQueueRef = useRef<Promise<boolean> | null>(null);
     const lastSavedDraftIdRef = useRef<string | null>(null);
+    const inSessionCreatedDraftIdsRef = useRef<Set<string>>(new Set());
+    const forkBaselineRef = useRef(forkBaseline);
+    forkBaselineRef.current = forkBaseline;
 
     useEffect(() => {
         isMountedRef.current = true;
@@ -32,6 +41,21 @@ export function useDraftPersistence({
             isMountedRef.current = false;
         };
     }, []);
+
+    useEffect(() => {
+        if (recipeModal.isOpen === false) {
+            inSessionCreatedDraftIdsRef.current.clear();
+            lastSavedDraftIdRef.current = null;
+        }
+    }, [recipeModal.isOpen]);
+
+    const isInSessionCreatedDraft = useCallback(
+        (draftId?: string | null): boolean =>
+            Boolean(
+                draftId && inSessionCreatedDraftIdsRef.current.has(draftId)
+            ),
+        []
+    );
 
     const saveDraft = useCallback(
         (
@@ -69,11 +93,15 @@ export function useDraftPersistence({
                             stepsInputMode,
                             stepNum,
                             false,
-                            Boolean(isLocked)
+                            Boolean(isLocked),
+                            forkBaselineRef.current
                         );
                     const res = await axios.post('/api/draft', data);
                     if (res.data?.draftId) {
                         if (!currentDraftId) {
+                            inSessionCreatedDraftIdsRef.current.add(
+                                res.data.draftId
+                            );
                             form.setValue('draftId', res.data.draftId);
                         }
                         if (
@@ -83,7 +111,10 @@ export function useDraftPersistence({
                             lastSavedDraftIdRef.current !== res.data.draftId
                         ) {
                             lastSavedDraftIdRef.current = res.data.draftId;
-                            recipeModal.onOpenSharedDraft(res.data.draftId);
+                            const bindDraft =
+                                recipeModal.bindDraftId ??
+                                recipeModal.onOpenSharedDraft;
+                            bindDraft(res.data.draftId);
                         }
                     }
                     if (res.data?.inviteToken && !currentInviteToken) {
@@ -155,7 +186,9 @@ export function useDraftPersistence({
             ingredientsInputMode,
             stepsInputMode,
             undefined,
-            true
+            true,
+            false,
+            forkBaselineRef.current
         );
 
         let currentDraftId = fullDraftData.draftId;
@@ -167,12 +200,19 @@ export function useDraftPersistence({
                     '/api/draft/invite',
                     fullDraftData
                 );
+                const hadDraftId = Boolean(currentDraftId);
                 currentDraftId = res.data.draftId;
                 currentToken = res.data.inviteToken;
                 form.setValue('draftId', currentDraftId);
                 form.setValue('inviteToken', currentToken);
                 if (currentDraftId) {
-                    recipeModal.onOpenSharedDraft(currentDraftId);
+                    if (!hadDraftId) {
+                        inSessionCreatedDraftIdsRef.current.add(currentDraftId);
+                    }
+                    const bindDraft =
+                        recipeModal.bindDraftId ??
+                        recipeModal.onOpenSharedDraft;
+                    bindDraft(currentDraftId);
                 }
                 mutateDraft?.();
             } else {
@@ -258,6 +298,7 @@ export function useDraftPersistence({
             mutateDraft?.();
             mutate('/api/draft', null, false);
             if (currentDraftId) {
+                inSessionCreatedDraftIdsRef.current.delete(currentDraftId);
                 mutate(
                     `/api/draft?draftId=${encodeURIComponent(currentDraftId)}`,
                     null,
@@ -277,5 +318,6 @@ export function useDraftPersistence({
         deleteDraft,
         isSaving,
         flushDraftSaves,
+        isInSessionCreatedDraft,
     };
 }

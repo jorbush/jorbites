@@ -1273,4 +1273,118 @@ describe('useRecipeFormState hook', () => {
 
         expect(result.current.step).toBe(2);
     });
+
+    it('includes forkBaseline in saveDraft and copyInviteLink and uses bindDraftId in fork mode', async () => {
+        const axios = (await import('axios')).default;
+        (axios.post as any).mockClear();
+        (axios.post as any)
+            .mockResolvedValueOnce({
+                data: {
+                    draftId: 'fork-draft-1',
+                    inviteToken: 'fork-tok-1',
+                },
+            })
+            .mockResolvedValueOnce({
+                data: {
+                    draftId: 'fork-draft-2',
+                    inviteToken: 'fork-tok-2',
+                },
+            });
+
+        const mockWriteText = vi.fn().mockResolvedValue(undefined);
+        Object.assign(navigator, {
+            clipboard: {
+                writeText: mockWriteText,
+            },
+        });
+        delete (global as any).ClipboardItem;
+
+        const mockBindDraftId = vi.fn();
+        const mockOpenSharedDraft = vi.fn();
+        const forkRecipeData = {
+            id: 'orig-1',
+            title: 'Original Focaccia',
+            description: 'Crisp focaccia',
+            categories: ['Bread'],
+            method: 'bake',
+            ingredients: ['Flour', 'Water'],
+            steps: ['Mix', 'Bake'],
+            minutes: 40,
+            prepTime: 15,
+            cookTime: 25,
+            imageSrc: '',
+            userId: 'author-1',
+            createdAt: '',
+            updatedAt: '',
+        };
+
+        const { result } = renderHook(() =>
+            useRecipeFormState({
+                recipeModal: {
+                    isOpen: true,
+                    isEditMode: false,
+                    forkRecipeData: forkRecipeData as any,
+                    forkedFromRecipeId: 'orig-1',
+                    onClose: vi.fn(),
+                    onOpenSharedDraft: mockOpenSharedDraft,
+                    bindDraftId: mockBindDraftId,
+                },
+                currentUser: {
+                    id: 'u1',
+                    name: 'Chef',
+                    email: 'c@test.com',
+                    createdAt: '',
+                    updatedAt: '',
+                    favoriteIds: [],
+                },
+            })
+        );
+
+        // Fork prefill is populated
+        expect(result.current.getValues('forkedFromRecipeId')).toBe('orig-1');
+        expect(result.current.getValues('title')).toBe('remix_of');
+        expect(result.current.getValues('ingredient-0')).toBe('Flour');
+
+        await act(async () => {
+            await result.current.saveDraft();
+        });
+
+        expect(axios.post).toHaveBeenNthCalledWith(
+            1,
+            '/api/draft',
+            expect.objectContaining({
+                forkedFromRecipeId: 'orig-1',
+                forkedFromTitle: 'Original Focaccia',
+                forkedFromIngredients: ['Flour', 'Water'],
+                forkedFromSteps: ['Mix', 'Bake'],
+            })
+        );
+        expect(mockBindDraftId).toHaveBeenCalledWith('fork-draft-1');
+        expect(mockOpenSharedDraft).not.toHaveBeenCalled();
+        expect(result.current.isInSessionCreatedDraft('fork-draft-1')).toBe(
+            true
+        );
+
+        // Reset draft identifiers before testing copyInviteLink
+        act(() => {
+            result.current.setValue('draftId', '');
+            result.current.setValue('inviteToken', '');
+        });
+
+        await act(async () => {
+            await result.current.copyInviteLink();
+        });
+
+        expect(axios.post).toHaveBeenNthCalledWith(
+            2,
+            '/api/draft/invite',
+            expect.objectContaining({
+                forkedFromRecipeId: 'orig-1',
+                forkedFromTitle: 'Original Focaccia',
+                forkedFromIngredients: ['Flour', 'Water'],
+                forkedFromSteps: ['Mix', 'Bake'],
+            })
+        );
+        expect(mockBindDraftId).toHaveBeenCalledWith('fork-draft-2');
+    });
 });

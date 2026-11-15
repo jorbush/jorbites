@@ -13,7 +13,7 @@ import {
 } from 'react-hook-form';
 import { TFunction } from 'i18next';
 import { STEPS, STEPS_LENGTH } from '@/app/utils/constants';
-import type { RecipeModalStateLike } from '@/app/types';
+import type { DraftData, RecipeModalStateLike } from '@/app/types';
 import {
     processIngredientsOnStepAdvance,
     processStepsOnStepAdvance,
@@ -24,6 +24,8 @@ export interface UseRecipeStepNavigationProps {
     step: number;
     setStep: Dispatch<SetStateAction<number>>;
     recipeModal: RecipeModalStateLike;
+    draftData?: Partial<DraftData> | null;
+    isDirty?: boolean;
     mutateDraft?: (() => Promise<unknown>) | null;
     saveDraft: (stepOverride?: number | MouseEvent) => Promise<boolean>;
     deleteDraft: () => Promise<void>;
@@ -47,6 +49,8 @@ export function useRecipeStepNavigation({
     step,
     setStep,
     recipeModal,
+    draftData,
+    isDirty = false,
     mutateDraft,
     saveDraft,
     deleteDraft,
@@ -68,13 +72,14 @@ export function useRecipeStepNavigation({
     const { push } = useRouter() || {};
     const [isLoading, setIsLoading] = useState(false);
     const isForkMode = Boolean(recipeModal.forkRecipeData);
+    const hasSavedDraft = Boolean(getValues('draftId') || draftData?.draftId);
+    const shouldAutoSaveOnStepChange =
+        process.env.NODE_ENV === 'production' &&
+        !recipeModal.isEditMode &&
+        (!isForkMode || isDirty || hasSavedDraft);
 
     const onBack = async () => {
-        if (
-            process.env.NODE_ENV === 'production' &&
-            !recipeModal.isEditMode &&
-            !isForkMode
-        ) {
+        if (shouldAutoSaveOnStepChange) {
             await saveDraft(step - 1);
         }
         setStep((value) => Math.max(value - 1, 0));
@@ -128,12 +133,7 @@ export function useRecipeStepNavigation({
 
         if (step !== STEPS.IMAGES) {
             const success = onNext();
-            if (
-                success &&
-                process.env.NODE_ENV === 'production' &&
-                !recipeModal.isEditMode &&
-                !isForkMode
-            ) {
+            if (success && shouldAutoSaveOnStepChange) {
                 await saveDraft(step + 1);
             }
             return;
@@ -147,13 +147,28 @@ export function useRecipeStepNavigation({
             return;
         }
 
-        if (isForkMode && recipeModal.forkRecipeData) {
+        const remixSourceIngredients =
+            recipeModal.forkRecipeData?.ingredients ??
+            draftData?.forkedFromIngredients;
+        const remixSourceSteps =
+            recipeModal.forkRecipeData?.steps ?? draftData?.forkedFromSteps;
+        const isRemixSubmission = Boolean(
+            isForkMode ||
+            data.forkedFromRecipeId ||
+            draftData?.forkedFromRecipeId
+        );
+
+        if (
+            isRemixSubmission &&
+            (Array.isArray(remixSourceIngredients) ||
+                Array.isArray(remixSourceSteps))
+        ) {
             const { hasModifiedIngredients, hasModifiedSteps, isValidRemix } =
                 validateRemixContent(
                     data.ingredients,
                     data.steps,
-                    recipeModal.forkRecipeData.ingredients,
-                    recipeModal.forkRecipeData.steps
+                    remixSourceIngredients,
+                    remixSourceSteps
                 );
 
             if (!isValidRemix) {
@@ -192,9 +207,7 @@ export function useRecipeStepNavigation({
                 const url = `${window.location.origin}/api/recipes`;
                 const response = await axios.post(url, data);
                 createdRecipeId = response?.data?.id || null;
-                if (!isForkMode) {
-                    await deleteDraft();
-                }
+                await deleteDraft();
                 toast.success(t('recipe_posted'));
             }
 
@@ -226,7 +239,7 @@ export function useRecipeStepNavigation({
                 typeof window !== 'undefined' &&
                 window.location.pathname.startsWith('/recipes/create');
 
-            if ((isForkMode || isCreatePage) && createdRecipeId) {
+            if ((isRemixSubmission || isCreatePage) && createdRecipeId) {
                 recipeModal.onClose?.({ skipCallback: true });
                 if (push) {
                     push(`/recipes/${createdRecipeId}`);

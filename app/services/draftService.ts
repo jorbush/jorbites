@@ -131,6 +131,10 @@ const ALLOWED_DRAFT_FIELDS: (keyof SharedDraft)[] = [
     'linkedRecipeIds',
     'youtubeUrl',
     'questId',
+    'forkedFromRecipeId',
+    'forkedFromTitle',
+    'forkedFromIngredients',
+    'forkedFromSteps',
 ];
 
 const STRING_FIELDS = new Set([
@@ -143,6 +147,8 @@ const STRING_FIELDS = new Set([
     'imageSrc3',
     'youtubeUrl',
     'questId',
+    'forkedFromRecipeId',
+    'forkedFromTitle',
 ]);
 
 const ARRAY_FIELDS = new Set([
@@ -151,6 +157,8 @@ const ARRAY_FIELDS = new Set([
     'steps',
     'coCooksIds',
     'linkedRecipeIds',
+    'forkedFromIngredients',
+    'forkedFromSteps',
 ]);
 
 const NUMBER_OR_NULL_FIELDS = new Set([
@@ -367,6 +375,22 @@ export class DraftService {
             linkedRecipeIds: Array.isArray(draft.linkedRecipeIds)
                 ? draft.linkedRecipeIds
                 : [],
+            ...(draft.forkedFromIngredients !== undefined
+                ? {
+                      forkedFromIngredients: Array.isArray(
+                          draft.forkedFromIngredients
+                      )
+                          ? draft.forkedFromIngredients
+                          : [],
+                  }
+                : {}),
+            ...(draft.forkedFromSteps !== undefined
+                ? {
+                      forkedFromSteps: Array.isArray(draft.forkedFromSteps)
+                          ? draft.forkedFromSteps
+                          : [],
+                  }
+                : {}),
         };
     }
 
@@ -387,6 +411,22 @@ export class DraftService {
             linkedRecipeIds: Array.isArray(draft.linkedRecipeIds)
                 ? draft.linkedRecipeIds
                 : [],
+            ...(draft.forkedFromIngredients !== undefined
+                ? {
+                      forkedFromIngredients: Array.isArray(
+                          draft.forkedFromIngredients
+                      )
+                          ? draft.forkedFromIngredients
+                          : [],
+                  }
+                : {}),
+            ...(draft.forkedFromSteps !== undefined
+                ? {
+                      forkedFromSteps: Array.isArray(draft.forkedFromSteps)
+                          ? draft.forkedFromSteps
+                          : [],
+                  }
+                : {}),
         };
     }
 
@@ -1343,6 +1383,17 @@ export class DraftService {
                         ownerName: shared.ownerName,
                         updatedAt,
                         imageSrc: shared.imageSrc,
+                        ...(shared.forkedFromRecipeId
+                            ? {
+                                  forkedFromRecipeId: shared.forkedFromRecipeId,
+                                  ...(shared.forkedFromTitle
+                                      ? {
+                                            forkedFromTitle:
+                                                shared.forkedFromTitle,
+                                        }
+                                      : {}),
+                              }
+                            : {}),
                     };
                 }
 
@@ -1372,6 +1423,18 @@ export class DraftService {
                             ownerName: solo.ownerName,
                             updatedAt,
                             imageSrc: solo.imageSrc,
+                            ...(solo.forkedFromRecipeId
+                                ? {
+                                      forkedFromRecipeId:
+                                          solo.forkedFromRecipeId,
+                                      ...(solo.forkedFromTitle
+                                          ? {
+                                                forkedFromTitle:
+                                                    solo.forkedFromTitle,
+                                            }
+                                          : {}),
+                                  }
+                                : {}),
                         };
                     } catch {
                         return null;

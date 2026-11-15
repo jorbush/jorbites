@@ -142,4 +142,23 @@ describe('RecipeCreateClient', () => {
         const state = useRecipeModal.getState();
         expect(state.forkRecipeData?.categories).toEqual(['Italian', 'Pasta']);
     });
+
+    it('does not close a newly opened draft modal on unmount after switching to My Drafts', () => {
+        const { unmount } = render(
+            <RecipeCreateClient
+                forkFromRecipe={mockRecipe}
+                forkFromId="recipe-123"
+            />
+        );
+
+        // User clicks My Drafts (closes fork modal) and then opens a saved draft before route unmount completes
+        useRecipeModal.getState().onClose();
+        useRecipeModal.getState().onOpenDraft('draft-999');
+        expect(useRecipeModal.getState().isOpen).toBe(true);
+
+        unmount();
+
+        expect(useRecipeModal.getState().isOpen).toBe(true);
+        expect(useRecipeModal.getState().activeDraftId).toBe('draft-999');
+    });
 });
