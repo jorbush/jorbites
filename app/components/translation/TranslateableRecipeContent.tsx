@@ -13,12 +13,14 @@ interface TranslateableRecipeContentProps {
     ganttTable?: GanttTable | null;
     recipeTitle?: string;
     recipeId?: string;
+    recipeYield?: number | null;
     RenderDescription: React.ComponentType<{
         content: string | React.ReactNode;
     }>;
     RenderIngredients: React.ComponentType<{
         items: string[];
         recipeId?: string;
+        recipeYield?: number | null;
     }>;
     RenderSteps: React.ComponentType<{
         items: string[];
@@ -40,6 +42,7 @@ export function TranslateableRecipeContent({
     ganttTable,
     recipeTitle,
     recipeId,
+    recipeYield,
     RenderDescription,
     RenderIngredients,
     RenderSteps,
@@ -84,6 +87,7 @@ export function TranslateableRecipeContent({
             <RenderIngredients
                 items={displayIngredients}
                 recipeId={recipeId}
+                recipeYield={recipeYield}
             />
             <RenderSteps
                 items={displaySteps}

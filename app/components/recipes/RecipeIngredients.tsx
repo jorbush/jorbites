@@ -1,26 +1,55 @@
 'use client';
 
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiCheck } from 'react-icons/fi';
+import Counter from '@/app/components/inputs/Counter';
 import useIsMounted from '@/app/hooks/useIsMounted';
 import useRecipeChecklist from '@/app/hooks/useRecipeChecklist';
+import { scaleIngredient } from '@/app/utils/ingredientScaler';
 import { formatText } from '@/app/utils/textFormatting';
 import RecipeChecklistHeader from './RecipeChecklistHeader';
 
 export interface RecipeIngredientsProps {
     items: string[];
     recipeId?: string;
+    recipeYield?: number | null;
 }
 
 export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
     items,
     recipeId,
+    recipeYield,
 }) => {
     const { t } = useTranslation();
     const mounted = useIsMounted();
     const { isCompleted, toggleIndex, resetChecklist, completedCount } =
         useRecipeChecklist(recipeId, 'ingredients');
+    const [customServings, setCustomServings] = useState<{
+        baseYield: number;
+        value: number;
+    } | null>(null);
+
+    const hasValidYield = typeof recipeYield === 'number' && recipeYield > 0;
+    const currentServings =
+        hasValidYield &&
+        customServings !== null &&
+        customServings.baseYield === recipeYield
+            ? customServings.value
+            : hasValidYield
+              ? recipeYield
+              : 1;
+
+    const handleServingsChange = useCallback(
+        (nextValue: number) => {
+            if (!hasValidYield) return;
+            setCustomServings({
+                baseYield: recipeYield,
+                value: Math.max(1, nextValue),
+            });
+        },
+        [hasValidYield, recipeYield]
+    );
 
     if (items.length === 0) return null;
 
@@ -36,6 +65,17 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
                 completedCount={completedCount}
                 totalCount={items.length}
                 onReset={resetChecklist}
+                actionSlot={
+                    hasValidYield ? (
+                        <Counter
+                            title={mounted ? t('servings') : 'servings'}
+                            value={currentServings}
+                            onChange={handleServingsChange}
+                            minValue={1}
+                            compact
+                        />
+                    ) : undefined
+                }
             />
 
             <ul className="mt-4 space-y-1 text-neutral-700 dark:text-neutral-300">
@@ -44,6 +84,9 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
                     seen.set(item, count);
                     const key = count === 1 ? item : `${item}-${count}`;
                     const completed = isCompleted(index);
+                    const displayItem = hasValidYield
+                        ? scaleIngredient(item, recipeYield, currentServings)
+                        : item;
 
                     return (
                         <li key={key}>
@@ -81,7 +124,7 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
                                             : 'text-neutral-700 dark:text-neutral-300'
                                     }`}
                                 >
-                                    {formatText(item)}
+                                    {formatText(displayItem)}
                                 </span>
                             </button>
                         </li>

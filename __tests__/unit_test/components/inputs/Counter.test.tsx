@@ -89,4 +89,19 @@ describe('Counter', () => {
 
         expect(screen.getByText('5')).toBeDefined();
     });
+
+    it('renders compact variant without subtitle', () => {
+        render(
+            <Counter
+                title="servings"
+                value={4}
+                onChange={mockOnChange}
+                compact
+            />
+        );
+
+        expect(screen.getByTestId('servings-counter')).toBeDefined();
+        expect(screen.getByText('servings')).toBeDefined();
+        expect(screen.getByTestId('counter-value').textContent).toBe('4');
+    });
 });
