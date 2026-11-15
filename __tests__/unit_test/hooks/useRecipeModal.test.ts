@@ -95,4 +95,19 @@ describe('useRecipeModal', () => {
         expect(useRecipeModal.getState().isOpen).toBe(false);
         expect(useRecipeModal.getState().onCloseCallback).toBeNull();
     });
+
+    it('removes Award-Winning category (case-insensitive) when opening in fork mode', () => {
+        useRecipeModal.getState().onOpenFork(
+            {
+                title: 'Awarded Dish',
+                categories: ['Award-Winning', 'Seafood', 'award-winning'],
+            },
+            'rec-award-123'
+        );
+
+        const state = useRecipeModal.getState();
+        expect(state.isOpen).toBe(true);
+        expect(state.forkedFromRecipeId).toBe('rec-award-123');
+        expect(state.forkRecipeData?.categories).toEqual(['Seafood']);
+    });
 });

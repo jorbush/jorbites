@@ -66,11 +66,17 @@ export function buildInitialRecipeDefaultValues(
               })
             : `Remix of ${rawTitle}`;
 
+        const categories = Array.isArray(forkData.categories)
+            ? forkData.categories.filter(
+                  (cat) =>
+                      typeof cat === 'string' &&
+                      cat.toLowerCase() !== 'award-winning'
+              )
+            : [];
+
         return {
             ...emptySlots,
-            categories: Array.isArray(forkData.categories)
-                ? forkData.categories
-                : [],
+            categories,
             method: forkData.method || '',
             imageSrc: '',
             imageSrc1: '',

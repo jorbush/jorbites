@@ -53,7 +53,7 @@ sequenceDiagram
     - English: `"Remix of Grandma's Apple Pie"`
     - Spanish: `"Remix de Tarta de Manzana de la Abuela"`
     - Catalan: `"Remescla de Pastís de Poma de la Iaia"`
-- **Copied Metadata**: Ingredients, preparation steps, categories, method, and prep/cook timings are duplicated for rapid tweaking.
+- **Copied Metadata**: Ingredients, preparation steps, categories (excluding `Award-Winning`), method, and prep/cook timings are duplicated for rapid tweaking.
 - **Fresh Photo Requirement**: The primary dish image (`imageSrc`) starts blank so each home cook provides their own genuine photo, preventing duplicate image conflicts (`409 Conflict`).
 - **Internal Reference**: The field `forkedFromRecipeId` is tracked internally and submitted to the API.
 
