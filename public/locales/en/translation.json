@@ -1693,7 +1693,6 @@
     "invalid_2fa_code": "Invalid verification code",
     "too_many_2fa_attempts": "Too many verification attempts. Please try again later.",
     "allergens": "Allergens",
-    "allergens_disclaimer": "Auto-detected from ingredients",
     "allergen_gluten": "Gluten",
     "allergen_crustaceans": "Crustaceans",
     "allergen_eggs": "Eggs",

@@ -151,19 +151,12 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
                     data-cy="recipe-allergens"
                     data-testid="recipe-allergens"
                 >
-                    <div className="flex flex-wrap items-center justify-between gap-1">
-                        <div className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-neutral-600 uppercase dark:text-neutral-400">
-                            <FiAlertCircle
-                                size={14}
-                                className="shrink-0 text-amber-600 dark:text-amber-400"
-                            />
-                            <span>
-                                {mounted ? t('allergens') : 'allergens'}
-                            </span>
-                        </div>
-                        <span className="text-[11px] text-neutral-400 dark:text-neutral-500">
-                            {mounted ? t('allergens_disclaimer') : ''}
-                        </span>
+                    <div className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-neutral-600 uppercase dark:text-neutral-400">
+                        <FiAlertCircle
+                            size={14}
+                            className="shrink-0 text-amber-600 dark:text-amber-400"
+                        />
+                        <span>{mounted ? t('allergens') : 'allergens'}</span>
                     </div>
                     <div className="mt-2.5 flex flex-wrap gap-2">
                         {detectedAllergens.map((allergen) => {
