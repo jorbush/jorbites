@@ -118,6 +118,15 @@ describe('<RecipeCard />', () => {
         const image = screen.getByAltText('recipe') as HTMLImageElement;
         expect(image).toBeDefined();
         expect(image.src).toContain('test-image.jpg');
+        expect(image.className).toContain('rounded-xl');
+
+        const proxyContainer = image.closest('.aspect-square');
+        const recipeImageWrapper = proxyContainer?.parentElement;
+        expect(proxyContainer?.className).toContain('rounded-xl');
+        expect(recipeImageWrapper?.className).toContain('aspect-square');
+        expect(recipeImageWrapper?.className).toContain('rounded-xl');
+        expect(recipeImageWrapper?.className).not.toContain('isolate');
+        expect(recipeImageWrapper?.className).not.toContain('transform-gpu');
     });
 
     it('renders the HeartButton component', () => {

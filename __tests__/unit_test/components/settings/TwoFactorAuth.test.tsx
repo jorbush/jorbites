@@ -116,6 +116,7 @@ describe('TwoFactorAuth Component', () => {
             expect(toast.success).toHaveBeenCalledWith(
                 'two_factor_enabled_success'
             );
+            expect(mockRefresh).toHaveBeenCalledTimes(1);
         });
     });
 

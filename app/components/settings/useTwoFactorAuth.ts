@@ -25,7 +25,9 @@ export function useTwoFactorAuth({ currentUser }: UseTwoFactorAuthOptions) {
     const { refresh } = useRouter() || {};
     const { t } = useTranslation();
     const [mode, setMode] = useState<FlowMode>('idle');
-    const [isPending, startTransition] = useTransition();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isRefreshing, startTransition] = useTransition();
+    const isPending = isSubmitting || isRefreshing;
 
     const [currentPassword, setCurrentPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -50,101 +52,111 @@ export function useTwoFactorAuth({ currentUser }: UseTwoFactorAuthOptions) {
         setVerificationCode('');
     };
 
-    const handleStartSetup = (e: React.FormEvent) => {
+    const handleStartSetup = async (e: React.FormEvent) => {
         e.preventDefault();
         if (isPending || !currentPassword) return;
 
-        startTransition(async () => {
-            try {
-                const response = await axios.post('/api/2fa/setup', {
-                    currentPassword,
-                });
-                setSecret(response.data.secret);
-                setOtpauthUrl(response.data.otpauthUrl);
-                setCurrentPassword('');
-                setMode('setup-verify');
-            } catch (error: any) {
-                const errorMessage =
-                    error.response?.data?.error || t('something_went_wrong');
-                toast.error(errorMessage);
-            }
-        });
+        setIsSubmitting(true);
+        try {
+            const response = await axios.post('/api/2fa/setup', {
+                currentPassword,
+            });
+            setSecret(response.data.secret);
+            setOtpauthUrl(response.data.otpauthUrl);
+            setCurrentPassword('');
+            setMode('setup-verify');
+        } catch (error: any) {
+            const errorMessage =
+                error.response?.data?.error || t('something_went_wrong');
+            toast.error(errorMessage);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
-    const handleVerifyAndEnable = (e: React.FormEvent) => {
+    const handleVerifyAndEnable = async (e: React.FormEvent) => {
         e.preventDefault();
         if (isPending || !verificationCode.trim()) return;
 
-        startTransition(async () => {
-            try {
-                const response = await axios.post('/api/2fa/enable', {
-                    code: verificationCode.trim(),
-                });
-                setBackupCodes(response.data.backupCodes || EMPTY_CODES);
-                setVerificationCode('');
-                setMode('backup-codes-view');
-                toast.success(
-                    t('two_factor_enabled_success') ||
-                        'Two-factor authentication enabled'
-                );
+        setIsSubmitting(true);
+        try {
+            const response = await axios.post('/api/2fa/enable', {
+                code: verificationCode.trim(),
+            });
+            setBackupCodes(response.data.backupCodes || EMPTY_CODES);
+            setVerificationCode('');
+            setMode('backup-codes-view');
+            toast.success(
+                t('two_factor_enabled_success') ||
+                    'Two-factor authentication enabled'
+            );
+            startTransition(() => {
                 refresh?.();
-            } catch (error: any) {
-                const errorMessage =
-                    error.response?.data?.error ||
-                    t('invalid_2fa_code') ||
-                    'Invalid verification code';
-                toast.error(errorMessage);
-            }
-        });
+            });
+        } catch (error: any) {
+            const errorMessage =
+                error.response?.data?.error ||
+                t('invalid_2fa_code') ||
+                'Invalid verification code';
+            toast.error(errorMessage);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
-    const handleDisable2FA = (e: React.FormEvent) => {
+    const handleDisable2FA = async (e: React.FormEvent) => {
         e.preventDefault();
         if (isPending || !currentPassword) return;
 
-        startTransition(async () => {
-            try {
-                await axios.post('/api/2fa/disable', {
-                    currentPassword,
-                });
-                toast.success(
-                    t('two_factor_disabled_success') ||
-                        'Two-factor authentication disabled'
-                );
-                resetState();
-                setBackupCodes(EMPTY_CODES);
+        setIsSubmitting(true);
+        try {
+            await axios.post('/api/2fa/disable', {
+                currentPassword,
+            });
+            toast.success(
+                t('two_factor_disabled_success') ||
+                    'Two-factor authentication disabled'
+            );
+            resetState();
+            setBackupCodes(EMPTY_CODES);
+            startTransition(() => {
                 refresh?.();
-            } catch (error: any) {
-                const errorMessage =
-                    error.response?.data?.error || t('something_went_wrong');
-                toast.error(errorMessage);
-            }
-        });
+            });
+        } catch (error: any) {
+            const errorMessage =
+                error.response?.data?.error || t('something_went_wrong');
+            toast.error(errorMessage);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
-    const handleRegenerateBackupCodes = (e: React.FormEvent) => {
+    const handleRegenerateBackupCodes = async (e: React.FormEvent) => {
         e.preventDefault();
         if (isPending || !currentPassword) return;
 
-        startTransition(async () => {
-            try {
-                const response = await axios.post('/api/2fa/backup-codes', {
-                    currentPassword,
-                });
-                setBackupCodes(response.data.backupCodes || EMPTY_CODES);
-                setCurrentPassword('');
-                setMode('backup-codes-view');
-                toast.success(
-                    t('backup_codes_regenerated') ||
-                        'Backup recovery codes regenerated'
-                );
+        setIsSubmitting(true);
+        try {
+            const response = await axios.post('/api/2fa/backup-codes', {
+                currentPassword,
+            });
+            setBackupCodes(response.data.backupCodes || EMPTY_CODES);
+            setCurrentPassword('');
+            setMode('backup-codes-view');
+            toast.success(
+                t('backup_codes_regenerated') ||
+                    'Backup recovery codes regenerated'
+            );
+            startTransition(() => {
                 refresh?.();
-            } catch (error: any) {
-                const errorMessage =
-                    error.response?.data?.error || t('something_went_wrong');
-                toast.error(errorMessage);
-            }
-        });
+            });
+        } catch (error: any) {
+            const errorMessage =
+                error.response?.data?.error || t('something_went_wrong');
+            toast.error(errorMessage);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const handleCopySecret = async () => {

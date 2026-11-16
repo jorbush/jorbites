@@ -78,7 +78,7 @@ const RecipeCard = memo(function RecipeCard({
                             alt="recipe"
                             fill
                             priority={isFirstCard}
-                            className="size-full object-cover transition-transform duration-300 ease-out group-hover:scale-102"
+                            className="size-full rounded-xl object-cover transition-transform duration-300 ease-out group-hover:scale-102"
                             width={209}
                             height={209}
                             sizes="(max-width: 640px) 150px, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1536px) 209px, 250px"

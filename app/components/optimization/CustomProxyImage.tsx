@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { getProxyImageSrcAndSrcSet } from '@/app/utils/imageOptimizer';
 import useIsMounted from '@/app/hooks/useIsMounted';
 
@@ -37,6 +37,9 @@ export default function CustomProxyImage({
 }: CustomProxyImageProps) {
     const isMounted = useIsMounted();
     const [loadedSrc, setLoadedSrc] = useState<string | null>(null);
+    const [hiddenPlaceholderSrc, setHiddenPlaceholderSrc] = useState<
+        string | null
+    >(null);
     const imgRef = useRef<HTMLImageElement>(null);
     const useMaxQuality = maxQuality || quality === 'auto:best';
 
@@ -54,6 +57,19 @@ export default function CustomProxyImage({
 
     const isLoaded =
         loadedSrc === optimizedSrc || (isMounted && !!imgRef.current?.complete);
+    const showPlaceholder = !isLoaded || hiddenPlaceholderSrc !== optimizedSrc;
+
+    useEffect(() => {
+        if (!isLoaded || !optimizedSrc) {
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            setHiddenPlaceholderSrc(optimizedSrc);
+        }, 350);
+
+        return () => clearTimeout(timer);
+    }, [isLoaded, optimizedSrc]);
 
     const fallbackImage = '/avocado.webp';
     let placeholderSrc = fallbackImage;
@@ -103,7 +119,7 @@ export default function CustomProxyImage({
     if (!optimizedSrc) {
         return (
             <div
-                className={`relative ${fill ? 'size-full' : ''} ${fill && !maxQuality ? 'aspect-square' : ''} ${circular ? 'aspect-square rounded-full' : ''} overflow-hidden bg-neutral-200 dark:bg-neutral-700 ${fill || circular ? className : ''}`}
+                className={`relative isolate ${fill ? 'size-full' : ''} ${fill && !maxQuality ? 'aspect-square' : ''} ${circular ? 'aspect-square rounded-full' : ''} overflow-hidden bg-neutral-200 dark:bg-neutral-700 ${fill || circular ? className : ''}`}
                 style={
                     !fill && !circular
                         ? { width: actualWidth, height: actualHeight, ...style }
@@ -115,7 +131,7 @@ export default function CustomProxyImage({
 
     return (
         <div
-            className={`relative ${fill ? 'size-full' : ''} ${fill && !maxQuality ? 'aspect-square' : ''} ${circular ? 'aspect-square rounded-full' : ''} overflow-hidden ${fill || circular ? className : ''} ${useMaxQuality && !fill ? 'flex items-center justify-center' : ''}`}
+            className={`relative isolate ${fill ? 'size-full' : ''} ${fill && !maxQuality ? 'aspect-square' : ''} ${circular ? 'aspect-square rounded-full' : ''} overflow-hidden ${fill || circular ? className : ''} ${useMaxQuality && !fill ? 'flex items-center justify-center' : ''}`}
             style={
                 !fill && !circular
                     ? { width: actualWidth, height: actualHeight, ...style }
@@ -135,14 +151,19 @@ export default function CustomProxyImage({
                     />
                 )}
 
-            {/* Blurry placeholder - only for non-circular images */}
-            {placeholderSrc && !circular && (
+            {/* Blurry placeholder - only for non-circular images, unmounted after fade-out */}
+            {placeholderSrc && !circular && showPlaceholder && (
                 <div
                     style={{
                         backgroundImage: `url(${placeholderSrc})`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         filter: 'blur(8px)',
+                    }}
+                    onTransitionEnd={() => {
+                        if (isLoaded) {
+                            setHiddenPlaceholderSrc(optimizedSrc);
+                        }
                     }}
                     className={`pointer-events-none absolute inset-0 h-full w-full bg-neutral-200 transition-opacity duration-300 dark:bg-neutral-700 ${isLoaded ? 'opacity-0' : 'opacity-100'}`}
                     aria-hidden="true"
@@ -165,7 +186,7 @@ export default function CustomProxyImage({
                 onLoad={() => setLoadedSrc(optimizedSrc)}
                 style={baseStyle}
                 sizes={sizes}
-                className={`${className} ${fill ? 'object-cover' : ''} transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+                className={`${className} ${fill ? 'object-cover' : ''} transition-[opacity,transform] duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
             />
         </div>
     );

@@ -79,6 +79,7 @@ const Modal: React.FC<ModalProps> = ({
     const handleSubmitRef = useRef(handleSubmit);
     const disabledRef = useRef(disabled);
     const actionDisabledRef = useRef(actionDisabled || isLoading);
+    const modalRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         handleSubmitRef.current = handleSubmit;
@@ -92,19 +93,45 @@ const Modal: React.FC<ModalProps> = ({
         }
 
         const handleKeyDown = (event: KeyboardEvent) => {
-            // Don't submit if user is typing in a textarea (e.g., plain text mode)
-            const target = event.target as HTMLElement;
-            const isTextarea = target?.tagName === 'TEXTAREA';
-
             if (
-                event.key === 'Enter' &&
-                !event.shiftKey &&
-                !disabledRef.current &&
-                !actionDisabledRef.current &&
-                !isTextarea
+                event.key !== 'Enter' ||
+                event.shiftKey ||
+                event.defaultPrevented ||
+                event.isComposing ||
+                disabledRef.current ||
+                actionDisabledRef.current
             ) {
-                handleSubmitRef.current();
+                return;
             }
+
+            // Don't handle Enter if another modal is stacked on top of this one
+            const backdrops = document.querySelectorAll(
+                '[data-modal-backdrop]'
+            );
+            if (
+                backdrops.length > 0 &&
+                backdrops[backdrops.length - 1] !== modalRef.current
+            ) {
+                return;
+            }
+
+            // Don't submit modal if user is typing in a textarea, editable area,
+            // nested form (e.g. 2FA/password forms inside Settings), or interactive control
+            const target = event.target;
+            if (
+                target instanceof HTMLElement &&
+                (target.tagName === 'TEXTAREA' || target.isContentEditable)
+            ) {
+                return;
+            }
+            if (
+                target instanceof Element &&
+                target.closest('form, button, a, select, [role="button"]')
+            ) {
+                return;
+            }
+
+            handleSubmitRef.current();
         };
         document.addEventListener('keydown', handleKeyDown);
         return () => document.removeEventListener('keydown', handleKeyDown);
@@ -116,14 +143,18 @@ const Modal: React.FC<ModalProps> = ({
 
     return (
         <>
-            <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-neutral-800/70 outline-hidden focus:outline-hidden">
+            <div
+                ref={modalRef}
+                data-modal-backdrop=""
+                className="fixed inset-0 isolate z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-neutral-800/70 outline-hidden focus:outline-hidden"
+            >
                 <div
                     className={`relative mx-auto h-full max-h-[100vh] w-full md:h-auto md:max-h-[calc(100vh-6rem)] lg:h-auto ${insideModal ? 'md:w-5/6' : 'md:w-4/6 lg:w-3/6 xl:w-2/5'}`}
                 >
                     <div
-                        className={`translate h-full duration-300 ${showAnimation ? 'translate-y-0' : 'translate-y-full'} ${showAnimation ? 'opacity-100' : 'opacity-0'} `}
+                        className={`h-full transition-[transform,opacity] duration-300 ${showAnimation ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`}
                     >
-                        <div className="translate dark:bg-dark relative flex size-full flex-col rounded-lg border-0 bg-white shadow-lg outline-hidden focus:outline-hidden md:h-auto lg:h-auto">
+                        <div className="dark:bg-dark relative flex size-full flex-col rounded-lg border-0 bg-white shadow-lg outline-hidden focus:outline-hidden md:h-auto lg:h-auto">
                             <div className="relative flex flex-shrink-0 items-center justify-center rounded-t border-b-[1px] px-6 pt-[calc(1.5rem+env(safe-area-inset-top,0px))] pb-6 md:pt-6">
                                 <button
                                     type="button"
