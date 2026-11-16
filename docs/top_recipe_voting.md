@@ -39,6 +39,7 @@ sequenceDiagram
     Note over GH, Next: CLOSE SESSION WORKFLOW
     GH->>Next: POST /api/top-recipe-vote {action: "close"} + CRON_SECRET
     Next->>DB: Count votes per candidate (tie-break by recipe likes)
+    Next->>DB: Add "Award-Winning" to winner Recipe.categories (if missing)
     Next->>DB: Update RecipeVoteSession (status: "closed", winnerId)
     Next->>BF: POST /award-top-recipe {category, user_id, recipe_id} + API_KEY
     BF->>DB: Add badge name to User.badges (if missing)
@@ -99,6 +100,7 @@ Tracks the lifecycle of voting sessions.
   1. Counts votes grouped by `recipeId`.
   2. Selects the candidate with the highest vote count.
   3. **Tie-breaking**: If there's a tie, the candidate with the highest total `numLikes` wins. If still tied, it falls back to database creation order.
+- **Category Award**: Adds `"Award-Winning"` to the winning recipe's `categories` array if not already present (case-insensitive check) and invalidates the recipe caches.
 - **Badging**: Calls the Badge Forge `/award-top-recipe` microservice endpoint. Badge Forge checks if the author already holds the badge. If not, it adds the badge slug to the user's document (`recipe_of_the_week`, `recipe_of_the_month`, `recipe_of_the_year`) and sends a `NEW_BADGE` notification.
 - **Notification**: Triggers a `VOTATION_RESULT` notification to announce the winner.
 

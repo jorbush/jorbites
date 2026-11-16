@@ -14,6 +14,7 @@ vi.mock('@/app/lib/prismadb', () => {
         recipe: {
             findMany: vi.fn(),
             findUnique: vi.fn(),
+            update: vi.fn(),
         },
         recipeVoteSession: {
             findUnique: vi.fn(),
@@ -46,7 +47,16 @@ vi.mock('@/app/lib/axiom/server', () => ({
     },
 }));
 
+// Mock Redis cache
+vi.mock('@/app/lib/redis', () => ({
+    redisCache: {
+        del: vi.fn().mockResolvedValue(1),
+        incr: vi.fn().mockResolvedValue(1),
+    },
+}));
+
 import prisma from '@/app/lib/prismadb';
+import { redisCache } from '@/app/lib/redis';
 
 describe('Top Recipe Vote Business Logic', () => {
     const originalEnv = process.env;
@@ -222,6 +232,16 @@ describe('Top Recipe Vote Business Logic', () => {
             );
 
             expect(result).toEqual(mockUpdatedSession as any);
+            expect(prisma.recipe.update).toHaveBeenCalledWith({
+                where: { id: 'r2' },
+                data: {
+                    categories: ['Award-Winning'],
+                },
+            });
+            expect(redisCache.del).toHaveBeenCalledWith('recipe:r2');
+            expect(redisCache.incr).toHaveBeenCalledWith(
+                'recipes:global:version'
+            );
             expect(prisma.recipeVoteSession.update).toHaveBeenCalledWith(
                 expect.objectContaining({
                     where: { id: 'session-123' },
@@ -242,6 +262,107 @@ describe('Top Recipe Vote Business Logic', () => {
                     }),
                 })
             );
+        });
+
+        it.each(['week', 'month', 'year'] as const)(
+            'should add Award-Winning category to %s winner preserving existing categories',
+            async (category) => {
+                const mockSession = {
+                    id: `session-${category}`,
+                    category,
+                    periodKey: '2026-05',
+                    candidates: ['r1', 'r2'],
+                    status: 'voting',
+                };
+                vi.mocked(
+                    prisma.recipeVoteSession.findUnique
+                ).mockResolvedValueOnce(mockSession as any);
+                vi.mocked(prisma.recipeVote.groupBy).mockResolvedValueOnce([
+                    { recipeId: 'r1', _count: { recipeId: 3 } },
+                ] as any);
+                vi.mocked(prisma.recipe.findMany).mockResolvedValueOnce([
+                    {
+                        id: 'r1',
+                        numLikes: 10,
+                        userId: 'user-a',
+                        categories: ['Desserts', 'Vegetarian'],
+                    },
+                    {
+                        id: 'r2',
+                        numLikes: 5,
+                        userId: 'user-b',
+                        categories: ['Pasta'],
+                    },
+                ] as any);
+                vi.mocked(
+                    prisma.recipeVoteSession.update
+                ).mockResolvedValueOnce({
+                    ...mockSession,
+                    status: 'closed',
+                    winnerId: 'r1',
+                } as any);
+
+                await closeVoteSession(
+                    category,
+                    new Date('2026-06-22T12:00:00.000Z')
+                );
+
+                expect(prisma.recipe.update).toHaveBeenCalledWith({
+                    where: { id: 'r1' },
+                    data: {
+                        categories: ['Desserts', 'Vegetarian', 'Award-Winning'],
+                    },
+                });
+                expect(redisCache.del).toHaveBeenCalledWith('recipe:r1');
+                expect(redisCache.incr).toHaveBeenCalledWith(
+                    'recipes:global:version'
+                );
+            }
+        );
+
+        it('should not add duplicate Award-Winning category if winner already has it (case-insensitive)', async () => {
+            const mockSession = {
+                id: 'session-month',
+                category: 'month',
+                periodKey: '2026-05',
+                candidates: ['r1', 'r2'],
+                status: 'voting',
+            };
+            vi.mocked(
+                prisma.recipeVoteSession.findUnique
+            ).mockResolvedValueOnce(mockSession as any);
+            vi.mocked(prisma.recipeVote.groupBy).mockResolvedValueOnce([
+                { recipeId: 'r1', _count: { recipeId: 4 } },
+            ] as any);
+            vi.mocked(prisma.recipe.findMany).mockResolvedValueOnce([
+                {
+                    id: 'r1',
+                    numLikes: 20,
+                    userId: 'user-a',
+                    categories: ['Desserts', 'award-winning'],
+                },
+                {
+                    id: 'r2',
+                    numLikes: 5,
+                    userId: 'user-b',
+                    categories: ['Pasta'],
+                },
+            ] as any);
+            vi.mocked(prisma.recipeVoteSession.update).mockResolvedValueOnce({
+                ...mockSession,
+                status: 'closed',
+                winnerId: 'r1',
+            } as any);
+
+            await closeVoteSession(
+                'month',
+                new Date('2026-06-22T12:00:00.000Z')
+            );
+
+            expect(prisma.recipe.update).not.toHaveBeenCalled();
+            expect(redisCache.del).not.toHaveBeenCalled();
+            expect(redisCache.incr).not.toHaveBeenCalled();
+            expect(prisma.recipeVoteSession.update).toHaveBeenCalled();
         });
     });
 
