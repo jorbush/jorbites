@@ -13,6 +13,7 @@ import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import useLoginModal from '@/app/hooks/useLoginModal';
+import useClientSearch from '@/app/hooks/useClientSearch';
 import { SafePlanning, SafeUser } from '@/app/types';
 import { NavigationTab } from '@/app/components/utils/TabNavigation';
 import { planningsReducer } from './planningsReducer';
@@ -165,11 +166,29 @@ export function usePlanningsClient({
         return communityPlannings;
     }, [activeTab, myPlannings, savedPlannings, communityPlannings]);
 
+    const extractPlanningSearchFields = useCallback(
+        (plan: SafePlanning) => [plan.name, plan.description, plan.user?.name],
+        []
+    );
+
+    const {
+        searchQuery,
+        setSearchQuery,
+        clearSearch,
+        isSearching,
+        filteredItems: filteredPlans,
+    } = useClientSearch(activePlans, extractPlanningSearchFields);
+
     return {
         activeTab,
         setActiveTab,
         tabs,
         activePlans,
+        filteredPlans,
+        searchQuery,
+        setSearchQuery,
+        clearSearch,
+        isSearching,
         myPlannings,
         communityPlannings,
         savedPlannings,

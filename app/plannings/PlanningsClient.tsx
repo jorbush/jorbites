@@ -6,6 +6,7 @@ import Container from '@/app/components/utils/Container';
 import ConfirmModal from '@/app/components/modals/ConfirmModal';
 import PlanningModal from '@/app/components/modals/PlanningModal';
 import TabNavigation from '@/app/components/utils/TabNavigation';
+import SearchBar from '@/app/components/inputs/SearchBar';
 import PlanningsHeader from '@/app/components/plannings/PlanningsHeader';
 import PlanningsGrid from '@/app/components/plannings/PlanningsGrid';
 import { SafePlanning, SafeUser } from '@/app/types';
@@ -24,7 +25,11 @@ const PlanningsClient: React.FC<PlanningsClientProps> = (props) => {
         activeTab,
         setActiveTab,
         tabs,
-        activePlans,
+        filteredPlans,
+        searchQuery,
+        setSearchQuery,
+        clearSearch,
+        isSearching,
         isCreateOpen,
         setIsCreateOpen,
         isCreating,
@@ -53,13 +58,27 @@ const PlanningsClient: React.FC<PlanningsClientProps> = (props) => {
                     onTabChange={(tabId) => setActiveTab(tabId as PlanningsTab)}
                 />
 
+                <SearchBar
+                    id="plannings-search-input"
+                    value={searchQuery}
+                    onChange={setSearchQuery}
+                    placeholder={String(
+                        t('search_plannings', 'Search meal plans...')
+                    )}
+                    clearLabel={String(t('clear_search', 'Clear search'))}
+                    dataTestId="plannings-search-input"
+                    dataCy="plannings-search-input"
+                />
+
                 <div className="mt-2">
                     <PlanningsGrid
-                        plans={activePlans}
+                        plans={filteredPlans}
                         currentUser={currentUser}
                         showDelete={activeTab !== 'community'}
                         isSavedTab={activeTab === 'saved'}
                         showPublicBadge={activeTab === 'my'}
+                        isSearching={isSearching}
+                        onClearSearch={clearSearch}
                         onUnsave={onUnsave}
                         onDeleteClick={setDeletePlanId}
                         push={push}

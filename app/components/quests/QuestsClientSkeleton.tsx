@@ -26,6 +26,9 @@ const QuestsClientSkeleton = () => {
                     ))}
                 </div>
 
+                {/* Search Bar Skeleton */}
+                <div className="mb-6 h-10 w-full animate-pulse rounded-xl bg-neutral-200 sm:max-w-sm dark:bg-neutral-800"></div>
+
                 {/* Quest Cards Skeleton */}
                 <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
                     {[1, 2, 3, 4, 5, 6].map((i) => (

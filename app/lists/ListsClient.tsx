@@ -13,6 +13,9 @@ import ListCard from '@/app/components/lists/ListCard';
 import TabNavigation, {
     NavigationTab,
 } from '@/app/components/utils/TabNavigation';
+import SearchBar from '@/app/components/inputs/SearchBar';
+import EmptySearchResults from '@/app/components/utils/EmptySearchResults';
+import useClientSearch from '@/app/hooks/useClientSearch';
 
 interface ListsClientProps {
     initialMyLists: SafeList[];
@@ -49,6 +52,23 @@ const ListsClient: React.FC<ListsClientProps> = ({
     const listsToRender =
         activeTab === 'my' ? initialMyLists : initialCommunityLists;
 
+    const extractListSearchFields = useCallback(
+        (list: SafeList) => [
+            list.isDefault ? t('to_cook_later') : list.name,
+            list.name,
+            list.user?.name,
+        ],
+        [t]
+    );
+
+    const {
+        searchQuery,
+        setSearchQuery,
+        clearSearch,
+        isSearching,
+        filteredItems: filteredLists,
+    } = useClientSearch(listsToRender, extractListSearchFields);
+
     const tabs: NavigationTab[] = [
         ...(currentUser ? [{ id: 'my', label: t('my_lists') }] : []),
         { id: 'community', label: t('community_lists') || 'Community Lists' },
@@ -82,16 +102,49 @@ const ListsClient: React.FC<ListsClientProps> = ({
                     }
                 />
 
+                {/* Search Bar */}
+                <SearchBar
+                    id="lists-search-input"
+                    value={searchQuery}
+                    onChange={setSearchQuery}
+                    placeholder={String(t('search_lists', 'Search lists...'))}
+                    clearLabel={String(t('clear_search', 'Clear search'))}
+                    dataTestId="lists-search-input"
+                    dataCy="lists-search-input"
+                />
+
                 {/* Tab Content */}
-                <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {listsToRender.length === 0 ? (
-                        <div className="col-span-full flex h-48 w-full flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-300 py-10 text-neutral-500 dark:border-neutral-800 dark:text-neutral-400">
+                {filteredLists.length === 0 ? (
+                    isSearching ? (
+                        <EmptySearchResults
+                            title={String(
+                                t(
+                                    'no_lists_matching_search',
+                                    'No lists match your search'
+                                )
+                            )}
+                            subtitle={String(
+                                t(
+                                    'no_search_results_subtitle',
+                                    'Try searching with different keywords or check your spelling.'
+                                )
+                            )}
+                            clearLabel={String(
+                                t('clear_search', 'Clear search')
+                            )}
+                            onClearSearch={clearSearch}
+                            dataTestId="lists-search-empty"
+                        />
+                    ) : (
+                        <div className="flex h-48 w-full flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-300 py-10 text-neutral-500 dark:border-neutral-800 dark:text-neutral-400">
                             <p className="text-sm font-medium">
                                 {t('no_lists') || 'No lists found'}
                             </p>
                         </div>
-                    ) : (
-                        listsToRender.map((list) => (
+                    )
+                ) : (
+                    <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        {filteredLists.map((list) => (
                             <ListCard
                                 key={list.id}
                                 list={list}
@@ -104,9 +157,9 @@ const ListsClient: React.FC<ListsClientProps> = ({
                                 t={t}
                                 language={i18n.language}
                             />
-                        ))
-                    )}
-                </div>
+                        ))}
+                    </div>
+                )}
             </div>
             <ConfirmModal
                 open={!!deleteListId}

@@ -134,4 +134,49 @@ describe('PlanningsClient', () => {
             isPrivate: true,
         });
     });
+
+    it('filters meal plans by name, description, or author and handles empty search state', () => {
+        const extraPlan: SafePlanning = {
+            id: 'plan-2',
+            name: 'Mediterranean Menu',
+            description: 'Healthy olive oil dishes',
+            userId: 'user-2',
+            isPrivate: false,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            user: {
+                id: 'user-2',
+                name: 'Maria Cook',
+                image: null,
+                level: 2,
+                verified: false,
+                badges: [],
+            },
+            meals: [],
+        };
+
+        render(
+            <PlanningsClient
+                initialMyPlannings={[]}
+                initialCommunityPlannings={[...mockPlannings, extraPlan]}
+                currentUser={null}
+            />
+        );
+
+        const searchInput = screen.getByTestId(
+            'plannings-search-input'
+        ) as HTMLInputElement;
+
+        fireEvent.change(searchInput, { target: { value: 'Maria' } });
+        expect(screen.getByText('Mediterranean Menu')).toBeDefined();
+        expect(screen.queryByText('Keto Week')).toBeNull();
+
+        fireEvent.change(searchInput, { target: { value: 'no-match-xyz' } });
+        expect(screen.getByTestId('plannings-search-empty')).toBeDefined();
+
+        fireEvent.click(screen.getByTestId('plannings-search-input-clear'));
+        expect(searchInput.value).toBe('');
+        expect(screen.getByText('Keto Week')).toBeDefined();
+        expect(screen.getByText('Mediterranean Menu')).toBeDefined();
+    });
 });

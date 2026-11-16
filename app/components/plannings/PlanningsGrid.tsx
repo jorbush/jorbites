@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { SafePlanning, SafeUser } from '@/app/types';
+import EmptySearchResults from '@/app/components/utils/EmptySearchResults';
 import { PlanningCard } from './PlanningCard';
 
 const noopPush = () => {};
@@ -12,6 +13,8 @@ export interface PlanningsGridProps {
     showDelete?: boolean;
     isSavedTab?: boolean;
     showPublicBadge?: boolean;
+    isSearching?: boolean;
+    onClearSearch?: () => void;
     onUnsave: (planId: string) => Promise<void>;
     onDeleteClick: (planId: string) => void;
     push?: (url: string) => void;
@@ -25,6 +28,8 @@ export const PlanningsGrid: React.FC<PlanningsGridProps> = ({
     showDelete = false,
     isSavedTab = false,
     showPublicBadge = false,
+    isSearching = false,
+    onClearSearch,
     onUnsave,
     onDeleteClick,
     push = noopPush,
@@ -32,6 +37,28 @@ export const PlanningsGrid: React.FC<PlanningsGridProps> = ({
     language,
 }) => {
     if (plans.length === 0) {
+        if (isSearching) {
+            return (
+                <EmptySearchResults
+                    title={String(
+                        t(
+                            'no_plannings_matching_search',
+                            'No meal plans match your search'
+                        )
+                    )}
+                    subtitle={String(
+                        t(
+                            'no_search_results_subtitle',
+                            'Try searching with different keywords or check your spelling.'
+                        )
+                    )}
+                    clearLabel={String(t('clear_search', 'Clear search'))}
+                    onClearSearch={onClearSearch}
+                    dataTestId="plannings-search-empty"
+                />
+            );
+        }
+
         return (
             <div className="rounded-2xl border border-dashed border-neutral-300 p-12 text-center text-neutral-500 dark:border-neutral-800 dark:text-neutral-400">
                 <p className="text-sm font-medium">{t('no_meal_plans')}</p>

@@ -12,6 +12,9 @@ import { formatDistanceToNowLocale } from '@/app/utils/date-utils';
 import Avatar from '@/app/components/utils/Avatar';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import Pagination from '@/app/components/navigation/Pagination';
+import SearchBar from '@/app/components/inputs/SearchBar';
+import EmptySearchResults from '@/app/components/utils/EmptySearchResults';
+import useUrlSearch from '@/app/hooks/useUrlSearch';
 
 interface Quest {
     id: string;
@@ -85,6 +88,7 @@ interface QuestsClientProps {
     totalPages: number;
     currentPage: number;
     initialStatus?: string;
+    initialSearch?: string;
 }
 
 const QuestsClient: React.FC<QuestsClientProps> = ({
@@ -93,6 +97,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
     totalPages,
     currentPage,
     initialStatus = 'open',
+    initialSearch = '',
 }) => {
     const { t, i18n } = useTranslation();
     const { push } = useRouter() || {};
@@ -115,6 +120,17 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
         'all' | 'open' | 'in_progress' | 'completed'
     >(() => getInitialFilter());
 
+    const {
+        searchQuery,
+        setSearchQuery,
+        submitSearch,
+        clearSearch,
+        isSearching,
+    } = useUrlSearch({
+        basePath: '/quests',
+        initialSearch,
+    });
+
     const handleRequestRecipe = () => {
         if (!currentUser) {
             loginModal.onOpen();
@@ -130,6 +146,12 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
             params.set('status', newFilter);
         } else {
             params.delete('status');
+        }
+        const trimmedSearch = searchQuery.trim();
+        if (trimmedSearch) {
+            params.set('search', trimmedSearch);
+        } else {
+            params.delete('search');
         }
         params.set('page', '1');
         const queryString = params.toString();
@@ -200,6 +222,23 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                 </div>
             </div>
 
+            {/* Search Bar */}
+            <div className="mb-6">
+                <SearchBar
+                    id="quests-search-input"
+                    value={searchQuery}
+                    onChange={setSearchQuery}
+                    onSubmit={submitSearch}
+                    onClear={clearSearch}
+                    placeholder={String(
+                        t('search_quests_placeholder', 'Search quests...')
+                    )}
+                    clearLabel={String(t('clear_search', 'Clear search'))}
+                    dataTestId="quests-search-input"
+                    dataCy="quests-search-input"
+                />
+            </div>
+
             {/* Floating Action Button for mobile (below md) */}
             <button
                 type="button"
@@ -213,18 +252,38 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
 
             {/* Quests Grid */}
             {quests.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-neutral-300 p-12 text-center dark:border-neutral-800">
-                    <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-xl border border-neutral-200/80 bg-neutral-100 text-neutral-400 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-500">
-                        <FiCircle size={22} />
+                isSearching ? (
+                    <EmptySearchResults
+                        title={String(
+                            t(
+                                'no_quests_matching_search',
+                                'No quests match your search'
+                            )
+                        )}
+                        subtitle={String(
+                            t(
+                                'no_search_results_subtitle',
+                                'Try searching with different keywords or check your spelling.'
+                            )
+                        )}
+                        clearLabel={String(t('clear_search', 'Clear search'))}
+                        onClearSearch={clearSearch}
+                        dataTestId="quests-search-empty"
+                    />
+                ) : (
+                    <div className="rounded-2xl border border-dashed border-neutral-300 p-12 text-center dark:border-neutral-800">
+                        <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-xl border border-neutral-200/80 bg-neutral-100 text-neutral-400 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-500">
+                            <FiCircle size={22} />
+                        </div>
+                        <h3 className="mb-1 text-base font-semibold text-neutral-900 dark:text-white">
+                            {t('no_quests') || 'No quests found'}
+                        </h3>
+                        <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                            {t('no_quests_description') ||
+                                'Be the first to request a recipe!'}
+                        </p>
                     </div>
-                    <h3 className="mb-1 text-base font-semibold text-neutral-900 dark:text-white">
-                        {t('no_quests') || 'No quests found'}
-                    </h3>
-                    <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                        {t('no_quests_description') ||
-                            'Be the first to request a recipe!'}
-                    </p>
-                </div>
+                )
             ) : (
                 <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
                     {quests.map((quest) => (
@@ -350,6 +409,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                         currentPage={currentPage}
                         searchParams={{
                             status: filter !== 'all' ? filter : undefined,
+                            search: initialSearch.trim() || undefined,
                         }}
                     />
                 </div>

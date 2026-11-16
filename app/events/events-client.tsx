@@ -15,7 +15,9 @@ import { EventCardSkeleton } from '@/app/components/events/EventCard';
 import useTheme from '@/app/hooks/useTheme';
 import WeeklyChallenge from '@/app/components/events/WeeklyChallenge';
 import { FcIdea } from 'react-icons/fc';
-import { FiCalendar, FiPlus, FiSearch, FiX } from 'react-icons/fi';
+import { FiCalendar, FiPlus } from 'react-icons/fi';
+import SearchBar from '@/app/components/inputs/SearchBar';
+import EmptySearchResults from '@/app/components/utils/EmptySearchResults';
 import EventCalendar from '@/app/components/events/EventCalendar';
 import { SafeWeeklyChallenge } from '@/app/types';
 import TopRecipeVoting from '@/app/components/events/TopRecipeVoting';
@@ -200,90 +202,6 @@ const EventsLoadingSkeleton: React.FC = () => {
     );
 };
 
-interface EventsSearchBarProps {
-    value: string;
-    onChange: (value: string) => void;
-    placeholder: string;
-    clearLabel: string;
-}
-
-const EventsSearchBar: React.FC<EventsSearchBarProps> = ({
-    value,
-    onChange,
-    placeholder,
-    clearLabel,
-}) => (
-    <div className="mb-6 flex justify-end">
-        <div className="relative w-full sm:max-w-xs">
-            <label
-                htmlFor="events-search-input"
-                className="sr-only"
-            >
-                {placeholder}
-            </label>
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-                <FiSearch className="size-4 text-neutral-400" />
-            </div>
-            <input
-                id="events-search-input"
-                type="text"
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                placeholder={placeholder}
-                className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 w-full rounded-xl border border-neutral-200/80 bg-white/80 py-2 pr-9 pl-10 text-base text-neutral-900 shadow-2xs transition-colors duration-200 outline-none placeholder:text-neutral-400 focus:ring-2 md:text-sm dark:border-neutral-800/80 dark:bg-neutral-900/60 dark:text-white dark:placeholder:text-neutral-500"
-                data-testid="events-search-input"
-                aria-label={placeholder}
-            />
-            {value && (
-                <button
-                    type="button"
-                    onClick={() => onChange('')}
-                    className="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer rounded-full p-1 text-neutral-400 transition-colors duration-200 hover:text-neutral-600 dark:hover:text-neutral-200"
-                    aria-label={clearLabel}
-                    data-testid="events-search-clear"
-                >
-                    <FiX className="size-4" />
-                </button>
-            )}
-        </div>
-    </div>
-);
-
-interface EmptySearchResultsProps {
-    onClearSearch?: () => void;
-}
-
-const EmptySearchResults: React.FC<EmptySearchResultsProps> = ({
-    onClearSearch,
-}) => {
-    const { t } = useTranslation();
-
-    return (
-        <div
-            className="rounded-2xl border border-neutral-200/80 bg-white/80 px-6 py-10 text-center dark:border-neutral-800/80 dark:bg-neutral-900/60"
-            data-testid="events-search-empty"
-        >
-            <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                {String(
-                    t(
-                        'no_events_matching_search',
-                        'No events match your search'
-                    )
-                )}
-            </p>
-            {onClearSearch && (
-                <button
-                    type="button"
-                    onClick={onClearSearch}
-                    className="mt-3 cursor-pointer text-sm font-medium text-neutral-900 underline decoration-neutral-300 underline-offset-4 transition-colors hover:decoration-neutral-900 dark:text-neutral-100 dark:decoration-neutral-600 dark:hover:decoration-neutral-100"
-                >
-                    {String(t('clear_search', 'Clear search'))}
-                </button>
-            )}
-        </div>
-    );
-};
-
 interface EventsCategoriesListsProps {
     events: CategorizedEvents;
     isSearching?: boolean;
@@ -339,7 +257,20 @@ const EventsCategoriesLists: React.FC<EventsCategoriesListsProps> = ({
         : sections;
 
     if (isSearching && visibleSections.length === 0) {
-        return <EmptySearchResults onClearSearch={onClearSearch} />;
+        return (
+            <EmptySearchResults
+                title={String(
+                    t(
+                        'no_events_matching_search',
+                        'No events match your search'
+                    )
+                )}
+                clearLabel={String(t('clear_search', 'Clear search'))}
+                onClearSearch={onClearSearch}
+                dataTestId="events-search-empty"
+                showIcon={false}
+            />
+        );
     }
 
     return (
@@ -420,13 +351,18 @@ const EventsClient: React.FC<EventsClientProps> = ({
                 />
 
                 {!loading && (
-                    <EventsSearchBar
+                    <SearchBar
+                        id="events-search-input"
                         value={searchQuery}
                         onChange={setSearchQuery}
                         placeholder={String(
                             t('search_events', 'Search events...')
                         )}
                         clearLabel={String(t('clear_search', 'Clear search'))}
+                        className="mb-6 justify-end"
+                        inputWrapperClassName="w-full sm:max-w-xs"
+                        dataTestId="events-search-input"
+                        clearTestId="events-search-clear"
                     />
                 )}
 
