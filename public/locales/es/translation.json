@@ -1692,5 +1692,21 @@
     "enter_2fa_code_subtitle": "Introduce el código de 6 dígitos de tu aplicación de autenticación o un código de recuperación.",
     "enter_2fa_code_error": "Por favor, introduce tu código de verificación",
     "invalid_2fa_code": "Código de verificación no válido",
-    "too_many_2fa_attempts": "Demasiados intentos de verificación. Por favor, inténtalo más tarde."
+    "too_many_2fa_attempts": "Demasiados intentos de verificación. Por favor, inténtalo más tarde.",
+    "allergens": "Alérgenos",
+    "allergens_disclaimer": "Detectados por ingredientes",
+    "allergen_gluten": "Gluten",
+    "allergen_crustaceans": "Crustáceos",
+    "allergen_eggs": "Huevos",
+    "allergen_fish": "Pescado",
+    "allergen_peanuts": "Cacahuetes",
+    "allergen_soy": "Soja",
+    "allergen_milk": "Lácteos",
+    "allergen_nuts": "Frutos de cáscara",
+    "allergen_celery": "Apio",
+    "allergen_mustard": "Mostaza",
+    "allergen_sesame": "Sésamo",
+    "allergen_sulphites": "Sulfitos",
+    "allergen_lupin": "Altramuces",
+    "allergen_molluscs": "Moluscos"
 }

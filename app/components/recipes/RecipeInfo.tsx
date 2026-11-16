@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { IconType } from 'react-icons';
 import { GanttTable, SafeUser } from '@/app/types';
 import RecipeCategoryAndMethod from '@/app/components/recipes/RecipeCategoryAndMethod';
@@ -133,6 +134,11 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     const linkedRecipes = linkedRecipesData || [];
     const isLoadingRelatedData = isCoCooksLoading || isLinkedRecipesLoading;
 
+    const categoryLabels = useMemo(
+        () => categories?.map((c) => c.label) ?? EMPTY_ARRAY,
+        [categories]
+    );
+
     return (
         <div className="col-span-4 flex flex-col gap-8 pr-2 pl-2">
             <RecipeInfoHeader
@@ -184,6 +190,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                 recipeTitle={recipeTitle}
                 recipeId={id}
                 recipeYield={recipeYield}
+                categories={categoryLabels}
                 RenderDescription={RecipeDescription}
                 RenderIngredients={RecipeIngredients}
                 RenderSteps={RecipeSteps}
