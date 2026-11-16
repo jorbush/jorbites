@@ -1,23 +1,28 @@
 'use client';
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FiCheck } from 'react-icons/fi';
+import { FiAlertCircle, FiCheck } from 'react-icons/fi';
 import Counter from '@/app/components/inputs/Counter';
 import useIsMounted from '@/app/hooks/useIsMounted';
 import useRecipeChecklist from '@/app/hooks/useRecipeChecklist';
+import { detectAllergens } from '@/app/utils/allergenDetector';
 import { scaleIngredient } from '@/app/utils/ingredientScaler';
 import { formatText } from '@/app/utils/textFormatting';
 import RecipeChecklistHeader from './RecipeChecklistHeader';
 
 export interface RecipeIngredientsProps {
     items: string[];
+    rawIngredients?: string[];
+    categories?: string[];
     recipeId?: string;
     recipeYield?: number | null;
 }
 
 export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
     items,
+    rawIngredients,
+    categories,
     recipeId,
     recipeYield,
 }) => {
@@ -50,6 +55,14 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
         },
         [hasValidYield, recipeYield]
     );
+
+    const detectedAllergens = useMemo(() => {
+        const sourceItems =
+            rawIngredients && rawIngredients.length > 0
+                ? rawIngredients
+                : items;
+        return detectAllergens(sourceItems, categories);
+    }, [rawIngredients, items, categories]);
 
     if (items.length === 0) return null;
 
@@ -131,6 +144,48 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
                     );
                 })}
             </ul>
+
+            {detectedAllergens.length > 0 && (
+                <div
+                    className="mt-5 border-t border-neutral-100 pt-4 dark:border-neutral-800/80"
+                    data-cy="recipe-allergens"
+                    data-testid="recipe-allergens"
+                >
+                    <div className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-neutral-600 uppercase dark:text-neutral-400">
+                        <FiAlertCircle
+                            size={14}
+                            className="shrink-0 text-amber-600 dark:text-amber-400"
+                        />
+                        <span>{mounted ? t('allergens') : 'allergens'}</span>
+                    </div>
+                    <div className="mt-2.5 flex flex-wrap gap-2">
+                        {detectedAllergens.map((allergen) => {
+                            const Icon = allergen.icon;
+                            const labelKey = `allergen_${allergen.id}`;
+                            const label = String(
+                                mounted ? t(labelKey) : labelKey
+                            );
+                            const tooltip = String(
+                                `${label}: ${allergen.matchedIngredients.join(', ')}`
+                            );
+                            return (
+                                <span
+                                    key={allergen.id}
+                                    data-testid={`allergen-badge-${allergen.id}`}
+                                    title={tooltip}
+                                    className="inline-flex items-center gap-1.5 rounded-full border border-amber-200/80 bg-amber-50/70 px-3 py-1 text-xs font-medium text-amber-900 dark:border-amber-800/50 dark:bg-amber-950/30 dark:text-amber-200"
+                                >
+                                    <Icon
+                                        size={14}
+                                        className="shrink-0 text-amber-700 dark:text-amber-300"
+                                    />
+                                    <span>{label}</span>
+                                </span>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -148,4 +148,42 @@ describe('RecipeIngredients', () => {
         expect(screen.getByText('0.5 tsp salt')).toBeDefined();
         expect(screen.getByText('0.5 egg')).toBeDefined();
     });
+
+    it('renders detected allergen badges when allergenic ingredients are present', () => {
+        render(
+            <RecipeIngredients
+                items={mockItems}
+                recipeId="rec-1"
+            />
+        );
+
+        expect(screen.getByTestId('recipe-allergens')).toBeDefined();
+        expect(screen.getByTestId('allergen-badge-gluten')).toBeDefined();
+        expect(screen.getByTestId('allergen-badge-eggs')).toBeDefined();
+    });
+
+    it('does not render allergens section when ingredients have no allergens', () => {
+        render(
+            <RecipeIngredients
+                items={['2 cups water', '1 tsp salt']}
+                recipeId="rec-1"
+            />
+        );
+
+        expect(screen.queryByTestId('recipe-allergens')).toBeNull();
+    });
+
+    it('respects Gluten-Free category override for allergens display', () => {
+        render(
+            <RecipeIngredients
+                items={mockItems}
+                categories={['Gluten-Free']}
+                recipeId="rec-1"
+            />
+        );
+
+        expect(screen.getByTestId('recipe-allergens')).toBeDefined();
+        expect(screen.queryByTestId('allergen-badge-gluten')).toBeNull();
+        expect(screen.getByTestId('allergen-badge-eggs')).toBeDefined();
+    });
 });

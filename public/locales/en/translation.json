@@ -1697,5 +1697,20 @@
     "enter_2fa_code_subtitle": "Enter the 6-digit code from your authenticator app or a backup recovery code.",
     "enter_2fa_code_error": "Please enter your verification code",
     "invalid_2fa_code": "Invalid verification code",
-    "too_many_2fa_attempts": "Too many verification attempts. Please try again later."
+    "too_many_2fa_attempts": "Too many verification attempts. Please try again later.",
+    "allergens": "Allergens",
+    "allergen_gluten": "Gluten",
+    "allergen_crustaceans": "Crustaceans",
+    "allergen_eggs": "Eggs",
+    "allergen_fish": "Fish",
+    "allergen_peanuts": "Peanuts",
+    "allergen_soy": "Soy",
+    "allergen_milk": "Dairy",
+    "allergen_nuts": "Tree Nuts",
+    "allergen_celery": "Celery",
+    "allergen_mustard": "Mustard",
+    "allergen_sesame": "Sesame",
+    "allergen_sulphites": "Sulphites",
+    "allergen_lupin": "Lupin",
+    "allergen_molluscs": "Molluscs"
 }
