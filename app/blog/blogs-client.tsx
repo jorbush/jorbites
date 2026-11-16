@@ -1,6 +1,12 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import Container from '@/app/components/utils/Container';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
@@ -8,6 +14,10 @@ import { Blog } from '@/app/utils/markdownUtils';
 import useTheme from '@/app/hooks/useTheme';
 import BlogCard, { BlogCardSkeleton } from '@/app/components/blog/BlogCard';
 import Pagination from '@/app/components/navigation/Pagination';
+import SearchBar, {
+    EmptySearchResults,
+} from '@/app/components/utils/SearchBar';
+import { useDebouncedValue } from '@/app/hooks/useDebouncedValue';
 import { FcNews } from 'react-icons/fc';
 import { FiEdit3 } from 'react-icons/fi';
 import { CMS_BLOGS_URL } from '@/app/utils/constants';
@@ -17,6 +27,7 @@ import { fetcher } from '@/app/utils/fetcher';
 interface BlogsClientProps {
     initialPage: number;
     initialCategory?: string;
+    initialSearch?: string;
 }
 
 const CATEGORIES = [
@@ -27,6 +38,7 @@ const CATEGORIES = [
 const BlogsClient: React.FC<BlogsClientProps> = ({
     initialPage,
     initialCategory = 'general',
+    initialSearch = '',
 }) => {
     const { t, i18n } = useTranslation();
     const { push } = useRouter() || {};
@@ -37,23 +49,88 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
 
     useTheme();
 
+    const [searchQuery, setSearchQuery] = useState(initialSearch);
+    const debouncedSearch = useDebouncedValue(searchQuery, 300);
+    const lastNavigatedSearchRef = useRef(initialSearch.trim());
+
+    useEffect(() => {
+        const trimmed = initialSearch.trim();
+        if (trimmed !== lastNavigatedSearchRef.current) {
+            lastNavigatedSearchRef.current = trimmed;
+            setSearchQuery(initialSearch);
+        }
+    }, [initialSearch]);
+
+    const navigateToBlogs = useCallback(
+        (category: string, search: string) => {
+            const params = new URLSearchParams({
+                category,
+                page: '1',
+            });
+            const trimmedSearch = search.trim();
+            if (trimmedSearch) {
+                params.set('search', trimmedSearch);
+            }
+            lastNavigatedSearchRef.current = trimmedSearch;
+            push(`/blog?${params.toString()}`, { scroll: false });
+        },
+        [push]
+    );
+
+    useEffect(() => {
+        const trimmed = debouncedSearch.trim();
+        if (trimmed !== lastNavigatedSearchRef.current) {
+            navigateToBlogs(currentCategory, debouncedSearch);
+        }
+    }, [debouncedSearch, currentCategory, navigateToBlogs]);
+
+    const activeSearch =
+        searchQuery.trim() === '' ? '' : debouncedSearch.trim();
+    const effectivePage =
+        activeSearch !== initialSearch.trim() ? 1 : currentPage;
+
+    const swrUrl = useMemo(() => {
+        const params = new URLSearchParams({
+            lang: i18n.language || 'en',
+            page: String(effectivePage),
+            pageSize: '12',
+            category: currentCategory,
+        });
+        if (activeSearch) {
+            params.set('search', activeSearch);
+        }
+        return `/api/blogs?${params.toString()}`;
+    }, [i18n.language, effectivePage, currentCategory, activeSearch]);
+
     const { data: mainData, isLoading: loading } = useSWR<{
         blogs: Blog[];
         totalPages: number;
-    }>(
-        `/api/blogs?lang=${i18n.language || 'en'}&page=${currentPage}&pageSize=12&category=${currentCategory}`,
-        fetcher
-    );
+    }>(swrUrl, fetcher);
 
     const mainBlogs = mainData?.blogs || [];
     const totalPages = mainData?.totalPages || 1;
 
     const handleCategoryChange = useCallback(
         (category: string) => {
-            push(`/blog?category=${category}&page=1`);
+            navigateToBlogs(category, searchQuery);
         },
-        [push]
+        [navigateToBlogs, searchQuery]
     );
+
+    const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            if (searchQuery.trim() !== lastNavigatedSearchRef.current) {
+                navigateToBlogs(currentCategory, searchQuery);
+            }
+        }
+    };
+
+    const handleClearSearch = () => {
+        setSearchQuery('');
+        if (lastNavigatedSearchRef.current !== '') {
+            navigateToBlogs(currentCategory, '');
+        }
+    };
 
     return (
         <Container>
@@ -111,6 +188,20 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
                     </div>
                 </div>
 
+                {/* Search Bar */}
+                <SearchBar
+                    id="blogs-search-input"
+                    value={searchQuery}
+                    onChange={setSearchQuery}
+                    onClear={handleClearSearch}
+                    onKeyDown={handleSearchKeyDown}
+                    placeholder={String(
+                        t('search_blogs', 'Search articles...')
+                    )}
+                    dataTestId="blogs-search-input"
+                    clearDataTestId="blogs-search-clear"
+                />
+
                 {/* Feed Section */}
                 <div>
                     {loading ? (
@@ -120,11 +211,24 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
                             ))}
                         </div>
                     ) : mainBlogs.length === 0 ? (
-                        <div className="rounded-2xl border border-dashed border-neutral-300 py-16 text-center dark:border-neutral-700">
-                            <p className="text-base text-neutral-500 dark:text-neutral-400">
-                                {t('no_blogs_found')}
-                            </p>
-                        </div>
+                        activeSearch.length > 0 ? (
+                            <EmptySearchResults
+                                message={String(
+                                    t(
+                                        'no_blogs_matching_search',
+                                        'No articles match your search'
+                                    )
+                                )}
+                                onClearSearch={handleClearSearch}
+                                dataTestId="blogs-search-empty"
+                            />
+                        ) : (
+                            <div className="rounded-2xl border border-dashed border-neutral-300 py-16 text-center dark:border-neutral-700">
+                                <p className="text-base text-neutral-500 dark:text-neutral-400">
+                                    {t('no_blogs_found')}
+                                </p>
+                            </div>
+                        )
                     ) : (
                         <>
                             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -140,10 +244,13 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
                                 <div className="mt-10">
                                     <Pagination
                                         totalPages={totalPages}
-                                        currentPage={currentPage}
+                                        currentPage={effectivePage}
                                         searchParams={{
-                                            page: currentPage,
+                                            page: effectivePage,
                                             category: currentCategory,
+                                            ...(activeSearch
+                                                ? { search: activeSearch }
+                                                : {}),
                                         }}
                                     />
                                 </div>

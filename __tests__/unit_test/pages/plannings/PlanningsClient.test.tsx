@@ -134,4 +134,28 @@ describe('PlanningsClient', () => {
             isPrivate: true,
         });
     });
+
+    it('filters meal plans by search query and shows empty search state with clear button', () => {
+        render(
+            <PlanningsClient
+                initialMyPlannings={[]}
+                initialCommunityPlannings={mockPlannings}
+                currentUser={null}
+            />
+        );
+
+        const searchInput = screen.getByTestId('plannings-search-input');
+        expect(searchInput.classList.contains('text-base')).toBe(true);
+        expect(searchInput.classList.contains('md:text-sm')).toBe(true);
+
+        fireEvent.change(searchInput, { target: { value: 'Low carb' } });
+        expect(screen.getByText('Keto Week')).toBeDefined();
+
+        fireEvent.change(searchInput, { target: { value: 'nonexistent' } });
+        expect(screen.getByTestId('plannings-search-empty')).toBeDefined();
+        expect(screen.getByText('no_plannings_matching_search')).toBeDefined();
+
+        fireEvent.click(screen.getByText('clear_search'));
+        expect(screen.getByText('Keto Week')).toBeDefined();
+    });
 });

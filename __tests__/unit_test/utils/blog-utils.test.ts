@@ -334,6 +334,61 @@ New content`;
             expect(result.totalPages).toBe(1);
             expect(result.currentPage).toBe(999);
         });
+
+        it('should filter blogs by search query matching title or description', async () => {
+            vi.mocked(fs.readdirSync).mockReturnValue([
+                'pasta-post.md',
+                'soup-post.md',
+            ] as any);
+            vi.mocked(fs.readFileSync).mockImplementation((filePath: any) =>
+                String(filePath).includes('pasta') ? 'pasta' : 'soup'
+            );
+
+            const matter = await import('gray-matter');
+            vi.mocked(matter.default).mockImplementation((content: any) => {
+                if (content === 'pasta') {
+                    return {
+                        data: {
+                            title: 'Italian Pasta Guide',
+                            date: '2025-02-01',
+                            user_id: '123',
+                            description: 'Fresh noodles',
+                        },
+                        content: 'Content',
+                    } as any;
+                }
+                return {
+                    data: {
+                        title: 'Winter Broth',
+                        date: '2025-01-01',
+                        user_id: '123',
+                        description: 'Warming soup recipes',
+                    },
+                    content: 'Content',
+                } as any;
+            });
+
+            const byTitle = await getPaginatedBlogs(
+                'en',
+                1,
+                10,
+                'general',
+                'pasta'
+            );
+            expect(byTitle.blogs).toHaveLength(1);
+            expect(byTitle.blogs[0].id).toBe('pasta-post');
+            expect(byTitle.total).toBe(1);
+
+            const byDesc = await getPaginatedBlogs(
+                'en',
+                1,
+                10,
+                'general',
+                'WARMING'
+            );
+            expect(byDesc.blogs).toHaveLength(1);
+            expect(byDesc.blogs[0].id).toBe('soup-post');
+        });
     });
 
     describe('getBlogsByAuthor', () => {

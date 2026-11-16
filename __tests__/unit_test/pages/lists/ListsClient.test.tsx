@@ -244,4 +244,31 @@ describe('ListsClient', () => {
         expect(screen.getByText('Awesome Desserts')).toBeDefined();
         expect(screen.queryByText('public')).toBeNull();
     });
+
+    it('filters lists by search query and shows empty search state with clear button', () => {
+        render(
+            <ListsClient
+                initialMyLists={mockMyLists}
+                initialCommunityLists={mockCommunityLists}
+                currentUser={mockUser}
+            />
+        );
+
+        const searchInput = screen.getByTestId('lists-search-input');
+        expect(searchInput.classList.contains('text-base')).toBe(true);
+        expect(searchInput.classList.contains('md:text-sm')).toBe(true);
+
+        fireEvent.change(searchInput, { target: { value: 'Special' } });
+
+        expect(screen.getByText('My Special List')).toBeDefined();
+        expect(screen.queryByText('to_cook_later')).toBeNull();
+
+        fireEvent.change(searchInput, { target: { value: 'nonexistent' } });
+        expect(screen.getByTestId('lists-search-empty')).toBeDefined();
+        expect(screen.getByText('no_lists_matching_search')).toBeDefined();
+
+        fireEvent.click(screen.getByText('clear_search'));
+        expect(screen.getByText('My Special List')).toBeDefined();
+        expect(screen.getByText('to_cook_later')).toBeDefined();
+    });
 });

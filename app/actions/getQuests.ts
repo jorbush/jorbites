@@ -4,6 +4,7 @@ import { logger } from '@/app/lib/axiom/server';
 export interface IQuestsParams {
     status?: string;
     userId?: string;
+    search?: string;
     page?: number;
     limit?: number;
 }
@@ -28,7 +29,7 @@ export default async function getQuests(
 ): Promise<ServerResponse<QuestsResponse>> {
     try {
         logger.info('getQuests - start', { params });
-        const { status, userId, page = 1, limit = 10 } = params;
+        const { status, userId, search, page = 1, limit = 10 } = params;
 
         let query: any = {};
 
@@ -38,6 +39,24 @@ export default async function getQuests(
 
         if (userId) {
             query.userId = userId;
+        }
+
+        if (typeof search === 'string' && search.trim()) {
+            const trimmedSearch = search.trim();
+            query.OR = [
+                {
+                    title: {
+                        contains: trimmedSearch,
+                        mode: 'insensitive',
+                    },
+                },
+                {
+                    description: {
+                        contains: trimmedSearch,
+                        mode: 'insensitive',
+                    },
+                },
+            ];
         }
 
         const quests = await prisma.quest.findMany({

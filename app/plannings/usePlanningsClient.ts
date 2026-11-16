@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import useLoginModal from '@/app/hooks/useLoginModal';
 import { SafePlanning, SafeUser } from '@/app/types';
 import { NavigationTab } from '@/app/components/utils/TabNavigation';
+import { useSearchFilter } from '@/app/hooks/useSearchFilter';
 import { planningsReducer } from './planningsReducer';
 
 export type PlanningsTab = 'my' | 'saved' | 'community';
@@ -27,6 +28,12 @@ export interface UsePlanningsClientProps {
 }
 
 const EMPTY_PLANNINGS: SafePlanning[] = [];
+
+const getPlanningSearchFields = (plan: SafePlanning) => [
+    plan.name,
+    plan.description,
+    plan.user?.name,
+];
 
 export function usePlanningsClient({
     initialMyPlannings = EMPTY_PLANNINGS,
@@ -159,17 +166,29 @@ export function usePlanningsClient({
         [currentUser, t]
     );
 
-    const activePlans = useMemo(() => {
+    const tabPlans = useMemo(() => {
         if (activeTab === 'my') return myPlannings;
         if (activeTab === 'saved') return savedPlannings;
         return communityPlannings;
     }, [activeTab, myPlannings, savedPlannings, communityPlannings]);
+
+    const {
+        searchQuery,
+        setSearchQuery,
+        clearSearch,
+        isSearching,
+        filteredItems: activePlans,
+    } = useSearchFilter(tabPlans, getPlanningSearchFields);
 
     return {
         activeTab,
         setActiveTab,
         tabs,
         activePlans,
+        searchQuery,
+        setSearchQuery,
+        clearSearch,
+        isSearching,
         myPlannings,
         communityPlannings,
         savedPlannings,

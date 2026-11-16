@@ -3,6 +3,12 @@ import path from 'path';
 import matter from 'gray-matter';
 import { Blog, BlogFrontmatter } from '@/app/utils/markdownUtils';
 import { ALLOWED_LANGUAGES } from '@/app/utils/constants';
+import { filterBySearchQuery } from '@/app/utils/searchUtils';
+
+const getBlogSearchFields = (blog: Blog) => [
+    blog.frontmatter.title,
+    blog.frontmatter.description,
+];
 
 /**
  * Read a single markdown file and extract frontmatter and content
@@ -133,7 +139,8 @@ export async function getPaginatedBlogs(
     language: string = 'en',
     page: number = 1,
     pageSize: number = 10,
-    category: 'general' | 'releases' = 'general'
+    category: 'general' | 'releases' = 'general',
+    search?: string
 ): Promise<{
     blogs: Blog[];
     total: number;
@@ -141,11 +148,15 @@ export async function getPaginatedBlogs(
     currentPage: number;
 }> {
     const allBlogs = await getAllBlogs(language, category);
-    const total = allBlogs.length;
+    const filteredBlogs =
+        typeof search === 'string' && search.trim()
+            ? filterBySearchQuery(allBlogs, search, getBlogSearchFields)
+            : allBlogs;
+    const total = filteredBlogs.length;
     const totalPages = Math.ceil(total / pageSize);
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    const blogs = allBlogs.slice(startIndex, endIndex);
+    const blogs = filteredBlogs.slice(startIndex, endIndex);
 
     return {
         blogs,

@@ -154,6 +154,31 @@ describe('Blogs API Routes', () => {
             );
         });
 
+        it('should forward search parameter to getPaginatedBlogs', async () => {
+            const mockResult = {
+                blogs: [],
+                total: 0,
+                totalPages: 0,
+                currentPage: 1,
+            };
+
+            (getPaginatedBlogs as jest.Mock).mockResolvedValueOnce(mockResult);
+
+            const request = new NextRequest(
+                'http://localhost:3000/api/blogs?lang=en&page=1&pageSize=12&category=releases&search=v0.9'
+            );
+            const response = await BlogsGET(request);
+
+            expect(response.status).toBe(200);
+            expect(getPaginatedBlogs).toHaveBeenCalledWith(
+                'en',
+                1,
+                12,
+                'releases',
+                'v0.9'
+            );
+        });
+
         it('should return authored blogs when authorId is provided', async () => {
             const mockAuthorBlogs = [
                 {

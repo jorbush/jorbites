@@ -22,13 +22,18 @@ export const metadata: Metadata = {
 };
 
 interface BlogPageProps {
-    searchParams: Promise<{ page?: string; category?: string }>;
+    searchParams: Promise<{
+        page?: string;
+        category?: string;
+        search?: string;
+    }>;
 }
 
 const BlogPage = async ({ searchParams }: BlogPageProps) => {
     const resolvedParams = await searchParams;
     const page = parseInt(resolvedParams.page || '1');
     const category = resolvedParams.category || 'general';
+    const search = resolvedParams.search || '';
 
     return (
         <Suspense
@@ -65,6 +70,7 @@ const BlogPage = async ({ searchParams }: BlogPageProps) => {
                 <BlogsClient
                     initialPage={page}
                     initialCategory={category}
+                    initialSearch={search}
                 />
             </ClientOnly>
         </Suspense>

@@ -8,6 +8,9 @@ import PlanningModal from '@/app/components/modals/PlanningModal';
 import TabNavigation from '@/app/components/utils/TabNavigation';
 import PlanningsHeader from '@/app/components/plannings/PlanningsHeader';
 import PlanningsGrid from '@/app/components/plannings/PlanningsGrid';
+import SearchBar, {
+    EmptySearchResults,
+} from '@/app/components/utils/SearchBar';
 import { SafePlanning, SafeUser } from '@/app/types';
 import { usePlanningsClient, PlanningsTab } from './usePlanningsClient';
 
@@ -25,6 +28,10 @@ const PlanningsClient: React.FC<PlanningsClientProps> = (props) => {
         setActiveTab,
         tabs,
         activePlans,
+        searchQuery,
+        setSearchQuery,
+        clearSearch,
+        isSearching,
         isCreateOpen,
         setIsCreateOpen,
         isCreating,
@@ -53,19 +60,43 @@ const PlanningsClient: React.FC<PlanningsClientProps> = (props) => {
                     onTabChange={(tabId) => setActiveTab(tabId as PlanningsTab)}
                 />
 
-                <div className="mt-2">
-                    <PlanningsGrid
-                        plans={activePlans}
-                        currentUser={currentUser}
-                        showDelete={activeTab !== 'community'}
-                        isSavedTab={activeTab === 'saved'}
-                        showPublicBadge={activeTab === 'my'}
-                        onUnsave={onUnsave}
-                        onDeleteClick={setDeletePlanId}
-                        push={push}
-                        t={t}
-                        language={language}
-                    />
+                <SearchBar
+                    id="plannings-search-input"
+                    value={searchQuery}
+                    onChange={setSearchQuery}
+                    placeholder={String(
+                        t('search_plannings', 'Search meal plans...')
+                    )}
+                    dataTestId="plannings-search-input"
+                    clearDataTestId="plannings-search-clear"
+                />
+
+                <div>
+                    {isSearching && activePlans.length === 0 ? (
+                        <EmptySearchResults
+                            message={String(
+                                t(
+                                    'no_plannings_matching_search',
+                                    'No meal plans match your search'
+                                )
+                            )}
+                            onClearSearch={clearSearch}
+                            dataTestId="plannings-search-empty"
+                        />
+                    ) : (
+                        <PlanningsGrid
+                            plans={activePlans}
+                            currentUser={currentUser}
+                            showDelete={activeTab !== 'community'}
+                            isSavedTab={activeTab === 'saved'}
+                            showPublicBadge={activeTab === 'my'}
+                            onUnsave={onUnsave}
+                            onDeleteClick={setDeletePlanId}
+                            push={push}
+                            t={t}
+                            language={language}
+                        />
+                    )}
                 </div>
             </div>
 

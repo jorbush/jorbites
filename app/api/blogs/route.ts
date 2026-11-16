@@ -3,6 +3,7 @@ import { getPaginatedBlogs, getBlogsByAuthor } from '@/app/utils/blog-utils';
 import { internalServerError } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
 import { ALLOWED_LANGUAGES } from '@/app/utils/constants';
+import { filterBySearchQuery } from '@/app/utils/searchUtils';
 
 export async function GET(request: NextRequest) {
     try {
@@ -21,6 +22,10 @@ export async function GET(request: NextRequest) {
             searchParams.get('authorName') ||
             searchParams.get('author') ||
             undefined;
+        const search =
+            searchParams.get('search')?.trim() ||
+            searchParams.get('q')?.trim() ||
+            undefined;
 
         if (isNaN(page) || page < 1) page = 1;
         if (isNaN(pageSize) || pageSize < 1) pageSize = 10;
@@ -32,6 +37,7 @@ export async function GET(request: NextRequest) {
             category,
             authorId,
             authorName,
+            search,
         });
         const language = (ALLOWED_LANGUAGES as readonly string[]).includes(lang)
             ? lang
@@ -43,10 +49,16 @@ export async function GET(request: NextRequest) {
                 authorName || null,
                 language
             );
-            const total = authorBlogs.length;
+            const filteredAuthorBlogs = search
+                ? filterBySearchQuery(authorBlogs, search, (blog) => [
+                      blog.frontmatter.title,
+                      blog.frontmatter.description,
+                  ])
+                : authorBlogs;
+            const total = filteredAuthorBlogs.length;
             const totalPages = Math.ceil(total / pageSize) || 1;
             const startIndex = (page - 1) * pageSize;
-            const paginatedAuthorBlogs = authorBlogs.slice(
+            const paginatedAuthorBlogs = filteredAuthorBlogs.slice(
                 startIndex,
                 startIndex + pageSize
             );
@@ -67,12 +79,15 @@ export async function GET(request: NextRequest) {
             });
         }
 
-        const result = await getPaginatedBlogs(
-            language,
-            page,
-            pageSize,
-            category
-        );
+        const result = search
+            ? await getPaginatedBlogs(
+                  language,
+                  page,
+                  pageSize,
+                  category,
+                  search
+              )
+            : await getPaginatedBlogs(language, page, pageSize, category);
         logger.info('GET /api/blogs - success', {
             language,
             category,

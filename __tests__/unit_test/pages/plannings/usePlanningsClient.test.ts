@@ -311,4 +311,31 @@ describe('usePlanningsClient hook', () => {
 
         expect(result.current.myPlannings).toEqual(updatedPlans);
     });
+
+    it('filters activePlans by searchQuery and clears search', () => {
+        const bothPlans = [mockPlanning1, mockPlanning2];
+        const { result } = renderHook(() =>
+            usePlanningsClient({
+                currentUser: mockUser,
+                initialMyPlannings: bothPlans,
+            })
+        );
+
+        expect(result.current.isSearching).toBe(false);
+        expect(result.current.activePlans).toEqual(bothPlans);
+
+        act(() => {
+            result.current.setSearchQuery('Desc 2');
+        });
+
+        expect(result.current.isSearching).toBe(true);
+        expect(result.current.activePlans).toEqual([mockPlanning2]);
+
+        act(() => {
+            result.current.clearSearch();
+        });
+
+        expect(result.current.isSearching).toBe(false);
+        expect(result.current.activePlans).toEqual(bothPlans);
+    });
 });

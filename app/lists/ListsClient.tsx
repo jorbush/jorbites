@@ -13,6 +13,10 @@ import ListCard from '@/app/components/lists/ListCard';
 import TabNavigation, {
     NavigationTab,
 } from '@/app/components/utils/TabNavigation';
+import SearchBar, {
+    EmptySearchResults,
+} from '@/app/components/utils/SearchBar';
+import { useSearchFilter } from '@/app/hooks/useSearchFilter';
 
 interface ListsClientProps {
     initialMyLists: SafeList[];
@@ -49,6 +53,23 @@ const ListsClient: React.FC<ListsClientProps> = ({
     const listsToRender =
         activeTab === 'my' ? initialMyLists : initialCommunityLists;
 
+    const getListSearchFields = useCallback(
+        (list: SafeList) => [
+            list.isDefault ? String(t('to_cook_later')) : list.name,
+            list.name,
+            list.user?.name,
+        ],
+        [t]
+    );
+
+    const {
+        searchQuery,
+        setSearchQuery,
+        clearSearch,
+        isSearching,
+        filteredItems: filteredLists,
+    } = useSearchFilter(listsToRender, getListSearchFields);
+
     const tabs: NavigationTab[] = [
         ...(currentUser ? [{ id: 'my', label: t('my_lists') }] : []),
         { id: 'community', label: t('community_lists') || 'Community Lists' },
@@ -82,31 +103,54 @@ const ListsClient: React.FC<ListsClientProps> = ({
                     }
                 />
 
+                {/* Search Bar */}
+                <SearchBar
+                    id="lists-search-input"
+                    value={searchQuery}
+                    onChange={setSearchQuery}
+                    placeholder={String(t('search_lists', 'Search lists...'))}
+                    dataTestId="lists-search-input"
+                    clearDataTestId="lists-search-clear"
+                />
+
                 {/* Tab Content */}
-                <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {listsToRender.length === 0 ? (
-                        <div className="col-span-full flex h-48 w-full flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-300 py-10 text-neutral-500 dark:border-neutral-800 dark:text-neutral-400">
-                            <p className="text-sm font-medium">
-                                {t('no_lists') || 'No lists found'}
-                            </p>
-                        </div>
-                    ) : (
-                        listsToRender.map((list) => (
-                            <ListCard
-                                key={list.id}
-                                list={list}
-                                showDelete={
-                                    activeTab === 'my' && !list.isDefault
-                                }
-                                showPublicBadge={activeTab === 'my'}
-                                onDeleteClick={(id) => setDeleteListId(id)}
-                                push={push}
-                                t={t}
-                                language={i18n.language}
-                            />
-                        ))
-                    )}
-                </div>
+                {isSearching && filteredLists.length === 0 ? (
+                    <EmptySearchResults
+                        message={String(
+                            t(
+                                'no_lists_matching_search',
+                                'No lists match your search'
+                            )
+                        )}
+                        onClearSearch={clearSearch}
+                        dataTestId="lists-search-empty"
+                    />
+                ) : (
+                    <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        {filteredLists.length === 0 ? (
+                            <div className="col-span-full flex h-48 w-full flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-300 py-10 text-neutral-500 dark:border-neutral-800 dark:text-neutral-400">
+                                <p className="text-sm font-medium">
+                                    {t('no_lists') || 'No lists found'}
+                                </p>
+                            </div>
+                        ) : (
+                            filteredLists.map((list) => (
+                                <ListCard
+                                    key={list.id}
+                                    list={list}
+                                    showDelete={
+                                        activeTab === 'my' && !list.isDefault
+                                    }
+                                    showPublicBadge={activeTab === 'my'}
+                                    onDeleteClick={(id) => setDeleteListId(id)}
+                                    push={push}
+                                    t={t}
+                                    language={i18n.language}
+                                />
+                            ))
+                        )}
+                    </div>
+                )}
             </div>
             <ConfirmModal
                 open={!!deleteListId}
