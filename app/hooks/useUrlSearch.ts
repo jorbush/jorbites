@@ -19,6 +19,11 @@ export interface UseUrlSearchResult {
     isSearching: boolean;
 }
 
+interface SearchDraft {
+    baseSearch: string;
+    value: string;
+}
+
 export function useUrlSearch({
     basePath,
     initialSearch = '',
@@ -27,9 +32,13 @@ export function useUrlSearch({
     resetPage = true,
 }: UseUrlSearchOptions): UseUrlSearchResult {
     const { push } = useRouter() || {};
-    const [searchQuery, setSearchQuery] = useState(initialSearch);
-    const prevInitialSearchRef = useRef(initialSearch);
+    const [draft, setDraft] = useState<SearchDraft | null>(null);
     const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const searchQuery =
+        draft !== null && draft.baseSearch === initialSearch
+            ? draft.value
+            : initialSearch;
 
     const cancelPendingNavigation = useCallback(() => {
         if (debounceTimerRef.current !== null) {
@@ -39,18 +48,11 @@ export function useUrlSearch({
     }, []);
 
     useEffect(() => {
-        if (prevInitialSearchRef.current !== initialSearch) {
-            prevInitialSearchRef.current = initialSearch;
-            cancelPendingNavigation();
-            setSearchQuery(initialSearch);
-        }
-    }, [initialSearch, cancelPendingNavigation]);
-
-    useEffect(() => {
+        cancelPendingNavigation();
         return () => {
             cancelPendingNavigation();
         };
-    }, [cancelPendingNavigation]);
+    }, [initialSearch, cancelPendingNavigation]);
 
     const navigateWithSearch = useCallback(
         (rawValue: string) => {
@@ -82,7 +84,7 @@ export function useUrlSearch({
 
     const handleSearchChange = useCallback(
         (value: string) => {
-            setSearchQuery(value);
+            setDraft({ baseSearch: initialSearch, value });
             cancelPendingNavigation();
 
             const trimmedNext = value.trim();
@@ -106,7 +108,7 @@ export function useUrlSearch({
 
     const clearSearch = useCallback(() => {
         cancelPendingNavigation();
-        setSearchQuery('');
+        setDraft({ baseSearch: initialSearch, value: '' });
         if (initialSearch.trim().length > 0) {
             navigateWithSearch('');
         }
