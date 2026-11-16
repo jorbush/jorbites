@@ -353,6 +353,35 @@ export class DraftService {
         }
     }
 
+    private static normalizeForkBaselineArrays(
+        draft: Pick<
+            SharedDraft | SingleDraft,
+            'forkedFromIngredients' | 'forkedFromSteps'
+        >
+    ): Pick<
+        SharedDraft | SingleDraft,
+        'forkedFromIngredients' | 'forkedFromSteps'
+    > {
+        return {
+            ...(draft.forkedFromIngredients !== undefined
+                ? {
+                      forkedFromIngredients: Array.isArray(
+                          draft.forkedFromIngredients
+                      )
+                          ? draft.forkedFromIngredients
+                          : [],
+                  }
+                : {}),
+            ...(draft.forkedFromSteps !== undefined
+                ? {
+                      forkedFromSteps: Array.isArray(draft.forkedFromSteps)
+                          ? draft.forkedFromSteps
+                          : [],
+                  }
+                : {}),
+        };
+    }
+
     /**
      * Normalizes shared draft array properties to ensure they are always valid arrays,
      * protecting against Redis Lua cjson empty-table `{}` conversions.
@@ -375,22 +404,7 @@ export class DraftService {
             linkedRecipeIds: Array.isArray(draft.linkedRecipeIds)
                 ? draft.linkedRecipeIds
                 : [],
-            ...(draft.forkedFromIngredients !== undefined
-                ? {
-                      forkedFromIngredients: Array.isArray(
-                          draft.forkedFromIngredients
-                      )
-                          ? draft.forkedFromIngredients
-                          : [],
-                  }
-                : {}),
-            ...(draft.forkedFromSteps !== undefined
-                ? {
-                      forkedFromSteps: Array.isArray(draft.forkedFromSteps)
-                          ? draft.forkedFromSteps
-                          : [],
-                  }
-                : {}),
+            ...this.normalizeForkBaselineArrays(draft),
         };
     }
 
@@ -411,22 +425,7 @@ export class DraftService {
             linkedRecipeIds: Array.isArray(draft.linkedRecipeIds)
                 ? draft.linkedRecipeIds
                 : [],
-            ...(draft.forkedFromIngredients !== undefined
-                ? {
-                      forkedFromIngredients: Array.isArray(
-                          draft.forkedFromIngredients
-                      )
-                          ? draft.forkedFromIngredients
-                          : [],
-                  }
-                : {}),
-            ...(draft.forkedFromSteps !== undefined
-                ? {
-                      forkedFromSteps: Array.isArray(draft.forkedFromSteps)
-                          ? draft.forkedFromSteps
-                          : [],
-                  }
-                : {}),
+            ...this.normalizeForkBaselineArrays(draft),
         };
     }
 
@@ -1358,6 +1357,23 @@ export class DraftService {
         }
     }
 
+    private static pickForkSummaryFields(
+        draft: Pick<
+            SharedDraft | SingleDraft,
+            'forkedFromRecipeId' | 'forkedFromTitle'
+        >
+    ): Pick<DraftSummary, 'forkedFromRecipeId' | 'forkedFromTitle'> {
+        if (!draft.forkedFromRecipeId) {
+            return {};
+        }
+        return {
+            forkedFromRecipeId: draft.forkedFromRecipeId,
+            ...(draft.forkedFromTitle
+                ? { forkedFromTitle: draft.forkedFromTitle }
+                : {}),
+        };
+    }
+
     static async getAllUserDrafts(userId: string): Promise<DraftSummary[]> {
         const draftIds = await this.getUserDraftIds(userId);
         const uniqueDraftIds = Array.from(new Set(draftIds));
@@ -1383,17 +1399,7 @@ export class DraftService {
                         ownerName: shared.ownerName,
                         updatedAt,
                         imageSrc: shared.imageSrc,
-                        ...(shared.forkedFromRecipeId
-                            ? {
-                                  forkedFromRecipeId: shared.forkedFromRecipeId,
-                                  ...(shared.forkedFromTitle
-                                      ? {
-                                            forkedFromTitle:
-                                                shared.forkedFromTitle,
-                                        }
-                                      : {}),
-                              }
-                            : {}),
+                        ...this.pickForkSummaryFields(shared),
                     };
                 }
 
@@ -1423,18 +1429,7 @@ export class DraftService {
                             ownerName: solo.ownerName,
                             updatedAt,
                             imageSrc: solo.imageSrc,
-                            ...(solo.forkedFromRecipeId
-                                ? {
-                                      forkedFromRecipeId:
-                                          solo.forkedFromRecipeId,
-                                      ...(solo.forkedFromTitle
-                                          ? {
-                                                forkedFromTitle:
-                                                    solo.forkedFromTitle,
-                                            }
-                                          : {}),
-                                  }
-                                : {}),
+                            ...this.pickForkSummaryFields(solo),
                         };
                     } catch {
                         return null;

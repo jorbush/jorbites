@@ -132,9 +132,10 @@ export function useDraftSync({
         [initialDraftData, isSharedDraft]
     );
 
-    const canSkipCheck = !skipDefaultDraftFetch || Boolean(activeDraftId);
+    const isDraftFetchAllowed =
+        !skipDefaultDraftFetch || Boolean(activeDraftId);
     const shouldFetchDraft =
-        Boolean(isOpen && !isEditMode && currentUser) && canSkipCheck;
+        Boolean(isOpen && !isEditMode && currentUser) && isDraftFetchAllowed;
 
     const {
         data: swrDraftData,

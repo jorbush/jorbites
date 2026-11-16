@@ -33,6 +33,8 @@ jobs:
                       spec: '__tests__/e2e/lists.cy.ts,__tests__/e2e/plannings.cy.ts'
                     - name: 'Collaborative Roles & Invites'
                       spec: '__tests__/e2e/collaborative_roles_invites.cy.ts'
+                    - name: 'Recipe Remix Spec'
+                      spec: '__tests__/e2e/recipe_remix.cy.ts'
         services:
             redis:
                 image: redis

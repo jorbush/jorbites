@@ -306,7 +306,7 @@ describe('useRecipeStepNavigation', () => {
             expect(mockSetStep).toHaveBeenCalledWith(STEPS.STEPS);
         });
 
-        it('submits successfully when both ingredients and steps are modified', async () => {
+        it('submits successfully when both ingredients and steps are modified without deleting unrelated drafts when no draftId exists', async () => {
             (axios.post as any).mockResolvedValueOnce({
                 data: { id: 'new-remix-id' },
             });
@@ -324,11 +324,39 @@ describe('useRecipeStepNavigation', () => {
             });
 
             expect(axios.post).toHaveBeenCalled();
-            expect(mockDeleteDraft).toHaveBeenCalled();
+            expect(mockDeleteDraft).not.toHaveBeenCalled();
             expect(mockReset).toHaveBeenCalled();
             expect(mockOnClose).toHaveBeenCalledWith({ skipCallback: true });
             expect(mockPush).toHaveBeenCalledWith('/recipes/new-remix-id');
             expect(toast.success).toHaveBeenCalledWith('recipe_posted');
+        });
+
+        it('deletes the associated remix draft on submit when a draftId is present', async () => {
+            (axios.post as any).mockResolvedValueOnce({
+                data: { id: 'saved-remix-id' },
+            });
+
+            const { result } = renderHook(() =>
+                useRecipeStepNavigation({
+                    ...forkProps,
+                    getValues: vi.fn((key?: string) =>
+                        key === 'draftId' ? 'draft-remix-1' : undefined
+                    ) as any,
+                })
+            );
+
+            await act(async () => {
+                await result.current.onSubmit({
+                    title: 'Remix of Original Dish',
+                    draftId: 'draft-remix-1',
+                    ingredients: ['Rye Flour', 'Water', 'Salt', 'Seeds'],
+                    steps: ['Mix gently', 'Cold ferment', 'Bake with steam'],
+                });
+            });
+
+            expect(axios.post).toHaveBeenCalled();
+            expect(mockDeleteDraft).toHaveBeenCalledTimes(1);
+            expect(mockPush).toHaveBeenCalledWith('/recipes/saved-remix-id');
         });
 
         it('validates resumed remix draft against draftData lineage without forkRecipeData and redirects to new recipe', async () => {

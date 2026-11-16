@@ -207,7 +207,12 @@ export function useRecipeStepNavigation({
                 const url = `${window.location.origin}/api/recipes`;
                 const response = await axios.post(url, data);
                 createdRecipeId = response?.data?.id || null;
-                await deleteDraft();
+                const hasDraftToDelete = Boolean(
+                    getValues('draftId') || data.draftId || draftData?.draftId
+                );
+                if (!isRemixSubmission || hasDraftToDelete) {
+                    await deleteDraft();
+                }
                 toast.success(t('recipe_posted'));
             }
 
