@@ -146,15 +146,15 @@ const Modal: React.FC<ModalProps> = ({
             <div
                 ref={modalRef}
                 data-modal-backdrop=""
-                className="fixed inset-0 isolate z-50 flex transform-gpu items-center justify-center overflow-x-hidden overflow-y-auto bg-neutral-800/70 outline-hidden focus:outline-hidden"
+                className="fixed inset-0 isolate z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-neutral-800/70 outline-hidden focus:outline-hidden"
             >
                 <div
-                    className={`relative mx-auto flex h-full max-h-[100vh] w-full flex-col md:h-auto md:max-h-[calc(100vh-6rem)] ${insideModal ? 'md:w-5/6' : 'md:w-4/6 lg:w-3/6 xl:w-2/5'}`}
+                    className={`relative mx-auto h-full max-h-[100vh] w-full md:h-auto md:max-h-[calc(100vh-6rem)] lg:h-auto ${insideModal ? 'md:w-5/6' : 'md:w-4/6 lg:w-3/6 xl:w-2/5'}`}
                 >
                     <div
-                        className={`flex h-full min-h-0 flex-col transition-[transform,opacity] duration-300 md:h-auto md:max-h-[calc(100vh-6rem)] ${showAnimation ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`}
+                        className={`h-full transition-[transform,opacity] duration-300 ${showAnimation ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`}
                     >
-                        <div className="dark:bg-dark relative flex h-full min-h-0 w-full flex-col rounded-lg border-0 bg-white shadow-lg outline-hidden focus:outline-hidden md:h-auto md:max-h-[calc(100vh-6rem)]">
+                        <div className="dark:bg-dark relative flex size-full flex-col rounded-lg border-0 bg-white shadow-lg outline-hidden focus:outline-hidden md:h-auto lg:h-auto">
                             <div className="relative flex flex-shrink-0 items-center justify-center rounded-t border-b-[1px] px-6 pt-[calc(1.5rem+env(safe-area-inset-top,0px))] pb-6 md:pt-6">
                                 <button
                                     type="button"

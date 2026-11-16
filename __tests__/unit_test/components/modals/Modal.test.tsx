@@ -188,7 +188,6 @@ describe('<Modal />', () => {
         expect(backdrop.className).toContain('fixed');
         expect(backdrop.className).toContain('z-50');
         expect(backdrop.className).toContain('isolate');
-        expect(backdrop.className).toContain('transform-gpu');
         expect(backdrop.hasAttribute('data-modal-backdrop')).toBe(true);
 
         const dialogWrapper = backdrop.firstChild as HTMLElement;
@@ -198,9 +197,8 @@ describe('<Modal />', () => {
         expect(dialogWrapper.className).toContain(
             'md:max-h-[calc(100vh-6rem)]'
         );
-        expect(animator.className).toContain('md:max-h-[calc(100vh-6rem)]');
-        expect(card.className).toContain('md:max-h-[calc(100vh-6rem)]');
-        expect(card.className).toContain('min-h-0');
+        expect(animator.className).toContain('h-full');
+        expect(card.className).toContain('md:h-auto');
     });
 
     it('submits modal on Enter inside standalone input outside a form', () => {
