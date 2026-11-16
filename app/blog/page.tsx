@@ -22,13 +22,19 @@ export const metadata: Metadata = {
 };
 
 interface BlogPageProps {
-    searchParams: Promise<{ page?: string; category?: string }>;
+    searchParams: Promise<{
+        page?: string;
+        category?: string;
+        search?: string;
+    }>;
 }
 
 const BlogPage = async ({ searchParams }: BlogPageProps) => {
     const resolvedParams = await searchParams;
-    const page = parseInt(resolvedParams.page || '1');
+    const parsedPage = parseInt(resolvedParams.page || '1', 10);
+    const page = Number.isNaN(parsedPage) || parsedPage < 1 ? 1 : parsedPage;
     const category = resolvedParams.category || 'general';
+    const search = resolvedParams.search || '';
 
     return (
         <Suspense
@@ -47,10 +53,13 @@ const BlogPage = async ({ searchParams }: BlogPageProps) => {
                             <div className="hidden h-10 w-36 shrink-0 animate-pulse rounded-xl bg-neutral-200 lg:block dark:bg-neutral-800" />
                         </div>
 
-                        {/* Category Pills Skeleton */}
-                        <div className="flex gap-2">
-                            <div className="h-9 w-28 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-800" />
-                            <div className="h-9 w-36 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-800" />
+                        {/* Category Pills & Search Bar Skeleton */}
+                        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                            <div className="flex gap-2">
+                                <div className="h-9 w-28 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-800" />
+                                <div className="h-9 w-36 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-800" />
+                            </div>
+                            <div className="h-10 w-full animate-pulse rounded-xl bg-neutral-200 sm:max-w-sm lg:w-72 lg:shrink-0 xl:w-80 dark:bg-neutral-800" />
                         </div>
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                             {[...Array(6)].map((_, index) => (
@@ -65,6 +74,7 @@ const BlogPage = async ({ searchParams }: BlogPageProps) => {
                 <BlogsClient
                     initialPage={page}
                     initialCategory={category}
+                    initialSearch={search}
                 />
             </ClientOnly>
         </Suspense>

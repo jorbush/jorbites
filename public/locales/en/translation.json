@@ -615,6 +615,8 @@
     "no_plannings_matching_search": "No meal plans match your search",
     "search_quests_placeholder": "Search quests...",
     "no_quests_matching_search": "No quests match your search",
+    "search_blogs": "Search articles...",
+    "no_blogs_matching_search": "No articles match your search",
     "filter_categories": "Filter categories",
     "title_a_z": "Title (A-Z)",
     "title_z_a": "Title (Z-A)",

@@ -334,6 +334,85 @@ New content`;
             expect(result.totalPages).toBe(1);
             expect(result.currentPage).toBe(999);
         });
+
+        it('should filter blogs by search query matching title, description, or content', async () => {
+            vi.mocked(fs.readdirSync).mockReturnValue([
+                'pasta.md',
+                'soup.md',
+                'cake.md',
+            ] as any);
+            vi.mocked(fs.readFileSync).mockImplementation((filePath: any) =>
+                String(filePath)
+            );
+            vi.mocked(matter).mockImplementation((filePath: any) => {
+                const name = String(filePath);
+                if (name.includes('pasta')) {
+                    return {
+                        data: {
+                            title: 'Fresh Pasta Guide',
+                            user_id: '1',
+                            date: '2025-03-01',
+                            description: 'Learn homemade noodles',
+                        },
+                        content: 'Knead the dough carefully.',
+                    } as any;
+                }
+                if (name.includes('soup')) {
+                    return {
+                        data: {
+                            title: 'Winter Broth',
+                            user_id: '1',
+                            date: '2025-02-01',
+                            description: 'Warm ramen and noodles',
+                        },
+                        content: 'Simmer slowly.',
+                    } as any;
+                }
+                return {
+                    data: {
+                        title: 'Chocolate Cake',
+                        user_id: '1',
+                        date: '2025-01-01',
+                        description: 'Rich dessert',
+                    },
+                    content: 'Bake with dark cocoa and espresso.',
+                } as any;
+            });
+
+            const byTitleOrDesc = await getPaginatedBlogs(
+                'en',
+                1,
+                10,
+                'general',
+                '  NOODLES  '
+            );
+            expect(byTitleOrDesc.total).toBe(2);
+            expect(byTitleOrDesc.blogs.map((b) => b.id)).toEqual([
+                'pasta',
+                'soup',
+            ]);
+
+            const byContent = await getPaginatedBlogs(
+                'en',
+                1,
+                10,
+                'general',
+                'espresso'
+            );
+            expect(byContent.total).toBe(1);
+            expect(byContent.blogs[0].id).toBe('cake');
+
+            const noMatches = await getPaginatedBlogs(
+                'en',
+                1,
+                10,
+                'general',
+                'tacos'
+            );
+            expect(noMatches.total).toBe(0);
+            expect(noMatches.totalPages).toBe(0);
+            expect(noMatches.blogs).toEqual([]);
+        });
     });
 
     describe('getBlogsByAuthor', () => {

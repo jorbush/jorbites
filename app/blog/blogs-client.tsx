@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import Container from '@/app/components/utils/Container';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
@@ -8,6 +8,12 @@ import { Blog } from '@/app/utils/markdownUtils';
 import useTheme from '@/app/hooks/useTheme';
 import BlogCard, { BlogCardSkeleton } from '@/app/components/blog/BlogCard';
 import Pagination from '@/app/components/navigation/Pagination';
+import SearchBar from '@/app/components/inputs/SearchBar';
+import EmptySearchResults from '@/app/components/utils/EmptySearchResults';
+import TabNavigation, {
+    NavigationTab,
+} from '@/app/components/utils/TabNavigation';
+import useUrlSearch from '@/app/hooks/useUrlSearch';
 import { FcNews } from 'react-icons/fc';
 import { FiEdit3 } from 'react-icons/fi';
 import { CMS_BLOGS_URL } from '@/app/utils/constants';
@@ -17,6 +23,7 @@ import { fetcher } from '@/app/utils/fetcher';
 interface BlogsClientProps {
     initialPage: number;
     initialCategory?: string;
+    initialSearch?: string;
 }
 
 const CATEGORIES = [
@@ -27,6 +34,7 @@ const CATEGORIES = [
 const BlogsClient: React.FC<BlogsClientProps> = ({
     initialPage,
     initialCategory = 'general',
+    initialSearch = '',
 }) => {
     const { t, i18n } = useTranslation();
     const { push } = useRouter() || {};
@@ -37,22 +45,65 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
 
     useTheme();
 
+    const {
+        searchQuery,
+        setSearchQuery,
+        submitSearch,
+        clearSearch,
+        isSearching,
+    } = useUrlSearch({
+        basePath: '/blog',
+        initialSearch,
+    });
+
+    const trimmedInitialSearch = initialSearch.trim();
+    const blogsUrl = useMemo(() => {
+        const params = new URLSearchParams({
+            lang: i18n.language || 'en',
+            page: String(currentPage),
+            pageSize: '12',
+            category: currentCategory,
+        });
+        if (trimmedInitialSearch) {
+            params.set('search', trimmedInitialSearch);
+        }
+        return `/api/blogs?${params.toString()}`;
+    }, [i18n.language, currentPage, currentCategory, trimmedInitialSearch]);
+
     const { data: mainData, isLoading: loading } = useSWR<{
         blogs: Blog[];
         totalPages: number;
-    }>(
-        `/api/blogs?lang=${i18n.language || 'en'}&page=${currentPage}&pageSize=12&category=${currentCategory}`,
-        fetcher
-    );
+    }>(blogsUrl, fetcher);
 
     const mainBlogs = mainData?.blogs || [];
     const totalPages = mainData?.totalPages || 1;
 
     const handleCategoryChange = useCallback(
         (category: string) => {
-            push(`/blog?category=${category}&page=1`);
+            if (!push) return;
+            const currentParams =
+                typeof window !== 'undefined' ? window.location.search : '';
+            const params = new URLSearchParams(currentParams);
+            params.set('category', category);
+            const trimmedSearch = searchQuery.trim();
+            if (trimmedSearch) {
+                params.set('search', trimmedSearch);
+            } else {
+                params.delete('search');
+            }
+            params.set('page', '1');
+            push(`/blog?${params.toString()}`);
         },
-        [push]
+        [push, searchQuery]
+    );
+
+    const tabs: NavigationTab[] = useMemo(
+        () =>
+            CATEGORIES.map((cat) => ({
+                id: cat.id,
+                label: String(t(cat.labelKey, cat.fallback)),
+            })),
+        [t]
     );
 
     return (
@@ -88,26 +139,31 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
                     </div>
                 </div>
 
-                {/* Category Filter Pills */}
-                <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-                    <div className="flex min-w-max gap-2 pb-1">
-                        {CATEGORIES.map((cat) => {
-                            const isActive = currentCategory === cat.id;
-                            return (
-                                <button
-                                    key={cat.id}
-                                    type="button"
-                                    onClick={() => handleCategoryChange(cat.id)}
-                                    className={`flex-shrink-0 cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200 ${
-                                        isActive
-                                            ? 'border-green-450/50 bg-green-450 border font-semibold text-neutral-900 shadow-xs'
-                                            : 'border border-neutral-200/80 bg-neutral-50/80 text-neutral-600 hover:border-neutral-300 hover:bg-neutral-100 dark:border-neutral-700/60 dark:bg-neutral-800/60 dark:text-neutral-300 dark:hover:border-neutral-600 dark:hover:bg-neutral-800'
-                                    }`}
-                                >
-                                    {t(cat.labelKey, cat.fallback)}
-                                </button>
-                            );
-                        })}
+                {/* Category Filter Pills & Search Bar */}
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                    <TabNavigation
+                        tabs={tabs}
+                        activeTab={currentCategory}
+                        onTabChange={handleCategoryChange}
+                    />
+
+                    <div className="w-full sm:max-w-sm lg:w-72 lg:max-w-none lg:shrink-0 xl:w-80">
+                        <SearchBar
+                            id="blogs-search-input"
+                            value={searchQuery}
+                            onChange={setSearchQuery}
+                            onSubmit={submitSearch}
+                            onClear={clearSearch}
+                            placeholder={String(
+                                t('search_blogs', 'Search articles...')
+                            )}
+                            clearLabel={String(
+                                t('clear_search', 'Clear search')
+                            )}
+                            inputWrapperClassName="w-full"
+                            dataTestId="blogs-search-input"
+                            dataCy="blogs-search-input"
+                        />
                     </div>
                 </div>
 
@@ -120,11 +176,33 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
                             ))}
                         </div>
                     ) : mainBlogs.length === 0 ? (
-                        <div className="rounded-2xl border border-dashed border-neutral-300 py-16 text-center dark:border-neutral-700">
-                            <p className="text-base text-neutral-500 dark:text-neutral-400">
-                                {t('no_blogs_found')}
-                            </p>
-                        </div>
+                        isSearching ? (
+                            <EmptySearchResults
+                                title={String(
+                                    t(
+                                        'no_blogs_matching_search',
+                                        'No articles match your search'
+                                    )
+                                )}
+                                subtitle={String(
+                                    t(
+                                        'no_search_results_subtitle',
+                                        'Try searching with different keywords or check your spelling.'
+                                    )
+                                )}
+                                clearLabel={String(
+                                    t('clear_search', 'Clear search')
+                                )}
+                                onClearSearch={clearSearch}
+                                dataTestId="blogs-search-empty"
+                            />
+                        ) : (
+                            <div className="rounded-2xl border border-dashed border-neutral-300 py-16 text-center dark:border-neutral-700">
+                                <p className="text-base text-neutral-500 dark:text-neutral-400">
+                                    {t('no_blogs_found')}
+                                </p>
+                            </div>
+                        )
                     ) : (
                         <>
                             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -144,6 +222,9 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
                                         searchParams={{
                                             page: currentPage,
                                             category: currentCategory,
+                                            search:
+                                                trimmedInitialSearch ||
+                                                undefined,
                                         }}
                                     />
                                 </div>

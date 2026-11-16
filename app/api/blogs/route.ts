@@ -21,6 +21,7 @@ export async function GET(request: NextRequest) {
             searchParams.get('authorName') ||
             searchParams.get('author') ||
             undefined;
+        const search = searchParams.get('search')?.trim() || '';
 
         if (isNaN(page) || page < 1) page = 1;
         if (isNaN(pageSize) || pageSize < 1) pageSize = 10;
@@ -32,6 +33,7 @@ export async function GET(request: NextRequest) {
             category,
             authorId,
             authorName,
+            search: search || undefined,
         });
         const language = (ALLOWED_LANGUAGES as readonly string[]).includes(lang)
             ? lang
@@ -67,12 +69,15 @@ export async function GET(request: NextRequest) {
             });
         }
 
-        const result = await getPaginatedBlogs(
-            language,
-            page,
-            pageSize,
-            category
-        );
+        const result = search
+            ? await getPaginatedBlogs(
+                  language,
+                  page,
+                  pageSize,
+                  category,
+                  search
+              )
+            : await getPaginatedBlogs(language, page, pageSize, category);
         logger.info('GET /api/blogs - success', {
             language,
             category,
