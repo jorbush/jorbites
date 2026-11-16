@@ -31,9 +31,11 @@ Create a `.env` file in the root directory with the following variables:
 # Database
 DATABASE_URL=your_mongodb_connection_string
 
-# NextAuth Configuration
+# NextAuth & Security Configuration
 NEXTAUTH_SECRET=your_nextauth_secret_key
 NEXTAUTH_URL=http://localhost:3000
+# 32-byte hex key for encrypting TOTP secrets and hashing backup codes (generate via `openssl rand -hex 32`)
+TWO_FACTOR_ENCRYPTION_KEY=your_64_character_hex_encryption_key
 
 # OAuth Providers
 GITHUB_ID=your_github_oauth_app_id

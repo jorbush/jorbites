@@ -1,23 +1,23 @@
 'use client';
 
-import { useCallback, useTransition } from 'react';
+import { useCallback, useState, useTransition } from 'react';
 import { toast } from 'react-hot-toast';
 import { signIn } from 'next-auth/react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
-import { FcGoogle } from 'react-icons/fc';
-import { AiFillGithub } from 'react-icons/ai';
 import { useRouter } from 'next/navigation';
 
 import useRegisterModal from '@/app/hooks/useRegisterModal';
 import useLoginModal from '@/app/hooks/useLoginModal';
+import useForgotPasswordModal from '@/app/hooks/useForgotPasswordModal';
 
 import Modal from '@/app/components/modals/Modal';
-import Input from '@/app/components/inputs/Input';
-import Heading from '@/app/components/navigation/Heading';
-import Button from '@/app/components/buttons/Button';
 import { useTranslation } from 'react-i18next';
 import { validateEmail } from '@/app/utils/validation';
-import useForgotPasswordModal from '@/app/hooks/useForgotPasswordModal';
+import { LoginCredentialsStep } from './LoginCredentialsStep';
+import { LoginTwoFactorStep } from './LoginTwoFactorStep';
+import { LoginModalFooter } from './LoginModalFooter';
+
+const EMPTY_FOOTER = <div />;
 
 const LoginModal = () => {
     const { refresh } = useRouter() || {};
@@ -25,6 +25,8 @@ const LoginModal = () => {
     const registerModal = useRegisterModal();
     const forgotPasswordModal = useForgotPasswordModal();
     const [isPending, startTransition] = useTransition();
+    const [showTwoFactorStep, setShowTwoFactorStep] = useState(false);
+    const [twoFactorCode, setTwoFactorCode] = useState('');
     const { t } = useTranslation();
 
     const {
@@ -38,116 +40,133 @@ const LoginModal = () => {
         },
     });
 
+    const resetState = useCallback(() => {
+        setShowTwoFactorStep(false);
+        setTwoFactorCode('');
+    }, []);
+
+    const handleCloseModal = useCallback(() => {
+        resetState();
+        loginModal.onClose();
+    }, [loginModal, resetState]);
+
+    const onToggle = useCallback(() => {
+        resetState();
+        loginModal.onClose();
+        registerModal.onOpen();
+    }, [loginModal, registerModal, resetState]);
+
+    const onForgotPassword = useCallback(() => {
+        resetState();
+        loginModal.onClose();
+        forgotPasswordModal.onOpen();
+    }, [loginModal, forgotPasswordModal, resetState]);
+
+    const handleSignInResult = (callback: any) => {
+        if (callback?.ok && !callback?.error) {
+            toast.success(t('logged_in'));
+            resetState();
+            refresh();
+            loginModal.onClose();
+            return;
+        }
+
+        if (callback?.error === '2FA_REQUIRED') {
+            setShowTwoFactorStep(true);
+            return;
+        }
+
+        if (callback?.error === 'TOO_MANY_2FA_ATTEMPTS') {
+            toast.error(
+                t('too_many_2fa_attempts') ||
+                    'Too many verification attempts. Please try again later.'
+            );
+            return;
+        }
+
+        if (callback?.error === 'INVALID_2FA_CODE') {
+            toast.error(t('invalid_2fa_code') || 'Invalid verification code');
+            return;
+        }
+
+        if (callback?.error === 'Invalid credentials') {
+            toast.error(callback.error);
+            return;
+        }
+
+        if (callback?.error) {
+            toast.error(t('something_went_wrong') || 'Something went wrong');
+        }
+    };
+
     const onSubmit: SubmitHandler<FieldValues> = (data) => {
         if (!validateEmail(data.email)) {
             toast.error(t('error_validate_email'));
             return;
         }
+
+        if (showTwoFactorStep && !twoFactorCode.trim()) {
+            toast.error(
+                t('enter_2fa_code_error') ||
+                    'Please enter your verification code'
+            );
+            return;
+        }
+
         startTransition(async () => {
-            const callback = await signIn('credentials', {
-                ...data,
-                redirect: false,
-            });
+            const payload = showTwoFactorStep
+                ? {
+                      email: data.email,
+                      password: data.password,
+                      twoFactorCode: twoFactorCode.trim(),
+                      redirect: false,
+                  }
+                : {
+                      ...data,
+                      redirect: false,
+                  };
 
-            if (callback?.ok) {
-                toast.success(t('logged_in'));
-                refresh();
-                loginModal.onClose();
-            }
-
-            if (callback?.error) {
-                toast.error(callback.error);
-            }
+            const callback = await signIn('credentials', payload);
+            handleSignInResult(callback);
         });
     };
 
-    const onToggle = useCallback(() => {
-        loginModal.onClose();
-        registerModal.onOpen();
-    }, [loginModal, registerModal]);
+    const actionLabel = isPending
+        ? t('logging_in') || 'Logging in...'
+        : showTwoFactorStep
+          ? t('verify') || 'Verify'
+          : t('continue');
 
-    const onForgotPassword = useCallback(() => {
-        loginModal.onClose();
-        forgotPasswordModal.onOpen();
-    }, [loginModal, forgotPasswordModal]);
-
-    const bodyContent = (
-        <div className="flex flex-col gap-4">
-            <Heading
-                title={t('welcome_back')}
-                subtitle={t('login_subtitle') ?? ''}
-            />
-            <Input
-                id="email"
-                label={t('email')}
-                disabled={isPending}
-                register={register}
-                errors={errors}
-                required
-                dataCy="login-email"
-            />
-            <Input
-                id="password"
-                label={t('password')}
-                type="password"
-                disabled={isPending}
-                register={register}
-                errors={errors}
-                required
-                dataCy="login-password"
-            />
-            <div className="text-right">
-                <button
-                    type="button"
-                    onClick={onForgotPassword}
-                    className="cursor-pointer border-0 bg-transparent p-0 text-sm text-neutral-600 hover:underline focus:outline-hidden"
-                >
-                    {t('forgot_password') ||
-                        'Have you forgotten your password?'}
-                </button>
-            </div>
-        </div>
+    const bodyContent = showTwoFactorStep ? (
+        <LoginTwoFactorStep
+            twoFactorCode={twoFactorCode}
+            isPending={isPending}
+            onChangeCode={setTwoFactorCode}
+            onBackToLogin={resetState}
+        />
+    ) : (
+        <LoginCredentialsStep
+            register={register}
+            errors={errors}
+            isPending={isPending}
+            onForgotPassword={onForgotPassword}
+        />
     );
 
-    const footerContent = (
-        <div className="mt-3 flex flex-col gap-4">
-            <hr />
-            <Button
-                outline
-                label={t('login_google')}
-                icon={FcGoogle}
-                onClick={() => signIn('google')}
-            />
-            <Button
-                outline
-                label={t('login_github')}
-                icon={AiFillGithub}
-                onClick={() => signIn('github')}
-            />
-            <div className="mt-4 text-center font-light text-neutral-500">
-                <p>
-                    {t('first_jorbites')}{' '}
-                    <button
-                        type="button"
-                        onClick={onToggle}
-                        className="cursor-pointer border-0 bg-transparent p-0 text-neutral-800 hover:underline focus:outline-hidden"
-                    >
-                        {t('create_account')}
-                    </button>
-                </p>
-            </div>
-        </div>
+    const footerContent = showTwoFactorStep ? (
+        EMPTY_FOOTER
+    ) : (
+        <LoginModalFooter onToggleRegister={onToggle} />
     );
 
     return (
         <Modal
+            key={showTwoFactorStep ? 'two-factor' : 'credentials'}
             disabled={isPending}
             isOpen={loginModal.isOpen}
             title={t('login') ?? ''}
-            actionLabel={
-                isPending ? t('logging_in') || 'Logging in...' : t('continue')
-            }
-            onClose={loginModal.onClose}
+            actionLabel={actionLabel}
+            onClose={handleCloseModal}
             onSubmit={handleSubmit(onSubmit)}
             body={bodyContent}
             footer={footerContent}

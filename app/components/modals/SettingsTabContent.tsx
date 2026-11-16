@@ -15,6 +15,7 @@ import ChangeUserNameSelector, {
 import ChangePassword, {
     ChangePasswordRef,
 } from '@/app/components/settings/ChangePassword';
+import TwoFactorAuth from '@/app/components/settings/TwoFactorAuth';
 import ChangeProfileDetails, {
     ChangeProfileDetailsRef,
 } from '@/app/components/settings/ChangeProfileDetails';
@@ -73,6 +74,7 @@ const SettingsTabContent: React.FC<SettingsTabContentProps> = ({
                         ref={passwordRef}
                         currentUser={currentUser}
                     />
+                    <TwoFactorAuth currentUser={currentUser} />
                     <DeleteAccount currentUser={currentUser} />
                 </div>
             ) : null;
