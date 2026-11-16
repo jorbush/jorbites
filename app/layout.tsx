@@ -124,19 +124,6 @@ export default async function RootLayout({
                 className={`${font.className} dark:bg-dark flex min-h-screen flex-col`}
             >
                 <ClientOnly>
-                    <ToasterProvider />
-                    <LoginModal />
-                    <SettingsModal currentUser={currentUser} />
-                    <RecipeModal currentUser={currentUser} />
-                    <WorkshopModal currentUser={currentUser} />
-                    <RegisterModal />
-                    <ForgotPasswordModal />
-                    <QuestModal />
-                    <AddToListModal />
-                    <RecipeBookModal />
-                    <DraftsModal currentUser={currentUser} />
-                    <DraftInviteModal currentUser={currentUser} />
-                    <CooksnapModal />
                     <Suspense fallback={null}>
                         <Navbar currentUser={currentUser} />
                     </Suspense>
@@ -152,6 +139,21 @@ export default async function RootLayout({
                     {children}
                 </main>
                 <SmartFooter />
+                <ClientOnly>
+                    <LoginModal />
+                    <SettingsModal currentUser={currentUser} />
+                    <RecipeModal currentUser={currentUser} />
+                    <WorkshopModal currentUser={currentUser} />
+                    <RegisterModal />
+                    <ForgotPasswordModal />
+                    <QuestModal />
+                    <AddToListModal />
+                    <RecipeBookModal />
+                    <DraftsModal currentUser={currentUser} />
+                    <DraftInviteModal currentUser={currentUser} />
+                    <CooksnapModal />
+                    <ToasterProvider />
+                </ClientOnly>
                 {process.env.NODE_ENV === 'production' && <SpeedInsights />}
             </body>
         </html>

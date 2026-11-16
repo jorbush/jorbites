@@ -123,6 +123,18 @@ describe('RootLayout', () => {
         expect(await findByTestId('add-to-list-modal')).toBeDefined();
         expect(await findByTestId('smart-footer')).toBeDefined();
 
+        // Modals and toasts must follow main content in DOM order
+        const mainContent = document.getElementById('main-content');
+        const settingsModal = await findByTestId('settings-modal');
+        expect(mainContent).not.toBeNull();
+        expect(
+            Boolean(
+                mainContent &&
+                settingsModal.compareDocumentPosition(mainContent) &
+                    Node.DOCUMENT_POSITION_PRECEDING
+            )
+        ).toBe(true);
+
         // Check if the children are rendered
         expect(await findByText('Test Content')).toBeDefined();
     });

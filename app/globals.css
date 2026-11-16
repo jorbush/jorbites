@@ -152,6 +152,10 @@ body,
 }
 
 /* View Transitions */
+html:has([data-modal-backdrop]) * {
+  view-transition-name: none !important;
+}
+
 ::view-transition-group(.morph) {
   animation-duration: 350ms;
   animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);

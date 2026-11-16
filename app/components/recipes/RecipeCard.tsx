@@ -67,7 +67,7 @@ const RecipeCard = memo(function RecipeCard({
             data-cy="recipe-card"
         >
             <div className="flex w-full flex-col gap-2">
-                <div className="relative isolate aspect-square w-full transform-gpu overflow-hidden rounded-xl">
+                <div className="relative aspect-square w-full overflow-hidden rounded-xl">
                     <ViewTransition
                         name={`recipe-image-${data.id}`}
                         share="morph"
