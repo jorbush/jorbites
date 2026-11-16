@@ -236,15 +236,13 @@ describe('Meal Plannings E2E', () => {
 
         // Verify Tab switching
         cy.get('[data-cy="tab-community"]').click();
-        cy.get('[data-cy="tab-community"]').should(
-            'not.have.class',
-            'border-transparent'
-        );
+        cy.get('[data-cy="tab-community"]')
+            .should('have.class', 'bg-green-450')
+            .and('have.attr', 'aria-pressed', 'true');
         cy.get('[data-cy="tab-my"]').click();
-        cy.get('[data-cy="tab-my"]').should(
-            'not.have.class',
-            'border-transparent'
-        );
+        cy.get('[data-cy="tab-my"]')
+            .should('have.class', 'bg-green-450')
+            .and('have.attr', 'aria-pressed', 'true');
 
         cy.task('log', '=== STEP 10: Delete meal plan ===');
         cy.intercept('DELETE', '/api/plannings/*').as('deletePlan');

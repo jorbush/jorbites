@@ -43,7 +43,7 @@ describe('TabNavigation', () => {
         expect(onTabChangeMock).toHaveBeenCalledWith('tab2');
     });
 
-    it('applies active styling to the active tab', () => {
+    it('applies active pill styling and aria-pressed to the active tab', () => {
         render(
             <TabNavigation
                 tabs={mockTabs}
@@ -55,12 +55,17 @@ describe('TabNavigation', () => {
         const firstTab = screen.getByText('First Tab');
         const secondTab = screen.getByText('Second Tab');
 
-        // Verify active class names are applied to tab1
-        expect(firstTab.className).toContain('border-neutral-900');
+        // Verify active pill class names and aria-pressed are applied to tab1
+        expect(firstTab.className).toContain('bg-green-450');
+        expect(firstTab.className).toContain('border-green-450/50');
         expect(firstTab.className).toContain('text-neutral-900');
+        expect(firstTab.className).toContain('rounded-full');
+        expect(firstTab.getAttribute('aria-pressed')).toBe('true');
 
-        // Verify inactive class names are applied to tab2
-        expect(secondTab.className).toContain('border-transparent');
-        expect(secondTab.className).toContain('text-neutral-400');
+        // Verify inactive pill class names and aria-pressed are applied to tab2
+        expect(secondTab.className).toContain('bg-neutral-50/80');
+        expect(secondTab.className).toContain('text-neutral-600');
+        expect(secondTab.className).toContain('rounded-full');
+        expect(secondTab.getAttribute('aria-pressed')).toBe('false');
     });
 });

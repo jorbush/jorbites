@@ -16,18 +16,18 @@ const QuestsClientSkeleton = () => {
                     <div className="hidden h-10 w-36 animate-pulse rounded-xl bg-neutral-200 md:block dark:bg-neutral-800"></div>
                 </div>
 
-                {/* Filters Skeleton */}
-                <div className="mb-6 flex flex-wrap gap-2">
-                    {[1, 2, 3, 4].map((i) => (
-                        <div
-                            key={i}
-                            className="h-9 w-24 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-800"
-                        ></div>
-                    ))}
+                {/* Filters & Search Bar Skeleton */}
+                <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                    <div className="flex flex-wrap gap-2">
+                        {[1, 2, 3, 4].map((i) => (
+                            <div
+                                key={i}
+                                className="h-9 w-24 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-800"
+                            ></div>
+                        ))}
+                    </div>
+                    <div className="h-10 w-full animate-pulse rounded-xl bg-neutral-200 sm:max-w-sm lg:w-72 lg:shrink-0 xl:w-80 dark:bg-neutral-800"></div>
                 </div>
-
-                {/* Search Bar Skeleton */}
-                <div className="mb-6 h-10 w-full animate-pulse rounded-xl bg-neutral-200 sm:max-w-sm dark:bg-neutral-800"></div>
 
                 {/* Quest Cards Skeleton */}
                 <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">

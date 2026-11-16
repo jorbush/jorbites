@@ -52,25 +52,34 @@ const PlanningsClient: React.FC<PlanningsClientProps> = (props) => {
                     t={t}
                 />
 
-                <TabNavigation
-                    tabs={tabs}
-                    activeTab={activeTab}
-                    onTabChange={(tabId) => setActiveTab(tabId as PlanningsTab)}
-                />
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                    <TabNavigation
+                        tabs={tabs}
+                        activeTab={activeTab}
+                        onTabChange={(tabId) =>
+                            setActiveTab(tabId as PlanningsTab)
+                        }
+                    />
 
-                <SearchBar
-                    id="plannings-search-input"
-                    value={searchQuery}
-                    onChange={setSearchQuery}
-                    placeholder={String(
-                        t('search_plannings', 'Search meal plans...')
-                    )}
-                    clearLabel={String(t('clear_search', 'Clear search'))}
-                    dataTestId="plannings-search-input"
-                    dataCy="plannings-search-input"
-                />
+                    <div className="w-full sm:max-w-sm lg:w-72 lg:max-w-none lg:shrink-0 xl:w-80">
+                        <SearchBar
+                            id="plannings-search-input"
+                            value={searchQuery}
+                            onChange={setSearchQuery}
+                            placeholder={String(
+                                t('search_plannings', 'Search meal plans...')
+                            )}
+                            clearLabel={String(
+                                t('clear_search', 'Clear search')
+                            )}
+                            inputWrapperClassName="w-full"
+                            dataTestId="plannings-search-input"
+                            dataCy="plannings-search-input"
+                        />
+                    </div>
+                </div>
 
-                <div className="mt-2">
+                <div>
                     <PlanningsGrid
                         plans={filteredPlans}
                         currentUser={currentUser}

@@ -179,4 +179,24 @@ describe('PlanningsClient', () => {
         expect(screen.getByText('Keto Week')).toBeDefined();
         expect(screen.getByText('Mediterranean Menu')).toBeDefined();
     });
+
+    it('renders pill tabs and search bar in a responsive lg+ toolbar', () => {
+        render(
+            <PlanningsClient
+                initialMyPlannings={mockPlannings}
+                initialCommunityPlannings={[]}
+                currentUser={mockUser}
+            />
+        );
+
+        const myTab = screen.getByText('my_meal_plans');
+        expect(myTab.className).toContain('bg-green-450');
+        expect(myTab.className).toContain('rounded-full');
+
+        const searchInput = screen.getByTestId('plannings-search-input');
+        const toolbar = searchInput.closest('.lg\\:flex-row');
+        expect(toolbar).not.toBeNull();
+        expect(toolbar?.className).toContain('lg:justify-between');
+        expect(toolbar?.contains(myTab)).toBe(true);
+    });
 });
