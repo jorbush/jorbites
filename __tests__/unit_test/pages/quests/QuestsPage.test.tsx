@@ -341,4 +341,25 @@ describe('<QuestsClient />', () => {
             '/quests?search=ramen&page=1&status=completed'
         );
     });
+
+    it('renders pill tabs and search bar in a responsive lg+ toolbar', () => {
+        render(
+            <QuestsClient
+                currentUser={mockUser}
+                quests={mockQuests}
+                totalPages={1}
+                currentPage={1}
+            />
+        );
+
+        const openTab = screen.getByRole('button', { name: 'open' });
+        expect(openTab.className).toContain('bg-green-450');
+        expect(openTab.className).toContain('rounded-full');
+
+        const searchInput = screen.getByTestId('quests-search-input');
+        const toolbar = searchInput.closest('.lg\\:flex-row');
+        expect(toolbar).not.toBeNull();
+        expect(toolbar?.className).toContain('lg:justify-between');
+        expect(toolbar?.contains(openTab)).toBe(true);
+    });
 });

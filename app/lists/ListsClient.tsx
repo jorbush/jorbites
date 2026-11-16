@@ -93,25 +93,33 @@ const ListsClient: React.FC<ListsClientProps> = ({
                     </div>
                 </div>
 
-                {/* Tab Navigation */}
-                <TabNavigation
-                    tabs={tabs}
-                    activeTab={activeTab}
-                    onTabChange={(tabId) =>
-                        setActiveTab(tabId as 'my' | 'community')
-                    }
-                />
+                {/* Tab Navigation & Search Bar */}
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                    <TabNavigation
+                        tabs={tabs}
+                        activeTab={activeTab}
+                        onTabChange={(tabId) =>
+                            setActiveTab(tabId as 'my' | 'community')
+                        }
+                    />
 
-                {/* Search Bar */}
-                <SearchBar
-                    id="lists-search-input"
-                    value={searchQuery}
-                    onChange={setSearchQuery}
-                    placeholder={String(t('search_lists', 'Search lists...'))}
-                    clearLabel={String(t('clear_search', 'Clear search'))}
-                    dataTestId="lists-search-input"
-                    dataCy="lists-search-input"
-                />
+                    <div className="w-full sm:max-w-sm lg:w-72 lg:max-w-none lg:shrink-0 xl:w-80">
+                        <SearchBar
+                            id="lists-search-input"
+                            value={searchQuery}
+                            onChange={setSearchQuery}
+                            placeholder={String(
+                                t('search_lists', 'Search lists...')
+                            )}
+                            clearLabel={String(
+                                t('clear_search', 'Clear search')
+                            )}
+                            inputWrapperClassName="w-full"
+                            dataTestId="lists-search-input"
+                            dataCy="lists-search-input"
+                        />
+                    </div>
+                </div>
 
                 {/* Tab Content */}
                 {filteredLists.length === 0 ? (

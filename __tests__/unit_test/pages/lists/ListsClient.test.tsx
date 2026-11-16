@@ -291,4 +291,24 @@ describe('ListsClient', () => {
         expect(screen.getByText('My Special List')).toBeDefined();
         expect(screen.getByText('to_cook_later')).toBeDefined();
     });
+
+    it('renders pill tabs and search bar in a responsive lg+ toolbar', () => {
+        render(
+            <ListsClient
+                initialMyLists={mockMyLists}
+                initialCommunityLists={mockCommunityLists}
+                currentUser={mockUser}
+            />
+        );
+
+        const myTab = screen.getByText('my_lists');
+        expect(myTab.className).toContain('bg-green-450');
+        expect(myTab.className).toContain('rounded-full');
+
+        const searchInput = screen.getByTestId('lists-search-input');
+        const toolbar = searchInput.closest('.lg\\:flex-row');
+        expect(toolbar).not.toBeNull();
+        expect(toolbar?.className).toContain('lg:justify-between');
+        expect(toolbar?.contains(myTab)).toBe(true);
+    });
 });

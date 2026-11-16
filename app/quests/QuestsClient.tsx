@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { SafeUser } from '@/app/types';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,9 @@ import useLoginModal from '@/app/hooks/useLoginModal';
 import { FiPlus } from 'react-icons/fi';
 import Pagination from '@/app/components/navigation/Pagination';
 import SearchBar from '@/app/components/inputs/SearchBar';
+import TabNavigation, {
+    NavigationTab,
+} from '@/app/components/utils/TabNavigation';
 import QuestsHeader from '@/app/components/quests/QuestsHeader';
 import QuestsGrid, { QuestListItem } from '@/app/components/quests/QuestsGrid';
 import useUrlSearch from '@/app/hooks/useUrlSearch';
@@ -92,6 +95,15 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
         push(queryString ? `/quests?${queryString}` : '/quests');
     };
 
+    const tabs: NavigationTab[] = useMemo(
+        () =>
+            VALID_STATUSES.map((status) => ({
+                id: status,
+                label: String(t(status) || status.replace('_', ' ')),
+            })),
+        [t]
+    );
+
     return (
         <div className="pt-2 pb-12 sm:pt-4">
             <QuestsHeader
@@ -106,44 +118,32 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                 onRequestRecipe={handleRequestRecipe}
             />
 
-            {/* Filters Row with Horizontal Scroll */}
-            <div className="-mx-4 mb-6 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-                <div className="flex min-w-max gap-2 pb-2">
-                    {VALID_STATUSES.map((status) => {
-                        const isActive = filter === status;
-                        return (
-                            <button
-                                key={status}
-                                type="button"
-                                onClick={() => handleFilterChange(status)}
-                                className={`flex-shrink-0 cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200 ${
-                                    isActive
-                                        ? 'border-green-450/50 bg-green-450 hover:bg-green-450/90 border font-semibold text-neutral-900 shadow-xs'
-                                        : 'border border-neutral-200/80 bg-neutral-50/80 text-neutral-600 hover:border-neutral-300 hover:bg-neutral-100 dark:border-neutral-700/60 dark:bg-neutral-800/60 dark:text-neutral-300 dark:hover:border-neutral-600 dark:hover:bg-neutral-800'
-                                }`}
-                            >
-                                {t(status) || status.replace('_', ' ')}
-                            </button>
-                        );
-                    })}
-                </div>
-            </div>
-
-            {/* Search Bar */}
-            <div className="mb-6">
-                <SearchBar
-                    id="quests-search-input"
-                    value={searchQuery}
-                    onChange={setSearchQuery}
-                    onSubmit={submitSearch}
-                    onClear={clearSearch}
-                    placeholder={String(
-                        t('search_quests_placeholder', 'Search quests...')
-                    )}
-                    clearLabel={String(t('clear_search', 'Clear search'))}
-                    dataTestId="quests-search-input"
-                    dataCy="quests-search-input"
+            {/* Filters & Search Bar */}
+            <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <TabNavigation
+                    tabs={tabs}
+                    activeTab={filter}
+                    onTabChange={(tabId) =>
+                        handleFilterChange(tabId as QuestFilter)
+                    }
                 />
+
+                <div className="w-full sm:max-w-sm lg:w-72 lg:max-w-none lg:shrink-0 xl:w-80">
+                    <SearchBar
+                        id="quests-search-input"
+                        value={searchQuery}
+                        onChange={setSearchQuery}
+                        onSubmit={submitSearch}
+                        onClear={clearSearch}
+                        placeholder={String(
+                            t('search_quests_placeholder', 'Search quests...')
+                        )}
+                        clearLabel={String(t('clear_search', 'Clear search'))}
+                        inputWrapperClassName="w-full"
+                        dataTestId="quests-search-input"
+                        dataCy="quests-search-input"
+                    />
+                </div>
             </div>
 
             {/* Floating Action Button for mobile (below md) */}

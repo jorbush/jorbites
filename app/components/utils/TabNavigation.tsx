@@ -22,23 +22,29 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
 }) => {
     return (
         <div
-            className={`flex border-b border-neutral-200 dark:border-neutral-800 ${className}`}
+            className={`-mx-4 min-w-0 overflow-x-auto px-4 sm:mx-0 sm:px-0 ${className}`}
         >
-            {tabs.map((tab) => (
-                <button
-                    key={tab.id}
-                    type="button"
-                    onClick={() => onTabChange(tab.id)}
-                    data-cy={`tab-${tab.id}`}
-                    className={`cursor-pointer border-b-2 px-6 py-3.5 text-sm font-semibold transition-colors duration-200 ${
-                        activeTab === tab.id
-                            ? 'border-neutral-900 text-neutral-900 dark:border-neutral-100 dark:text-white'
-                            : 'border-transparent text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300'
-                    }`}
-                >
-                    {tab.label}
-                </button>
-            ))}
+            <div className="flex min-w-max gap-2 py-0.5 pb-1 lg:pb-0.5">
+                {tabs.map((tab) => {
+                    const isActive = activeTab === tab.id;
+                    return (
+                        <button
+                            key={tab.id}
+                            type="button"
+                            onClick={() => onTabChange(tab.id)}
+                            data-cy={`tab-${tab.id}`}
+                            aria-pressed={isActive}
+                            className={`flex-shrink-0 cursor-pointer rounded-full border px-4 py-2 text-sm transition-colors duration-200 ${
+                                isActive
+                                    ? 'border-green-450/50 bg-green-450 hover:bg-green-450/90 font-semibold text-neutral-900 shadow-xs'
+                                    : 'border-neutral-200/80 bg-neutral-50/80 font-medium text-neutral-600 hover:border-neutral-300 hover:bg-neutral-100 dark:border-neutral-700/60 dark:bg-neutral-800/60 dark:text-neutral-300 dark:hover:border-neutral-600 dark:hover:bg-neutral-800'
+                            }`}
+                        >
+                            {tab.label}
+                        </button>
+                    );
+                })}
+            </div>
         </div>
     );
 };
