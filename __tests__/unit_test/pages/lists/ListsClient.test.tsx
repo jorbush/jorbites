@@ -244,4 +244,51 @@ describe('ListsClient', () => {
         expect(screen.getByText('Awesome Desserts')).toBeDefined();
         expect(screen.queryByText('public')).toBeNull();
     });
+
+    it('filters lists by name and author when typing in search bar', () => {
+        render(
+            <ListsClient
+                initialMyLists={mockMyLists}
+                initialCommunityLists={mockCommunityLists}
+                currentUser={mockUser}
+            />
+        );
+
+        const searchInput = screen.getByTestId(
+            'lists-search-input'
+        ) as HTMLInputElement;
+        fireEvent.change(searchInput, { target: { value: 'Special' } });
+
+        expect(screen.getByText('My Special List')).toBeDefined();
+        expect(screen.queryByText('to_cook_later')).toBeNull();
+
+        fireEvent.change(searchInput, { target: { value: 'to_cook_later' } });
+        expect(screen.getByText('to_cook_later')).toBeDefined();
+        expect(screen.queryByText('My Special List')).toBeNull();
+    });
+
+    it('shows empty search results and clears search on button click', () => {
+        render(
+            <ListsClient
+                initialMyLists={mockMyLists}
+                initialCommunityLists={mockCommunityLists}
+                currentUser={mockUser}
+            />
+        );
+
+        const searchInput = screen.getByTestId(
+            'lists-search-input'
+        ) as HTMLInputElement;
+        fireEvent.change(searchInput, { target: { value: 'nonexistent' } });
+
+        expect(screen.getByTestId('lists-search-empty')).toBeDefined();
+        expect(screen.getByText('no_lists_matching_search')).toBeDefined();
+
+        const clearButton = screen.getByTestId('lists-search-input-clear');
+        fireEvent.click(clearButton);
+
+        expect(searchInput.value).toBe('');
+        expect(screen.getByText('My Special List')).toBeDefined();
+        expect(screen.getByText('to_cook_later')).toBeDefined();
+    });
 });

@@ -1,11 +1,13 @@
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import QuestsClient from '@/app/quests/QuestsClient';
+
+const mockPush = vi.fn();
 
 // Mock dependencies
 vi.mock('next/navigation', () => ({
     useRouter: () => ({
-        push: vi.fn(),
+        push: mockPush,
         refresh: vi.fn(),
     }),
     useSearchParams: () => ({
@@ -278,5 +280,65 @@ describe('<QuestsClient />', () => {
         );
         const timeDisplays = screen.getAllByText('2 hours ago');
         expect(timeDisplays.length).toBe(mockQuests.length);
+    });
+
+    it('renders search bar and navigates with search query on submit', () => {
+        window.history.replaceState({}, '', '/quests');
+        render(
+            <QuestsClient
+                currentUser={mockUser}
+                quests={mockQuests}
+                totalPages={1}
+                currentPage={1}
+            />
+        );
+
+        const searchInput = screen.getByTestId(
+            'quests-search-input'
+        ) as HTMLInputElement;
+        fireEvent.change(searchInput, { target: { value: 'ramen' } });
+        fireEvent.submit(searchInput.closest('form')!);
+
+        expect(mockPush).toHaveBeenCalledWith('/quests?search=ramen', {
+            scroll: false,
+        });
+    });
+
+    it('renders empty search results state when initialSearch yields no quests and clears search', () => {
+        window.history.replaceState({}, '', '/quests?search=ramen');
+        render(
+            <QuestsClient
+                currentUser={mockUser}
+                quests={[]}
+                totalPages={1}
+                currentPage={1}
+                initialSearch="ramen"
+            />
+        );
+
+        expect(screen.getByTestId('quests-search-empty')).toBeDefined();
+        expect(screen.getByText('no_quests_matching_search')).toBeDefined();
+
+        fireEvent.click(screen.getByTestId('quests-search-input-clear'));
+        expect(mockPush).toHaveBeenCalledWith('/quests', { scroll: false });
+    });
+
+    it('preserves active search query when switching status filters', () => {
+        window.history.replaceState({}, '', '/quests?search=ramen&page=2');
+        render(
+            <QuestsClient
+                currentUser={mockUser}
+                quests={mockQuests}
+                totalPages={2}
+                currentPage={2}
+                initialStatus="open"
+                initialSearch="ramen"
+            />
+        );
+
+        fireEvent.click(screen.getByRole('button', { name: 'completed' }));
+        expect(mockPush).toHaveBeenCalledWith(
+            '/quests?search=ramen&page=1&status=completed'
+        );
     });
 });

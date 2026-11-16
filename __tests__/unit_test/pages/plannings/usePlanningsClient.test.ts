@@ -311,4 +311,40 @@ describe('usePlanningsClient hook', () => {
 
         expect(result.current.myPlannings).toEqual(updatedPlans);
     });
+
+    it('filters activePlans via searchQuery and resets via clearSearch', () => {
+        const anotherPlan: SafePlanning = {
+            ...mockPlanning2,
+            id: 'plan-3',
+            name: 'Vegetarian Delight',
+            description: 'Fresh salads',
+            userId: 'user-1',
+        };
+
+        const searchPlans = [mockPlanning1, anotherPlan];
+
+        const { result } = renderHook(() =>
+            usePlanningsClient({
+                currentUser: mockUser,
+                initialMyPlannings: searchPlans,
+            })
+        );
+
+        expect(result.current.filteredPlans).toHaveLength(2);
+        expect(result.current.isSearching).toBe(false);
+
+        act(() => {
+            result.current.setSearchQuery('salads');
+        });
+
+        expect(result.current.isSearching).toBe(true);
+        expect(result.current.filteredPlans).toEqual([anotherPlan]);
+
+        act(() => {
+            result.current.clearSearch();
+        });
+
+        expect(result.current.isSearching).toBe(false);
+        expect(result.current.filteredPlans).toHaveLength(2);
+    });
 });

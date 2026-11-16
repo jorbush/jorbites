@@ -18,6 +18,7 @@ interface QuestsPageProps {
     searchParams: Promise<{
         status?: string;
         page?: string;
+        search?: string;
     }>;
 }
 
@@ -25,11 +26,13 @@ const QuestsPage = async ({ searchParams }: QuestsPageProps) => {
     const resolvedParams = await searchParams;
     const page = parseInt(resolvedParams.page || '1');
     const status = resolvedParams.status || 'open';
+    const search = resolvedParams.search || '';
 
     const [currentUser, response] = await Promise.all([
         getCurrentUser(),
         getQuests({
             status: status === 'all' ? undefined : status,
+            search: search || undefined,
             page: page,
             limit: 10,
         }),
@@ -54,6 +57,7 @@ const QuestsPage = async ({ searchParams }: QuestsPageProps) => {
                                 totalPages={response.data?.totalPages || 1}
                                 currentPage={page}
                                 initialStatus={status}
+                                initialSearch={search}
                             />
                         </Suspense>
                     )}
