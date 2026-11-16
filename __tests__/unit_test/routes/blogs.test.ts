@@ -154,6 +154,55 @@ describe('Blogs API Routes', () => {
             );
         });
 
+        it('should pass trimmed search parameter to getPaginatedBlogs when provided', async () => {
+            const mockResult = {
+                blogs: [],
+                total: 0,
+                totalPages: 0,
+                currentPage: 1,
+            };
+
+            (getPaginatedBlogs as jest.Mock).mockResolvedValueOnce(mockResult);
+
+            const request = new NextRequest(
+                'http://localhost:3000/api/blogs?lang=en&page=1&pageSize=12&category=releases&search=%20allergens%20'
+            );
+            const response = await BlogsGET(request);
+
+            expect(response.status).toBe(200);
+            expect(getPaginatedBlogs).toHaveBeenCalledWith(
+                'en',
+                1,
+                12,
+                'releases',
+                'allergens'
+            );
+        });
+
+        it('should omit search parameter when whitespace-only', async () => {
+            const mockResult = {
+                blogs: [],
+                total: 0,
+                totalPages: 0,
+                currentPage: 1,
+            };
+
+            (getPaginatedBlogs as jest.Mock).mockResolvedValueOnce(mockResult);
+
+            const request = new NextRequest(
+                'http://localhost:3000/api/blogs?search=%20%20%20'
+            );
+            const response = await BlogsGET(request);
+
+            expect(response.status).toBe(200);
+            expect(getPaginatedBlogs).toHaveBeenCalledWith(
+                'en',
+                1,
+                10,
+                'general'
+            );
+        });
+
         it('should return authored blogs when authorId is provided', async () => {
             const mockAuthorBlogs = [
                 {

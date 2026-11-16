@@ -127,13 +127,14 @@ export async function getAllBlogs(
 }
 
 /**
- * Get paginated blogs
+ * Get paginated blogs, optionally filtered by a search query
  */
 export async function getPaginatedBlogs(
     language: string = 'en',
     page: number = 1,
     pageSize: number = 10,
-    category: 'general' | 'releases' = 'general'
+    category: 'general' | 'releases' = 'general',
+    search?: string
 ): Promise<{
     blogs: Blog[];
     total: number;
@@ -141,11 +142,25 @@ export async function getPaginatedBlogs(
     currentPage: number;
 }> {
     const allBlogs = await getAllBlogs(language, category);
-    const total = allBlogs.length;
+    const normalizedSearch = search?.trim().toLowerCase() ?? '';
+    const filteredBlogs = normalizedSearch
+        ? allBlogs.filter((blog) => {
+              const title = blog.frontmatter.title?.toLowerCase() ?? '';
+              const description =
+                  blog.frontmatter.description?.toLowerCase() ?? '';
+              const content = blog.content?.toLowerCase() ?? '';
+              return (
+                  title.includes(normalizedSearch) ||
+                  description.includes(normalizedSearch) ||
+                  content.includes(normalizedSearch)
+              );
+          })
+        : allBlogs;
+    const total = filteredBlogs.length;
     const totalPages = Math.ceil(total / pageSize);
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    const blogs = allBlogs.slice(startIndex, endIndex);
+    const blogs = filteredBlogs.slice(startIndex, endIndex);
 
     return {
         blogs,

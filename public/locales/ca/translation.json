@@ -615,6 +615,8 @@
     "no_plannings_matching_search": "Cap pla de menú coincideix amb la teva cerca",
     "search_quests_placeholder": "Cercar missions...",
     "no_quests_matching_search": "Cap missió coincideix amb la teva cerca",
+    "search_blogs": "Cercar articles...",
+    "no_blogs_matching_search": "Cap article coincideix amb la teva cerca",
     "filter_categories": "Filtrar categories",
     "title_a_z": "Títol (A-Z)",
     "title_z_a": "Títol (Z-A)",
