@@ -171,4 +171,33 @@ describe('<Modal />', () => {
         );
         expect(screen.getByText('Test Footer Content')).toBeDefined();
     });
+
+    it('isolates stacking context and constrains desktop modal height for internal scrolling', () => {
+        const { container } = render(
+            <Modal
+                isOpen={true}
+                onClose={mockOnClose}
+                onSubmit={mockOnSubmit}
+                actionLabel="Submit"
+                title="Settings"
+                body={<div>Tall Content</div>}
+            />
+        );
+
+        const backdrop = container.firstChild as HTMLElement;
+        expect(backdrop.className).toContain('fixed');
+        expect(backdrop.className).toContain('z-50');
+        expect(backdrop.className).toContain('isolate');
+
+        const dialogWrapper = backdrop.firstChild as HTMLElement;
+        const animator = dialogWrapper.firstChild as HTMLElement;
+        const card = animator.firstChild as HTMLElement;
+
+        expect(dialogWrapper.className).toContain(
+            'md:max-h-[calc(100vh-6rem)]'
+        );
+        expect(animator.className).toContain('md:max-h-[calc(100vh-6rem)]');
+        expect(card.className).toContain('md:max-h-[calc(100vh-6rem)]');
+        expect(card.className).toContain('min-h-0');
+    });
 });

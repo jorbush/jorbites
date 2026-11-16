@@ -118,6 +118,10 @@ describe('<RecipeCard />', () => {
         const image = screen.getByAltText('recipe') as HTMLImageElement;
         expect(image).toBeDefined();
         expect(image.src).toContain('test-image.jpg');
+        expect(image.className).toContain('rounded-xl');
+
+        const cardContainer = image.closest('.overflow-hidden');
+        expect(cardContainer?.className).toContain('rounded-xl');
     });
 
     it('renders the HeartButton component', () => {
