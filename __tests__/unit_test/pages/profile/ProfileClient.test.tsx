@@ -495,4 +495,112 @@ describe('ProfileClient', () => {
             expect(queryByTestId('tab-blogs')).toBeNull();
         });
     });
+
+    describe('Profile Search Bar', () => {
+        const mockBlogs: Blog[] = [
+            {
+                id: 'sourdough-guide',
+                slug: 'sourdough-guide',
+                content: 'Fermentation notes',
+                language: 'en',
+                frontmatter: {
+                    title: 'The Art of Sourdough',
+                    description: 'Naturally leavened bread',
+                    date: '2026-06-01T00:00:00.000Z',
+                    user_id: 'user1',
+                },
+            },
+            {
+                id: 'pasta-guide',
+                slug: 'pasta-guide',
+                content: 'Fresh pasta dough',
+                language: 'en',
+                frontmatter: {
+                    title: 'Handmade Pasta',
+                    description: 'Egg dough basics',
+                    date: '2026-06-02T00:00:00.000Z',
+                    user_id: 'user1',
+                },
+            },
+        ];
+
+        it('renders the search bar and navigates on submit', () => {
+            const { getByTestId } = render(
+                <ProfileClient
+                    recipes={mockRecipes}
+                    currentUser={mockCurrentUser}
+                    totalPages={1}
+                    currentPage={1}
+                    searchParams={{}}
+                    profileUserId="user1"
+                />
+            );
+
+            const searchInput = getByTestId(
+                'profile-search-input'
+            ) as HTMLInputElement;
+            expect(searchInput).toBeDefined();
+            expect(searchInput.placeholder).toBe('search_profile_recipes');
+
+            fireEvent.change(searchInput, { target: { value: 'pasta' } });
+            fireEvent.submit(searchInput.closest('form')!);
+
+            expect(mockPush).toHaveBeenCalledWith(
+                '/profile/user1?search=pasta',
+                { scroll: false }
+            );
+        });
+
+        it('renders empty search results and clears search on recipes tab', () => {
+            const { getByTestId, getByText } = render(
+                <ProfileClient
+                    recipes={[]}
+                    currentUser={mockCurrentUser}
+                    totalPages={0}
+                    currentPage={1}
+                    searchParams={{ search: 'tacos' }}
+                    profileUserId="user1"
+                />
+            );
+
+            expect(getByTestId('profile-recipes-search-empty')).toBeDefined();
+            expect(getByText('no_recipes_matching_search')).toBeDefined();
+
+            fireEvent.click(getByTestId('profile-recipes-search-clear'));
+            expect(mockPush).toHaveBeenCalledWith('/profile/user1', {
+                scroll: false,
+            });
+        });
+
+        it('updates placeholder and filters blogs when switching to Blogs tab', () => {
+            const { getByTestId, getByText, queryByText } = render(
+                <ProfileClient
+                    recipes={mockRecipes}
+                    blogs={mockBlogs}
+                    currentUser={mockCurrentUser}
+                    totalPages={1}
+                    currentPage={1}
+                    searchParams={{}}
+                    profileUserId="user1"
+                    profilePreferences={{
+                        showStats: false,
+                        showActivityGraph: false,
+                        showArticles: true,
+                    }}
+                />
+            );
+
+            fireEvent.click(getByTestId('tab-blogs'));
+
+            const searchInput = getByTestId(
+                'profile-search-input'
+            ) as HTMLInputElement;
+            expect(searchInput.placeholder).toBe('search_blogs');
+
+            fireEvent.change(searchInput, { target: { value: 'sourdough' } });
+
+            expect(getByText('The Art of Sourdough')).toBeDefined();
+            expect(queryByText('Handmade Pasta')).toBeNull();
+        });
+    });
 });

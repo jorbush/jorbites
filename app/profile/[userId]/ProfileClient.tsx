@@ -1,10 +1,12 @@
 'use client';
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { SafeRecipe, SafeUser, ProfilePreferences } from '@/app/types';
 import { Blog } from '@/app/utils/markdownUtils';
 import Container from '@/app/components/utils/Container';
 import Tabs from '@/app/components/utils/Tabs';
+import SearchBar from '@/app/components/inputs/SearchBar';
 import { OrderByType } from '@/app/utils/filter';
 import ProfileRecipesContent from '@/app/components/profile/ProfileRecipesContent';
 import ProfileBlogsContent from '@/app/components/profile/ProfileBlogsContent';
@@ -17,11 +19,13 @@ import {
     DEFAULT_PROFILE_PREFERENCES,
 } from '@/app/utils/profile-utils';
 import { useProfileTabs } from '@/app/hooks/useProfileTabs';
+import useUrlSearch from '@/app/hooks/useUrlSearch';
 
 interface SearchParams {
     orderBy?: OrderByType;
     page?: string;
     tab?: string;
+    search?: string;
 }
 
 interface ProfileClientProps {
@@ -141,6 +145,9 @@ interface ProfileTabContentProps {
     currentPage: number;
     searchParams: SearchParams;
     blogs: Blog[];
+    searchQuery: string;
+    isSearching: boolean;
+    onClearSearch: () => void;
 }
 
 const ProfileTabContent: React.FC<ProfileTabContentProps> = ({
@@ -154,6 +161,9 @@ const ProfileTabContent: React.FC<ProfileTabContentProps> = ({
     currentPage,
     searchParams,
     blogs,
+    searchQuery,
+    isSearching,
+    onClearSearch,
 }) => {
     if (activeTab === 'recipes') {
         return (
@@ -165,6 +175,8 @@ const ProfileTabContent: React.FC<ProfileTabContentProps> = ({
                 totalPages={totalPages}
                 currentPage={currentPage}
                 searchParams={searchParams}
+                isSearching={isSearching}
+                onClearSearch={onClearSearch}
             />
         );
     }
@@ -174,6 +186,8 @@ const ProfileTabContent: React.FC<ProfileTabContentProps> = ({
             <ProfileBlogsContent
                 blogs={blogs}
                 searchParams={searchParams}
+                searchQuery={searchQuery}
+                onClearSearch={onClearSearch}
             />
         );
     }
@@ -198,6 +212,7 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
     challengeSubmissions,
     activities,
 }) => {
+    const { t } = useTranslation();
     const isOwnProfile = Boolean(
         currentUser && currentUser.id === profileUserId
     );
@@ -217,12 +232,29 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
     const showArticles =
         preferences.showArticles ?? DEFAULT_PROFILE_PREFERENCES.showArticles;
 
+    const {
+        searchQuery,
+        setSearchQuery,
+        submitSearch,
+        clearSearch,
+        isSearching,
+    } = useUrlSearch({
+        basePath: `/profile/${profileUserId}`,
+        initialSearch: searchParams?.search ?? '',
+    });
+
     const { activeTab, handleTabChange, tabs } = useProfileTabs({
         tabParam: searchParams?.tab,
         recipesCount: recipes.length + pinnedRecipes.length,
         blogsCount: blogs.length,
         showArticles,
+        isSearching,
     });
+
+    const searchPlaceholder =
+        activeTab === 'blogs'
+            ? String(t('search_blogs', 'Search articles...'))
+            : String(t('search_profile_recipes', 'Search recipes...'));
 
     return (
         <>
@@ -240,13 +272,30 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
             />
 
             <Container>
-                <div className="mt-2 mb-8">
+                <div className="mt-2 mb-6 flex flex-col gap-4">
                     <Tabs
                         tabs={tabs}
                         activeTab={activeTab}
                         onTabChange={handleTabChange}
                         data-testid="profile-tabs"
                     />
+
+                    <div className="w-full sm:max-w-sm lg:w-72 lg:max-w-none xl:w-80">
+                        <SearchBar
+                            id="profile-search-input"
+                            value={searchQuery}
+                            onChange={setSearchQuery}
+                            onSubmit={submitSearch}
+                            onClear={clearSearch}
+                            placeholder={searchPlaceholder}
+                            clearLabel={String(
+                                t('clear_search', 'Clear search')
+                            )}
+                            inputWrapperClassName="w-full"
+                            dataTestId="profile-search-input"
+                            dataCy="profile-search-input"
+                        />
+                    </div>
                 </div>
 
                 <ProfileTabContent
@@ -260,6 +309,9 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
                     currentPage={currentPage}
                     searchParams={searchParams}
                     blogs={blogs}
+                    searchQuery={searchQuery}
+                    isSearching={isSearching}
+                    onClearSearch={clearSearch}
                 />
             </Container>
         </>

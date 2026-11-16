@@ -617,6 +617,8 @@
     "no_quests_matching_search": "No quests match your search",
     "search_blogs": "Search articles...",
     "no_blogs_matching_search": "No articles match your search",
+    "search_profile_recipes": "Search recipes...",
+    "no_recipes_matching_search": "No recipes match your search",
     "filter_categories": "Filter categories",
     "title_a_z": "Title (A-Z)",
     "title_z_a": "Title (Z-A)",

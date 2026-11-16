@@ -22,6 +22,7 @@ interface ISearchParams {
     orderBy?: OrderByType;
     page?: string;
     tab?: string;
+    search?: string;
 }
 
 export async function generateMetadata(props: {
@@ -81,7 +82,9 @@ async function loadProfilePageData(
         searchParamsPromise,
     ]);
     const userId = params.userId || '';
-    const page = parseInt(searchParams.page || '1', 10);
+    const parsedPage = parseInt(searchParams.page || '1', 10);
+    const page = Number.isNaN(parsedPage) || parsedPage < 1 ? 1 : parsedPage;
+    const search = searchParams.search;
 
     const [recipesResponse, user, currentUser, pinnedRecipes] =
         await Promise.all([
@@ -90,6 +93,7 @@ async function loadProfilePageData(
                 orderBy: searchParams.orderBy,
                 page,
                 limit: 12,
+                ...(search ? { search } : {}),
             }),
             getUserById({ userId, withStats: true }),
             getCurrentUser(),

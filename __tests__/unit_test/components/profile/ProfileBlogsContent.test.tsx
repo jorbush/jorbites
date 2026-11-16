@@ -120,4 +120,42 @@ describe('ProfileBlogsContent Component', () => {
         expect(screen.queryByText('Story Title 25')).toBeNull();
         expect(screen.getByText('2 of 3')).toBeDefined();
     });
+
+    it('filters blogs by searchQuery across title, description, and content', () => {
+        const blogs = [
+            createMockBlog('b1', 'Sourdough Basics'),
+            createMockBlog('b2', 'Summer Gazpacho'),
+        ];
+
+        render(
+            <ProfileBlogsContent
+                blogs={blogs}
+                searchParams={{}}
+                searchQuery="sourdough"
+            />
+        );
+
+        expect(screen.getByText('Sourdough Basics')).toBeDefined();
+        expect(screen.queryByText('Summer Gazpacho')).toBeNull();
+    });
+
+    it('renders EmptySearchResults when no blogs match searchQuery', () => {
+        const onClearSearch = vi.fn();
+        const blogs = [createMockBlog('b1', 'Sourdough Basics')];
+
+        render(
+            <ProfileBlogsContent
+                blogs={blogs}
+                searchParams={{}}
+                searchQuery="ramen"
+                onClearSearch={onClearSearch}
+            />
+        );
+
+        expect(screen.getByTestId('profile-blogs-search-empty')).toBeDefined();
+        expect(screen.getByText('no_blogs_matching_search')).toBeDefined();
+
+        screen.getByTestId('profile-blogs-search-clear').click();
+        expect(onClearSearch).toHaveBeenCalledTimes(1);
+    });
 });

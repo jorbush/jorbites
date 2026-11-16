@@ -1,4 +1,5 @@
 import prisma from '@/app/lib/prismadb';
+import { Prisma } from '@prisma/client';
 import { logger } from '@/app/lib/axiom/server';
 import { OrderByType, getPrismaOrderByClause } from '@/app/utils/filter';
 import { SafeRecipe } from '@/app/types';
@@ -9,6 +10,7 @@ interface IParams {
     orderBy?: OrderByType;
     page?: number;
     limit?: number;
+    search?: string;
 }
 
 export interface RecipesByUserIdResponse {
@@ -28,21 +30,40 @@ export default async function getRecipesByUserId(
             orderBy = OrderByType.NEWEST,
             page = 1,
             limit = 12,
+            search,
         } = params;
 
+        const where: Prisma.RecipeWhereInput = {
+            userId: userId,
+        };
+
+        const trimmedSearch = typeof search === 'string' ? search.trim() : '';
+        if (trimmedSearch) {
+            where.OR = [
+                {
+                    title: {
+                        contains: trimmedSearch,
+                        mode: 'insensitive',
+                    },
+                },
+                {
+                    description: {
+                        contains: trimmedSearch,
+                        mode: 'insensitive',
+                    },
+                },
+            ];
+        }
+
         const recipes = await prisma.recipe.findMany({
-            where: {
-                userId: userId,
-            },
+            where,
             orderBy: getPrismaOrderByClause(orderBy),
             skip: (page - 1) * limit,
             take: limit,
         });
 
         const totalRecipes = await prisma.recipe.count({
-            where: {
-                userId: userId,
-            },
+            where,
         });
 
         const safeRecipes = recipes.map(toSafeRecipe);

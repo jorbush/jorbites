@@ -10,11 +10,12 @@ import { MdRestaurantMenu } from 'react-icons/md';
 export const getInitialTab = (
     tabParam?: string,
     recipesCount = 0,
-    blogsCount = 0
+    blogsCount = 0,
+    isSearching = false
 ): string => {
     if (tabParam === 'blogs' || tabParam === 'articles') return 'blogs';
     if (tabParam === 'recipes') return 'recipes';
-    if (recipesCount === 0 && blogsCount > 0) return 'blogs';
+    if (!isSearching && recipesCount === 0 && blogsCount > 0) return 'blogs';
     return 'recipes';
 };
 
@@ -23,6 +24,7 @@ interface UseProfileTabsProps {
     recipesCount: number;
     blogsCount: number;
     showArticles: boolean;
+    isSearching?: boolean;
 }
 
 export function useProfileTabs({
@@ -30,12 +32,18 @@ export function useProfileTabs({
     recipesCount,
     blogsCount,
     showArticles,
+    isSearching = false,
 }: UseProfileTabsProps) {
     const router = useRouter();
     const { t } = useTranslation();
 
     const [activeTab, setActiveTab] = useState<string>(() => {
-        const initial = getInitialTab(tabParam, recipesCount, blogsCount);
+        const initial = getInitialTab(
+            tabParam,
+            recipesCount,
+            blogsCount,
+            isSearching
+        );
         if (!showArticles && initial === 'blogs') {
             return 'recipes';
         }

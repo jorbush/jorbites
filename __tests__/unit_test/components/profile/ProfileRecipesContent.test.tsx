@@ -140,4 +140,61 @@ describe('ProfileRecipesContent Component', () => {
             screen.getByRole('navigation', { name: 'Pagination' })
         ).toBeDefined();
     });
+
+    it('renders EmptySearchResults and triggers onClearSearch when searching with no results', () => {
+        const onClearSearch = vi.fn();
+        const pinnedRecipe = {
+            ...mockRecipe,
+            id: 'pinned-1',
+            title: 'Special Pizza',
+        };
+
+        render(
+            <ProfileRecipesContent
+                recipes={[]}
+                pinnedRecipes={[pinnedRecipe]}
+                currentUser={mockUser}
+                isOwnProfile={true}
+                totalPages={0}
+                currentPage={1}
+                searchParams={{ search: 'tacos' }}
+                isSearching={true}
+                onClearSearch={onClearSearch}
+            />
+        );
+
+        expect(
+            screen.getByTestId('profile-recipes-search-empty')
+        ).toBeDefined();
+        expect(screen.getByText('no_recipes_matching_search')).toBeDefined();
+        expect(screen.queryByText('Special Pizza')).toBeNull();
+
+        screen.getByTestId('profile-recipes-search-clear').click();
+        expect(onClearSearch).toHaveBeenCalledTimes(1);
+    });
+
+    it('hides pinned recipes section while search is active', () => {
+        const pinnedRecipe = {
+            ...mockRecipe,
+            id: 'pinned-1',
+            title: 'Special Pizza',
+        };
+
+        render(
+            <ProfileRecipesContent
+                recipes={[mockRecipe]}
+                pinnedRecipes={[pinnedRecipe]}
+                currentUser={mockUser}
+                isOwnProfile={true}
+                totalPages={1}
+                currentPage={1}
+                searchParams={{ search: 'pasta' }}
+                isSearching={true}
+            />
+        );
+
+        expect(screen.getByText('Pasta Carbonara')).toBeDefined();
+        expect(screen.queryByText('pinned_recipes')).toBeNull();
+        expect(screen.queryByText('Special Pizza')).toBeNull();
+    });
 });
