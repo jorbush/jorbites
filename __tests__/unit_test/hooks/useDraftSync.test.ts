@@ -268,4 +268,32 @@ describe('useDraftSync hook', () => {
 
         expect(toast).not.toHaveBeenCalled();
     });
+
+    it('skips default /api/draft fetch when skipDefaultDraftFetch is true and activeDraftId is null', () => {
+        const { rerender } = renderHook(
+            ({ activeDraftId }: { activeDraftId: string | null }) =>
+                useDraftSync({
+                    activeDraftId,
+                    isEditMode: false,
+                    skipDefaultDraftFetch: true,
+                    currentUser: mockUser,
+                    isOpen: true,
+                }),
+            { initialProps: { activeDraftId: null as string | null } }
+        );
+
+        expect(useSWR).toHaveBeenLastCalledWith(
+            null,
+            expect.any(Function),
+            expect.anything()
+        );
+
+        rerender({ activeDraftId: 'remix-draft-1' });
+
+        expect(useSWR).toHaveBeenLastCalledWith(
+            '/api/draft?draftId=remix-draft-1',
+            expect.any(Function),
+            expect.anything()
+        );
+    });
 });

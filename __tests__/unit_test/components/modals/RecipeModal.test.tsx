@@ -791,6 +791,39 @@ describe('<RecipeModal />', () => {
             const draftButton = screen.queryByTestId('load-draft-button');
             expect(draftButton).toBeNull();
         });
+
+        it('should show draft save and my drafts buttons in fork mode', async () => {
+            const useRecipeModal = await import('@/app/hooks/useRecipeModal');
+            vi.mocked(useRecipeModal.default).mockReturnValue({
+                isOpen: true,
+                isEditMode: false,
+                forkedFromRecipeId: 'orig-recipe-1',
+                forkRecipeData: {
+                    id: 'orig-recipe-1',
+                    title: 'Original Recipe',
+                    description: 'Original description',
+                    categories: ['Dinner'],
+                    method: 'Baking',
+                    imageSrc: 'http://test.jpg',
+                    ingredients: ['Ingredient 1'],
+                    steps: ['Step 1'],
+                    minutes: 30,
+                } as any,
+                onOpen: vi.fn(),
+                onOpenCreate: vi.fn(),
+                onOpenEdit: vi.fn(),
+                onClose: vi.fn(),
+            });
+
+            await act(async () => {
+                render(<RecipeModal currentUser={mockUser} />);
+            });
+
+            expect(screen.getByTestId('load-draft-button')).toBeDefined();
+            expect(
+                screen.getByTestId('open-drafts-modal-button')
+            ).toBeDefined();
+        });
     });
 
     describe('Loading Text Behavior', () => {

@@ -28,6 +28,7 @@ export interface RecipeModalDraftController {
     isEditMode?: boolean;
     activeDraftId?: string | null;
     onOpenSharedDraft: (draftId: string) => void;
+    bindDraftId?: (draftId: string) => void;
     onClose?: (options?: { skipCallback?: boolean }) => void;
 }
 

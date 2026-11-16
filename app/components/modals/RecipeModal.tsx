@@ -175,6 +175,7 @@ const RecipeModalContent: React.FC<{
         draftData,
         isLoadingDraft,
         isViewer,
+        isInSessionCreatedDraft,
     } = useRecipeFormState({
         recipeModal,
         currentUser,
@@ -204,7 +205,12 @@ const RecipeModalContent: React.FC<{
         currentUserId: currentUser?.id,
     });
 
-    if (isLoadingDraft && !draftData) {
+    if (
+        isLoadingDraft &&
+        !draftData &&
+        !recipeModal.forkRecipeData &&
+        !isInSessionCreatedDraft(recipeModal.activeDraftId)
+    ) {
         return (
             <RecipeModalLoadingFallback
                 isOpen={recipeModal.isOpen}
@@ -279,7 +285,7 @@ const RecipeModalContent: React.FC<{
             }
             isLoading={isLoading}
             topButton={
-                !recipeModal.isEditMode && !recipeModal.forkRecipeData ? (
+                !recipeModal.isEditMode ? (
                     <RecipeModalTopActions
                         onSaveDraft={saveDraft}
                         onOpenDrafts={handleOpenDrafts}

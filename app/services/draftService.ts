@@ -131,6 +131,10 @@ const ALLOWED_DRAFT_FIELDS: (keyof SharedDraft)[] = [
     'linkedRecipeIds',
     'youtubeUrl',
     'questId',
+    'forkedFromRecipeId',
+    'forkedFromTitle',
+    'forkedFromIngredients',
+    'forkedFromSteps',
 ];
 
 const STRING_FIELDS = new Set([
@@ -143,6 +147,8 @@ const STRING_FIELDS = new Set([
     'imageSrc3',
     'youtubeUrl',
     'questId',
+    'forkedFromRecipeId',
+    'forkedFromTitle',
 ]);
 
 const ARRAY_FIELDS = new Set([
@@ -151,6 +157,8 @@ const ARRAY_FIELDS = new Set([
     'steps',
     'coCooksIds',
     'linkedRecipeIds',
+    'forkedFromIngredients',
+    'forkedFromSteps',
 ]);
 
 const NUMBER_OR_NULL_FIELDS = new Set([
@@ -345,6 +353,35 @@ export class DraftService {
         }
     }
 
+    private static normalizeForkBaselineArrays(
+        draft: Pick<
+            SharedDraft | SingleDraft,
+            'forkedFromIngredients' | 'forkedFromSteps'
+        >
+    ): Pick<
+        SharedDraft | SingleDraft,
+        'forkedFromIngredients' | 'forkedFromSteps'
+    > {
+        return {
+            ...(draft.forkedFromIngredients !== undefined
+                ? {
+                      forkedFromIngredients: Array.isArray(
+                          draft.forkedFromIngredients
+                      )
+                          ? draft.forkedFromIngredients
+                          : [],
+                  }
+                : {}),
+            ...(draft.forkedFromSteps !== undefined
+                ? {
+                      forkedFromSteps: Array.isArray(draft.forkedFromSteps)
+                          ? draft.forkedFromSteps
+                          : [],
+                  }
+                : {}),
+        };
+    }
+
     /**
      * Normalizes shared draft array properties to ensure they are always valid arrays,
      * protecting against Redis Lua cjson empty-table `{}` conversions.
@@ -367,6 +404,7 @@ export class DraftService {
             linkedRecipeIds: Array.isArray(draft.linkedRecipeIds)
                 ? draft.linkedRecipeIds
                 : [],
+            ...this.normalizeForkBaselineArrays(draft),
         };
     }
 
@@ -387,6 +425,7 @@ export class DraftService {
             linkedRecipeIds: Array.isArray(draft.linkedRecipeIds)
                 ? draft.linkedRecipeIds
                 : [],
+            ...this.normalizeForkBaselineArrays(draft),
         };
     }
 
@@ -1318,6 +1357,23 @@ export class DraftService {
         }
     }
 
+    private static pickForkSummaryFields(
+        draft: Pick<
+            SharedDraft | SingleDraft,
+            'forkedFromRecipeId' | 'forkedFromTitle'
+        >
+    ): Pick<DraftSummary, 'forkedFromRecipeId' | 'forkedFromTitle'> {
+        if (!draft.forkedFromRecipeId) {
+            return {};
+        }
+        return {
+            forkedFromRecipeId: draft.forkedFromRecipeId,
+            ...(draft.forkedFromTitle
+                ? { forkedFromTitle: draft.forkedFromTitle }
+                : {}),
+        };
+    }
+
     static async getAllUserDrafts(userId: string): Promise<DraftSummary[]> {
         const draftIds = await this.getUserDraftIds(userId);
         const uniqueDraftIds = Array.from(new Set(draftIds));
@@ -1343,6 +1399,7 @@ export class DraftService {
                         ownerName: shared.ownerName,
                         updatedAt,
                         imageSrc: shared.imageSrc,
+                        ...this.pickForkSummaryFields(shared),
                     };
                 }
 
@@ -1372,6 +1429,7 @@ export class DraftService {
                             ownerName: solo.ownerName,
                             updatedAt,
                             imageSrc: solo.imageSrc,
+                            ...this.pickForkSummaryFields(solo),
                         };
                     } catch {
                         return null;

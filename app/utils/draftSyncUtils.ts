@@ -316,6 +316,7 @@ export function syncRemoteDraftToForm(
 
     applyField('draftId');
     applyField('inviteToken');
+    applyField('forkedFromRecipeId');
 }
 
 export interface StepConflictInfo {

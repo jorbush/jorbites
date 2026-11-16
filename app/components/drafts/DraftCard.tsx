@@ -2,6 +2,7 @@
 
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { TbGitFork } from 'react-icons/tb';
 import type { TFunction } from 'i18next';
 import { DraftSummary } from '@/app/types/draft';
 import {
@@ -135,7 +136,27 @@ const DraftCard: React.FC<DraftCardProps> = ({
                         {title}
                     </button>
                 </h3>
-                <div className="relative z-10 shrink-0">
+                <div className="relative z-10 flex shrink-0 items-center gap-1.5">
+                    {draft.forkedFromRecipeId && (
+                        <span
+                            data-testid="draft-card-remix-badge"
+                            title={
+                                draft.forkedFromTitle
+                                    ? `${String(t('remixed_from', { defaultValue: 'Remixed from' }))} ${draft.forkedFromTitle}`
+                                    : String(
+                                          t('remix', { defaultValue: 'Remix' })
+                                      )
+                            }
+                            className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50/80 px-2 py-0.5 text-xs font-medium text-neutral-800 dark:border-amber-800/40 dark:bg-amber-950/25 dark:text-neutral-200"
+                        >
+                            <TbGitFork
+                                size={12}
+                                className="shrink-0 text-amber-600 dark:text-amber-400"
+                                aria-hidden="true"
+                            />
+                            {t('remix', { defaultValue: 'Remix' })}
+                        </span>
+                    )}
                     <span
                         className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
                             draft.type === 'shared'

@@ -50,7 +50,7 @@ export default function RecipeCreateClient({
 
         return () => {
             const state = useRecipeModal.getState();
-            if (state.isOpen) {
+            if (state.isOpen && state.onCloseCallback === handleClose) {
                 state.onClose({ skipCallback: true });
             }
         };

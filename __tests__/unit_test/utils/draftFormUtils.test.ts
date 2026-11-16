@@ -566,6 +566,99 @@ describe('draftFormUtils helper functions', () => {
             expect(res.data.prepTime).toBe(15);
             expect(res.data.cookTime).toBe(30);
         });
+
+        it('includes fork lineage fields in solo and shared payloads when forkBaseline or draft lineage exists', () => {
+            const values: Record<string, unknown> = {
+                title: 'Remixed Tacos',
+                forkedFromRecipeId: 'orig-taco-1',
+            };
+            const form = {
+                getValues: (key: string) => values[key],
+                setValue: vi.fn(),
+            };
+            const forkBaseline = {
+                forkedFromRecipeId: 'orig-taco-1',
+                forkedFromTitle: 'Classic Tacos',
+                forkedFromIngredients: ['Tortilla', 'Beef'],
+                forkedFromSteps: ['Warm tortilla', 'Fill with beef'],
+            };
+
+            const soloResult = collectDraftFormData(
+                form,
+                STEPS.DESCRIPTION,
+                null,
+                1,
+                1,
+                'list',
+                'list',
+                undefined,
+                false,
+                false,
+                forkBaseline
+            );
+            expect(soloResult.data.forkedFromRecipeId).toBe('orig-taco-1');
+            expect(soloResult.data.forkedFromTitle).toBe('Classic Tacos');
+            expect(soloResult.data.forkedFromIngredients).toEqual([
+                'Tortilla',
+                'Beef',
+            ]);
+            expect(soloResult.data.forkedFromSteps).toEqual([
+                'Warm tortilla',
+                'Fill with beef',
+            ]);
+
+            const sharedResult = collectDraftFormData(
+                form,
+                STEPS.CATEGORY,
+                {
+                    draftId: 'shared-fork-1',
+                    type: 'shared',
+                    forkedFromRecipeId: 'orig-taco-1',
+                    forkedFromTitle: 'Classic Tacos',
+                    forkedFromIngredients: ['Tortilla', 'Beef'],
+                    forkedFromSteps: ['Warm tortilla', 'Fill with beef'],
+                },
+                1,
+                1,
+                'list',
+                'list'
+            );
+            expect(sharedResult.data.forkedFromRecipeId).toBe('orig-taco-1');
+            expect(sharedResult.data.forkedFromTitle).toBe('Classic Tacos');
+            expect(sharedResult.data.forkedFromIngredients).toEqual([
+                'Tortilla',
+                'Beef',
+            ]);
+            expect(sharedResult.data.forkedFromSteps).toEqual([
+                'Warm tortilla',
+                'Fill with beef',
+            ]);
+        });
+
+        it('omits fork lineage fields on non-remix drafts', () => {
+            const values: Record<string, unknown> = {
+                title: 'Original Soup',
+            };
+            const form = {
+                getValues: (key: string) => values[key],
+                setValue: vi.fn(),
+            };
+
+            const result = collectDraftFormData(
+                form,
+                STEPS.DESCRIPTION,
+                null,
+                1,
+                1,
+                'list',
+                'list'
+            );
+
+            expect(result.data.forkedFromRecipeId).toBeUndefined();
+            expect(result.data.forkedFromTitle).toBeUndefined();
+            expect(result.data.forkedFromIngredients).toBeUndefined();
+            expect(result.data.forkedFromSteps).toBeUndefined();
+        });
     });
 
     describe('checkIsCollaborativeSession', () => {

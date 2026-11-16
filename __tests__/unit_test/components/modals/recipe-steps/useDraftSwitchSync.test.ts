@@ -88,4 +88,40 @@ describe('useDraftSwitchSync', () => {
         expect(mockSetNumIngredients).toHaveBeenCalledWith(1);
         expect(mockSetNumSteps).toHaveBeenCalledWith(1);
     });
+
+    it('does not override step or item counts when transitioning from null to an in-session created draft', () => {
+        const isInSessionCreatedDraft = vi.fn(
+            (id?: string | null) => id === 'local-draft-1'
+        );
+
+        const { rerender } = renderHook((props) => useDraftSwitchSync(props), {
+            initialProps: {
+                isEditMode: false,
+                draftData: null as any,
+                isInSessionCreatedDraft,
+                setStep: mockSetStep,
+                setNumIngredients: mockSetNumIngredients,
+                setNumSteps: mockSetNumSteps,
+            },
+        });
+
+        rerender({
+            isEditMode: false,
+            draftData: {
+                draftId: 'local-draft-1',
+                ingredients: ['Salt'],
+                steps: ['Mix'],
+                currentStep: 1,
+            } as any,
+            isInSessionCreatedDraft,
+            setStep: mockSetStep,
+            setNumIngredients: mockSetNumIngredients,
+            setNumSteps: mockSetNumSteps,
+        });
+
+        expect(isInSessionCreatedDraft).toHaveBeenCalledWith('local-draft-1');
+        expect(mockSetStep).not.toHaveBeenCalled();
+        expect(mockSetNumIngredients).not.toHaveBeenCalled();
+        expect(mockSetNumSteps).not.toHaveBeenCalled();
+    });
 });

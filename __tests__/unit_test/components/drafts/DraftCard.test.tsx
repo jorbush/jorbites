@@ -255,4 +255,37 @@ describe('DraftCard', () => {
             'aria-label'
         );
     });
+
+    it('renders remix badge when forkedFromRecipeId is present and omits it otherwise', () => {
+        const { rerender } = render(
+            <DraftCard
+                draft={mockDraft}
+                onOpen={vi.fn()}
+                onDelete={vi.fn()}
+                onDuplicate={vi.fn()}
+            />
+        );
+
+        expect(
+            screen.queryByTestId('draft-card-remix-badge')
+        ).not.toBeInTheDocument();
+
+        rerender(
+            <DraftCard
+                draft={{
+                    ...mockDraft,
+                    forkedFromRecipeId: 'orig-123',
+                    forkedFromTitle: 'Original Pizza',
+                }}
+                onOpen={vi.fn()}
+                onDelete={vi.fn()}
+                onDuplicate={vi.fn()}
+            />
+        );
+
+        const badge = screen.getByTestId('draft-card-remix-badge');
+        expect(badge).toBeInTheDocument();
+        expect(badge).toHaveTextContent('remix');
+        expect(badge).toHaveAttribute('title', 'remixed_from Original Pizza');
+    });
 });

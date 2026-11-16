@@ -37,7 +37,8 @@ export function useRecipeFormState({
     const { draftData, isLoadingDraft, mutateDraft, syncFormFromDraft } =
         useDraftSync({
             activeDraftId: recipeModal.activeDraftId,
-            isEditMode: Boolean(recipeModal.isEditMode) || isForkMode,
+            isEditMode: Boolean(recipeModal.isEditMode),
+            skipDefaultDraftFetch: isForkMode && !recipeModal.activeDraftId,
             currentUser,
             isOpen: Boolean(recipeModal.isOpen),
             initialDraftData: propDraftData,
@@ -159,9 +160,41 @@ export function useRecipeFormState({
 
     syncFormFromDraft(setValue, getValues, step, lock);
 
+    const forkBaseline = useMemo(() => {
+        const sourceId =
+            recipeModal.forkedFromRecipeId || draftData?.forkedFromRecipeId;
+        if (!sourceId) return null;
+        return {
+            forkedFromRecipeId: sourceId,
+            forkedFromTitle:
+                recipeModal.forkRecipeData?.title ??
+                draftData?.forkedFromTitle ??
+                undefined,
+            forkedFromIngredients:
+                recipeModal.forkRecipeData?.ingredients ??
+                draftData?.forkedFromIngredients,
+            forkedFromSteps:
+                recipeModal.forkRecipeData?.steps ?? draftData?.forkedFromSteps,
+        };
+    }, [recipeModal.forkedFromRecipeId, recipeModal.forkRecipeData, draftData]);
+
+    const {
+        saveDraft: _saveDraft,
+        copyInviteLink: _copyInviteLink,
+        deleteDraft: _deleteDraft,
+        isSaving,
+        flushDraftSaves,
+        isInSessionCreatedDraft,
+    } = useDraftPersistence({
+        recipeModal,
+        mutateDraft,
+        forkBaseline,
+    });
+
     useDraftSwitchSync({
-        isEditMode: Boolean(recipeModal.isEditMode) || isForkMode,
+        isEditMode: Boolean(recipeModal.isEditMode),
         draftData,
+        isInSessionCreatedDraft,
         setStep,
         setNumIngredients,
         setNumSteps,
@@ -185,17 +218,6 @@ export function useRecipeFormState({
         questId,
         updateFormField,
         t,
-    });
-
-    const {
-        saveDraft: _saveDraft,
-        copyInviteLink: _copyInviteLink,
-        deleteDraft: _deleteDraft,
-        isSaving,
-        flushDraftSaves,
-    } = useDraftPersistence({
-        recipeModal,
-        mutateDraft,
     });
 
     const copyInviteLink = async () => {
@@ -243,6 +265,8 @@ export function useRecipeFormState({
         step,
         setStep,
         recipeModal,
+        draftData,
+        isDirty,
         mutateDraft,
         saveDraft,
         deleteDraft,
@@ -317,5 +341,6 @@ export function useRecipeFormState({
         isLoadingDraft,
         mutateDraft,
         isViewer,
+        isInSessionCreatedDraft,
     };
 }

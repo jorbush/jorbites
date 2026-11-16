@@ -104,6 +104,13 @@ export function extractIngredientsAndSteps(
     return { newIngredients, newSteps };
 }
 
+export interface ForkDraftBaseline {
+    forkedFromRecipeId?: string | null;
+    forkedFromTitle?: string | null;
+    forkedFromIngredients?: string[];
+    forkedFromSteps?: string[];
+}
+
 export function collectDraftFormData(
     form: FormAccessor,
     step: number,
@@ -114,7 +121,8 @@ export function collectDraftFormData(
     stepsInputMode: string,
     stepOverride?: number,
     _isFullPayload = false,
-    isLocked = false
+    isLocked = false,
+    forkBaseline?: ForkDraftBaseline | null
 ): {
     data: SaveDraftPayload;
     currentDraftId?: string;
@@ -143,6 +151,21 @@ export function collectDraftFormData(
             ? formInviteToken
             : draftData?.inviteToken;
 
+    const formForkedFromId = form.getValues('forkedFromRecipeId');
+    const forkedFromRecipeId =
+        (typeof formForkedFromId === 'string' && formForkedFromId.trim()
+            ? formForkedFromId.trim()
+            : null) ||
+        forkBaseline?.forkedFromRecipeId ||
+        draftData?.forkedFromRecipeId ||
+        undefined;
+    const forkedFromTitle =
+        forkBaseline?.forkedFromTitle ?? draftData?.forkedFromTitle;
+    const forkedFromIngredients =
+        forkBaseline?.forkedFromIngredients ?? draftData?.forkedFromIngredients;
+    const forkedFromSteps =
+        forkBaseline?.forkedFromSteps ?? draftData?.forkedFromSteps;
+
     // For shared (collaborative) drafts we only send the fields belonging to
     // the step the user is currently editing. Sending stale local values for
     // other steps would overwrite concurrent co-cook edits stored in Redis.
@@ -161,6 +184,14 @@ export function collectDraftFormData(
         inviteToken: currentInviteToken,
         currentStep: stepToSave,
         updatedAt: new Date().toISOString(),
+        ...(forkedFromRecipeId ? { forkedFromRecipeId } : {}),
+        ...(forkedFromRecipeId && forkedFromTitle ? { forkedFromTitle } : {}),
+        ...(forkedFromRecipeId && Array.isArray(forkedFromIngredients)
+            ? { forkedFromIngredients }
+            : {}),
+        ...(forkedFromRecipeId && Array.isArray(forkedFromSteps)
+            ? { forkedFromSteps }
+            : {}),
     };
 
     const addCategoryFields = () => {

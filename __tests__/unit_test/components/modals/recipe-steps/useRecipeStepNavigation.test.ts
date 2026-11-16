@@ -306,7 +306,7 @@ describe('useRecipeStepNavigation', () => {
             expect(mockSetStep).toHaveBeenCalledWith(STEPS.STEPS);
         });
 
-        it('submits successfully when both ingredients and steps are modified', async () => {
+        it('submits successfully when both ingredients and steps are modified without deleting unrelated drafts when no draftId exists', async () => {
             (axios.post as any).mockResolvedValueOnce({
                 data: { id: 'new-remix-id' },
             });
@@ -324,10 +324,172 @@ describe('useRecipeStepNavigation', () => {
             });
 
             expect(axios.post).toHaveBeenCalled();
+            expect(mockDeleteDraft).not.toHaveBeenCalled();
             expect(mockReset).toHaveBeenCalled();
             expect(mockOnClose).toHaveBeenCalledWith({ skipCallback: true });
             expect(mockPush).toHaveBeenCalledWith('/recipes/new-remix-id');
             expect(toast.success).toHaveBeenCalledWith('recipe_posted');
+        });
+
+        it('deletes the associated remix draft on submit when a draftId is present', async () => {
+            (axios.post as any).mockResolvedValueOnce({
+                data: { id: 'saved-remix-id' },
+            });
+
+            const { result } = renderHook(() =>
+                useRecipeStepNavigation({
+                    ...forkProps,
+                    getValues: vi.fn((key?: string) =>
+                        key === 'draftId' ? 'draft-remix-1' : undefined
+                    ) as any,
+                })
+            );
+
+            await act(async () => {
+                await result.current.onSubmit({
+                    title: 'Remix of Original Dish',
+                    draftId: 'draft-remix-1',
+                    ingredients: ['Rye Flour', 'Water', 'Salt', 'Seeds'],
+                    steps: ['Mix gently', 'Cold ferment', 'Bake with steam'],
+                });
+            });
+
+            expect(axios.post).toHaveBeenCalled();
+            expect(mockDeleteDraft).toHaveBeenCalledTimes(1);
+            expect(mockPush).toHaveBeenCalledWith('/recipes/saved-remix-id');
+        });
+
+        it('validates resumed remix draft against draftData lineage without forkRecipeData and redirects to new recipe', async () => {
+            (axios.post as any).mockResolvedValueOnce({
+                data: { id: 'resumed-remix-id' },
+            });
+
+            const { result, rerender } = renderHook(
+                ({ draft }: { draft: any }) =>
+                    useRecipeStepNavigation({
+                        ...defaultProps,
+                        step: STEPS.IMAGES,
+                        recipeModal: {
+                            isEditMode: false,
+                            onClose: mockOnClose,
+                        },
+                        draftData: draft,
+                    }),
+                {
+                    initialProps: {
+                        draft: {
+                            draftId: 'draft-remix-resumed',
+                            forkedFromRecipeId: 'orig-recipe-1',
+                            forkedFromTitle: 'Original Dish',
+                            forkedFromIngredients: ['Flour', 'Water', 'Salt'],
+                            forkedFromSteps: ['Mix', 'Knead', 'Bake'],
+                        },
+                    },
+                }
+            );
+
+            // Unchanged ingredients should fail validation even though forkRecipeData is absent
+            await act(async () => {
+                await result.current.onSubmit({
+                    title: 'Resumed Remix',
+                    forkedFromRecipeId: 'orig-recipe-1',
+                    ingredients: ['Flour', 'Water', 'Salt'],
+                    steps: ['Mix gently', 'Bake longer'],
+                });
+            });
+
+            expect(axios.post).not.toHaveBeenCalled();
+            expect(toast.error).toHaveBeenCalledWith(
+                'remix_validation_ingredients_required'
+            );
+
+            // Rerender and submit with modified ingredients & steps
+            rerender({
+                draft: {
+                    draftId: 'draft-remix-resumed',
+                    forkedFromRecipeId: 'orig-recipe-1',
+                    forkedFromTitle: 'Original Dish',
+                    forkedFromIngredients: ['Flour', 'Water', 'Salt'],
+                    forkedFromSteps: ['Mix', 'Knead', 'Bake'],
+                },
+            });
+
+            await act(async () => {
+                await result.current.onSubmit({
+                    title: 'Resumed Remix',
+                    forkedFromRecipeId: 'orig-recipe-1',
+                    ingredients: ['Whole Wheat Flour', 'Water', 'Salt'],
+                    steps: ['Mix gently', 'Bake longer'],
+                });
+            });
+
+            expect(axios.post).toHaveBeenCalled();
+            expect(mockDeleteDraft).toHaveBeenCalled();
+            expect(mockOnClose).toHaveBeenCalledWith({ skipCallback: true });
+            expect(mockPush).toHaveBeenCalledWith('/recipes/resumed-remix-id');
+        });
+
+        it('gates production step auto-save in fork mode until dirty or draft exists', async () => {
+            const originalEnv = process.env.NODE_ENV;
+            process.env.NODE_ENV = 'production';
+            try {
+                mockGetValues.mockReturnValue(undefined);
+                const { result: pristineResult } = renderHook(() =>
+                    useRecipeStepNavigation({
+                        ...forkProps,
+                        step: STEPS.DESCRIPTION,
+                        isDirty: false,
+                    })
+                );
+
+                await act(async () => {
+                    await pristineResult.current.onSubmit({ title: 'Remix' });
+                });
+                await act(async () => {
+                    await pristineResult.current.onBack();
+                });
+                expect(mockSaveDraft).not.toHaveBeenCalled();
+
+                // Once form becomes dirty, production step navigation auto-saves
+                const { result: dirtyResult } = renderHook(() =>
+                    useRecipeStepNavigation({
+                        ...forkProps,
+                        step: STEPS.DESCRIPTION,
+                        isDirty: true,
+                    })
+                );
+
+                await act(async () => {
+                    await dirtyResult.current.onSubmit({ title: 'Remix' });
+                });
+                expect(mockSaveDraft).toHaveBeenCalledWith(STEPS.INGREDIENTS);
+
+                mockSaveDraft.mockClear();
+                await act(async () => {
+                    await dirtyResult.current.onBack();
+                });
+                expect(mockSaveDraft).toHaveBeenCalledWith(STEPS.CATEGORY);
+
+                // Even if pristine again after reload, an existing draftId auto-saves on navigation
+                mockSaveDraft.mockClear();
+                const { result: existingDraftResult } = renderHook(() =>
+                    useRecipeStepNavigation({
+                        ...forkProps,
+                        step: STEPS.DESCRIPTION,
+                        isDirty: false,
+                        draftData: { draftId: 'existing-remix-draft' },
+                    })
+                );
+
+                await act(async () => {
+                    await existingDraftResult.current.onSubmit({
+                        title: 'Remix',
+                    });
+                });
+                expect(mockSaveDraft).toHaveBeenCalledWith(STEPS.INGREDIENTS);
+            } finally {
+                process.env.NODE_ENV = originalEnv;
+            }
         });
     });
 });

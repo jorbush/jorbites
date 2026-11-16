@@ -110,4 +110,25 @@ describe('useRecipeModal', () => {
         expect(state.forkedFromRecipeId).toBe('rec-award-123');
         expect(state.forkRecipeData?.categories).toEqual(['Seafood']);
     });
+
+    it('binds activeDraftId via bindDraftId without clearing fork state or onCloseCallback', () => {
+        const onCloseCb = () => {};
+        useRecipeModal
+            .getState()
+            .onOpenFork(
+                { title: 'Original Dish', questId: 'quest-1' },
+                'rec-parent-1',
+                onCloseCb
+            );
+
+        useRecipeModal.getState().bindDraftId('draft-remix-123');
+
+        const state = useRecipeModal.getState();
+        expect(state.isOpen).toBe(true);
+        expect(state.activeDraftId).toBe('draft-remix-123');
+        expect(state.forkedFromRecipeId).toBe('rec-parent-1');
+        expect(state.forkRecipeData?.title).toBe('Original Dish');
+        expect(state.questId).toBe('quest-1');
+        expect(state.onCloseCallback).toBe(onCloseCb);
+    });
 });
