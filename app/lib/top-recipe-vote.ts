@@ -13,6 +13,7 @@ import {
     getISOWeekYear,
 } from 'date-fns';
 import { logger } from '@/app/lib/axiom/server';
+import { redisCache } from '@/app/lib/redis';
 import sendNotification from '@/app/actions/sendNotification';
 import { NotificationType } from '@/app/types/notification';
 import { RecipeVoteSession } from '@prisma/client';
@@ -333,6 +334,42 @@ export async function closeVoteSession(
     const winner = sortedRecipes[0];
     if (!winner) {
         throw new Error('No candidates found to determine a winner');
+    }
+
+    const winnerCategories = winner.categories ?? [];
+    const hasAwardWinning = winnerCategories.some(
+        (cat) => cat.toLowerCase() === 'award-winning'
+    );
+
+    if (!hasAwardWinning) {
+        await prisma.recipe.update({
+            where: { id: winner.id },
+            data: {
+                categories: [...winnerCategories, 'Award-Winning'],
+            },
+        });
+
+        logger.info(
+            'lib/top-recipe-vote closeVoteSession - added Award-Winning category',
+            {
+                winnerId: winner.id,
+            }
+        );
+
+        try {
+            await Promise.all([
+                redisCache.del(`recipe:${winner.id}`),
+                redisCache.incr('recipes:global:version'),
+            ]);
+        } catch (cacheError: any) {
+            logger.error(
+                'lib/top-recipe-vote closeVoteSession - cache invalidation error',
+                {
+                    error: cacheError.message,
+                    winnerId: winner.id,
+                }
+            );
+        }
     }
 
     // Update the session in DB
