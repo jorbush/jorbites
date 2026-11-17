@@ -56,6 +56,7 @@ describe('PhotoLightbox', () => {
 
         const dialog = screen.getByRole('dialog');
         expect(dialog).toBeInTheDocument();
+        expect(dialog.tagName).toBe('DIALOG');
         expect(dialog).toHaveAttribute('aria-label', 'Delicious taco');
 
         const img = screen.getByTestId('lightbox-image');
@@ -128,6 +129,56 @@ describe('PhotoLightbox', () => {
 
         fireEvent.keyDown(dialog, { key: 'Enter' });
         expect(mockOnClose).toHaveBeenCalledTimes(1);
+    });
+
+    it('calls onClose and prevents default on native dialog cancel event', () => {
+        render(
+            <PhotoLightbox
+                src="https://images.example.com/photo.jpg"
+                isOpen={true}
+                onClose={mockOnClose}
+            />
+        );
+
+        const dialog = screen.getByRole('dialog');
+        const cancelEvent = new Event('cancel', { cancelable: true });
+        fireEvent(dialog, cancelEvent);
+
+        expect(cancelEvent.defaultPrevented).toBe(true);
+        expect(mockOnClose).toHaveBeenCalledTimes(1);
+    });
+
+    it('uses showModal and close when HTMLDialogElement methods are available', () => {
+        const showModalMock = vi.fn(function (this: HTMLDialogElement) {
+            this.setAttribute('open', '');
+        });
+        const closeMock = vi.fn(function (this: HTMLDialogElement) {
+            this.removeAttribute('open');
+        });
+
+        const originalShowModal = HTMLDialogElement.prototype.showModal;
+        const originalClose = HTMLDialogElement.prototype.close;
+        HTMLDialogElement.prototype.showModal = showModalMock;
+        HTMLDialogElement.prototype.close = closeMock;
+
+        try {
+            const { unmount } = render(
+                <PhotoLightbox
+                    src="https://images.example.com/photo.jpg"
+                    isOpen={true}
+                    onClose={mockOnClose}
+                />
+            );
+
+            expect(showModalMock).toHaveBeenCalledTimes(1);
+            expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+            unmount();
+            expect(closeMock).toHaveBeenCalledTimes(1);
+        } finally {
+            HTMLDialogElement.prototype.showModal = originalShowModal;
+            HTMLDialogElement.prototype.close = originalClose;
+        }
     });
 
     it('renders optional children content when provided', () => {
