@@ -223,4 +223,39 @@ describe('ProfileRecipesContent Component', () => {
             )
         ).toBe(true);
     });
+
+    it('uses single-column recipe grids below md breakpoint instead of sm:grid-cols-2', () => {
+        const pinnedRecipe = {
+            ...mockRecipe,
+            id: 'pinned-1',
+            title: 'Special Pizza',
+        };
+
+        const { container } = render(
+            <ProfileRecipesContent
+                recipes={[mockRecipe]}
+                pinnedRecipes={[pinnedRecipe]}
+                currentUser={mockUser}
+                isOwnProfile={true}
+                totalPages={1}
+                currentPage={1}
+                searchParams={{}}
+            />
+        );
+
+        const pinnedGrid = screen
+            .getByTestId('profile-pinned-recipes')
+            .querySelector('.grid');
+        const mainGrid = container.querySelector(
+            '[data-testid="profile-recipes-content"] > .grid'
+        );
+
+        expect(pinnedGrid?.className).toContain('grid-cols-1');
+        expect(pinnedGrid?.className).toContain('md:grid-cols-3');
+        expect(pinnedGrid?.className).not.toContain('sm:grid-cols-2');
+
+        expect(mainGrid?.className).toContain('grid-cols-1');
+        expect(mainGrid?.className).toContain('md:grid-cols-3');
+        expect(mainGrid?.className).not.toContain('sm:grid-cols-2');
+    });
 });
