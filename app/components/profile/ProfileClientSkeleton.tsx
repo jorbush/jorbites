@@ -3,24 +3,24 @@ import Container from '@/app/components/utils/Container';
 const ProfileClientSkeleton = () => {
     return (
         <Container>
-            {/* Tabs & Search Bar skeleton */}
-            <div className="mt-2 mb-6 flex flex-col gap-4">
-                <div className="flex border-b border-neutral-200 dark:border-neutral-600">
-                    <div className="flex flex-1 items-center justify-center gap-2 py-2">
-                        <div className="size-5 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                        <div className="h-5 w-20 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                    </div>
-                    <div className="flex flex-1 items-center justify-center gap-2 py-2">
-                        <div className="size-5 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                        <div className="h-5 w-16 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                    </div>
+            {/* Tabs skeleton */}
+            <div className="mt-2 mb-8 flex border-b border-neutral-200 dark:border-neutral-600">
+                <div className="flex flex-1 items-center justify-center gap-2 py-2">
+                    <div className="size-5 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                    <div className="h-5 w-20 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
                 </div>
-                <div className="h-10 w-full animate-pulse rounded-xl bg-neutral-200 sm:max-w-sm lg:w-72 xl:w-80 dark:bg-neutral-700"></div>
+                <div className="flex flex-1 items-center justify-center gap-2 py-2">
+                    <div className="size-5 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                    <div className="h-5 w-16 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                </div>
             </div>
 
-            {/* Dropdown filter skeleton */}
-            <div className="mb-4 flex justify-end">
-                <div className="h-9 w-36 animate-pulse rounded-md bg-neutral-200 dark:bg-neutral-700"></div>
+            {/* Search bar & Dropdown filter skeleton */}
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="h-10 w-full animate-pulse rounded-xl bg-neutral-200 sm:max-w-sm lg:w-72 xl:w-80 dark:bg-neutral-700"></div>
+                <div className="flex justify-end">
+                    <div className="h-9 w-36 animate-pulse rounded-md bg-neutral-200 dark:bg-neutral-700"></div>
+                </div>
             </div>
 
             {/* Card Skeletons Grid */}

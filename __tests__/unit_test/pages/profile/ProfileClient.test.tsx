@@ -602,5 +602,37 @@ describe('ProfileClient', () => {
             expect(getByText('The Art of Sourdough')).toBeDefined();
             expect(queryByText('Handmade Pasta')).toBeNull();
         });
+
+        it('renders search bar below pinned recipes section on recipes tab', () => {
+            const pinned = [
+                {
+                    ...mockRecipes[0],
+                    id: 'pinned1',
+                    title: 'Pinned Recipe 1',
+                },
+            ];
+
+            const { getByTestId } = render(
+                <ProfileClient
+                    recipes={mockRecipes}
+                    pinnedRecipes={pinned}
+                    currentUser={mockCurrentUser}
+                    totalPages={1}
+                    currentPage={1}
+                    searchParams={{}}
+                    profileUserId="user1"
+                />
+            );
+
+            const pinnedSection = getByTestId('profile-pinned-recipes');
+            const searchInput = getByTestId('profile-search-input');
+
+            expect(
+                Boolean(
+                    pinnedSection.compareDocumentPosition(searchInput) &
+                    Node.DOCUMENT_POSITION_FOLLOWING
+                )
+            ).toBe(true);
+        });
     });
 });

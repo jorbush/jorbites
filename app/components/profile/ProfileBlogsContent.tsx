@@ -7,13 +7,17 @@ import BlogCard from '@/app/components/blog/BlogCard';
 import Pagination from '@/app/components/navigation/Pagination';
 import EmptyState from '@/app/components/utils/EmptyState';
 import EmptySearchResults from '@/app/components/utils/EmptySearchResults';
+import SearchBar from '@/app/components/inputs/SearchBar';
 
 const BLOGS_PER_PAGE = 12;
+const NOOP = () => {};
 
 interface ProfileBlogsContentProps {
     blogs: Blog[];
     searchParams: any;
     searchQuery?: string;
+    onSearchChange?: (query: string) => void;
+    onSearchSubmit?: () => void;
     onClearSearch?: () => void;
 }
 
@@ -21,6 +25,8 @@ const ProfileBlogsContent: React.FC<ProfileBlogsContentProps> = ({
     blogs,
     searchParams,
     searchQuery,
+    onSearchChange,
+    onSearchSubmit,
     onClearSearch,
 }) => {
     const { t } = useTranslation();
@@ -46,31 +52,7 @@ const ProfileBlogsContent: React.FC<ProfileBlogsContentProps> = ({
         });
     }, [blogs, isSearching, normalizedSearch]);
 
-    if (filteredBlogs.length === 0) {
-        if (isSearching) {
-            return (
-                <div data-testid="profile-blogs-search-empty">
-                    <EmptySearchResults
-                        title={String(
-                            t(
-                                'no_blogs_matching_search',
-                                'No articles match your search'
-                            )
-                        )}
-                        subtitle={String(
-                            t(
-                                'no_search_results_subtitle',
-                                'Try searching with different keywords or check your spelling.'
-                            )
-                        )}
-                        clearLabel={String(t('clear_search', 'Clear search'))}
-                        onClearSearch={onClearSearch}
-                        clearTestId="profile-blogs-search-clear"
-                    />
-                </div>
-            );
-        }
-
+    if (blogs.length === 0 && !isSearching) {
         return (
             <div
                 className="py-12"
@@ -110,25 +92,66 @@ const ProfileBlogsContent: React.FC<ProfileBlogsContentProps> = ({
             className="pt-2"
             data-testid="profile-blogs-content"
         >
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {displayedBlogs.map((blog) => (
-                    <BlogCard
-                        key={blog.id}
-                        blog={blog}
-                    />
-                ))}
+            <div className="mb-6 w-full sm:max-w-sm lg:w-72 lg:max-w-none xl:w-80">
+                <SearchBar
+                    id="profile-search-input"
+                    value={activeSearch}
+                    onChange={onSearchChange ?? NOOP}
+                    onSubmit={onSearchSubmit}
+                    onClear={onClearSearch}
+                    placeholder={String(
+                        t('search_blogs', 'Search articles...')
+                    )}
+                    clearLabel={String(t('clear_search', 'Clear search'))}
+                    inputWrapperClassName="w-full"
+                    dataTestId="profile-search-input"
+                    dataCy="profile-search-input"
+                />
             </div>
 
-            {totalPages > 1 && (
-                <Pagination
-                    totalPages={totalPages}
-                    currentPage={currentPage}
-                    searchParams={{
-                        ...searchParams,
-                        tab: 'blogs',
-                        search: activeSearch.trim() || undefined,
-                    }}
-                />
+            {filteredBlogs.length === 0 ? (
+                <div data-testid="profile-blogs-search-empty">
+                    <EmptySearchResults
+                        title={String(
+                            t(
+                                'no_blogs_matching_search',
+                                'No articles match your search'
+                            )
+                        )}
+                        subtitle={String(
+                            t(
+                                'no_search_results_subtitle',
+                                'Try searching with different keywords or check your spelling.'
+                            )
+                        )}
+                        clearLabel={String(t('clear_search', 'Clear search'))}
+                        onClearSearch={onClearSearch}
+                        clearTestId="profile-blogs-search-clear"
+                    />
+                </div>
+            ) : (
+                <>
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        {displayedBlogs.map((blog) => (
+                            <BlogCard
+                                key={blog.id}
+                                blog={blog}
+                            />
+                        ))}
+                    </div>
+
+                    {totalPages > 1 && (
+                        <Pagination
+                            totalPages={totalPages}
+                            currentPage={currentPage}
+                            searchParams={{
+                                ...searchParams,
+                                tab: 'blogs',
+                                search: activeSearch.trim() || undefined,
+                            }}
+                        />
+                    )}
+                </>
             )}
         </div>
     );

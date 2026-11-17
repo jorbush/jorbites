@@ -1,12 +1,10 @@
 'use client';
 
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { SafeRecipe, SafeUser, ProfilePreferences } from '@/app/types';
 import { Blog } from '@/app/utils/markdownUtils';
 import Container from '@/app/components/utils/Container';
 import Tabs from '@/app/components/utils/Tabs';
-import SearchBar from '@/app/components/inputs/SearchBar';
 import { OrderByType } from '@/app/utils/filter';
 import ProfileRecipesContent from '@/app/components/profile/ProfileRecipesContent';
 import ProfileBlogsContent from '@/app/components/profile/ProfileBlogsContent';
@@ -147,6 +145,8 @@ interface ProfileTabContentProps {
     blogs: Blog[];
     searchQuery: string;
     isSearching: boolean;
+    onSearchChange: (query: string) => void;
+    onSearchSubmit: () => void;
     onClearSearch: () => void;
 }
 
@@ -163,6 +163,8 @@ const ProfileTabContent: React.FC<ProfileTabContentProps> = ({
     blogs,
     searchQuery,
     isSearching,
+    onSearchChange,
+    onSearchSubmit,
     onClearSearch,
 }) => {
     if (activeTab === 'recipes') {
@@ -175,7 +177,10 @@ const ProfileTabContent: React.FC<ProfileTabContentProps> = ({
                 totalPages={totalPages}
                 currentPage={currentPage}
                 searchParams={searchParams}
+                searchQuery={searchQuery}
                 isSearching={isSearching}
+                onSearchChange={onSearchChange}
+                onSearchSubmit={onSearchSubmit}
                 onClearSearch={onClearSearch}
             />
         );
@@ -187,6 +192,8 @@ const ProfileTabContent: React.FC<ProfileTabContentProps> = ({
                 blogs={blogs}
                 searchParams={searchParams}
                 searchQuery={searchQuery}
+                onSearchChange={onSearchChange}
+                onSearchSubmit={onSearchSubmit}
                 onClearSearch={onClearSearch}
             />
         );
@@ -212,7 +219,6 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
     challengeSubmissions,
     activities,
 }) => {
-    const { t } = useTranslation();
     const isOwnProfile = Boolean(
         currentUser && currentUser.id === profileUserId
     );
@@ -251,11 +257,6 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
         isSearching,
     });
 
-    const searchPlaceholder =
-        activeTab === 'blogs'
-            ? String(t('search_blogs', 'Search articles...'))
-            : String(t('search_profile_recipes', 'Search recipes...'));
-
     return (
         <>
             <ProfileCookingStats
@@ -272,30 +273,13 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
             />
 
             <Container>
-                <div className="mt-2 mb-6 flex flex-col gap-4">
+                <div className="mt-2 mb-8">
                     <Tabs
                         tabs={tabs}
                         activeTab={activeTab}
                         onTabChange={handleTabChange}
                         data-testid="profile-tabs"
                     />
-
-                    <div className="w-full sm:max-w-sm lg:w-72 lg:max-w-none xl:w-80">
-                        <SearchBar
-                            id="profile-search-input"
-                            value={searchQuery}
-                            onChange={setSearchQuery}
-                            onSubmit={submitSearch}
-                            onClear={clearSearch}
-                            placeholder={searchPlaceholder}
-                            clearLabel={String(
-                                t('clear_search', 'Clear search')
-                            )}
-                            inputWrapperClassName="w-full"
-                            dataTestId="profile-search-input"
-                            dataCy="profile-search-input"
-                        />
-                    </div>
                 </div>
 
                 <ProfileTabContent
@@ -311,6 +295,8 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
                     blogs={blogs}
                     searchQuery={searchQuery}
                     isSearching={isSearching}
+                    onSearchChange={setSearchQuery}
+                    onSearchSubmit={submitSearch}
                     onClearSearch={clearSearch}
                 />
             </Container>

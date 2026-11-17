@@ -163,17 +163,34 @@ describe('ProfileRecipesContent Component', () => {
             />
         );
 
-        expect(
-            screen.getByTestId('profile-recipes-search-empty')
-        ).toBeDefined();
+        const pinnedSection = screen.getByTestId('profile-pinned-recipes');
+        const searchInput = screen.getByTestId('profile-search-input');
+        const emptySearch = screen.getByTestId('profile-recipes-search-empty');
+
+        expect(pinnedSection).toBeDefined();
+        expect(screen.getByText('Special Pizza')).toBeDefined();
+        expect(searchInput).toBeDefined();
+        expect(emptySearch).toBeDefined();
         expect(screen.getByText('no_recipes_matching_search')).toBeDefined();
-        expect(screen.queryByText('Special Pizza')).toBeNull();
+
+        expect(
+            Boolean(
+                pinnedSection.compareDocumentPosition(searchInput) &
+                Node.DOCUMENT_POSITION_FOLLOWING
+            )
+        ).toBe(true);
+        expect(
+            Boolean(
+                searchInput.compareDocumentPosition(emptySearch) &
+                Node.DOCUMENT_POSITION_FOLLOWING
+            )
+        ).toBe(true);
 
         screen.getByTestId('profile-recipes-search-clear').click();
         expect(onClearSearch).toHaveBeenCalledTimes(1);
     });
 
-    it('hides pinned recipes section while search is active', () => {
+    it('renders search bar below pinned recipes section', () => {
         const pinnedRecipe = {
             ...mockRecipe,
             id: 'pinned-1',
@@ -193,8 +210,17 @@ describe('ProfileRecipesContent Component', () => {
             />
         );
 
+        const pinnedSection = screen.getByTestId('profile-pinned-recipes');
+        const searchInput = screen.getByTestId('profile-search-input');
+
         expect(screen.getByText('Pasta Carbonara')).toBeDefined();
-        expect(screen.queryByText('pinned_recipes')).toBeNull();
-        expect(screen.queryByText('Special Pizza')).toBeNull();
+        expect(screen.getByText('pinned_recipes')).toBeDefined();
+        expect(screen.getByText('Special Pizza')).toBeDefined();
+        expect(
+            Boolean(
+                pinnedSection.compareDocumentPosition(searchInput) &
+                Node.DOCUMENT_POSITION_FOLLOWING
+            )
+        ).toBe(true);
     });
 });
