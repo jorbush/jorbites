@@ -4,15 +4,13 @@ const ProfileClientSkeleton = () => {
     return (
         <Container>
             {/* Tabs skeleton */}
-            <div className="mt-2 mb-8 flex border-b border-neutral-200 dark:border-neutral-600">
-                <div className="flex flex-1 items-center justify-center gap-2 py-2">
-                    <div className="size-5 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                    <div className="h-5 w-20 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                </div>
-                <div className="flex flex-1 items-center justify-center gap-2 py-2">
-                    <div className="size-5 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                    <div className="h-5 w-16 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                </div>
+            <div className="mt-2 mb-6 flex gap-2 overflow-x-auto pb-1">
+                {[1, 2, 3, 4].map((i) => (
+                    <div
+                        key={i}
+                        className="h-9 w-24 shrink-0 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"
+                    ></div>
+                ))}
             </div>
 
             {/* Search bar & Dropdown filter skeleton */}

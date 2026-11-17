@@ -177,6 +177,9 @@ export type ProfilePreferences = {
     showStats?: boolean;
     showActivityGraph?: boolean;
     showArticles?: boolean;
+    showLists?: boolean;
+    showQuests?: boolean;
+    showPlannings?: boolean;
 };
 
 export type SafeWorkshop = Omit<

@@ -11,8 +11,9 @@ import ProfileHeader from '@/app/profile/[userId]/ProfileHeader';
 import ProfileHeaderSkeleton from '@/app/components/profile/ProfileHeaderSkeleton';
 import ProfileJsonLd from '@/app/components/profile/ProfileJsonLd';
 import ProfileContentSection from '@/app/components/profile/ProfileContentSection';
+import getProfileCollections from '@/app/actions/getProfileCollections';
 import { getBlogsByAuthor } from '@/app/utils/blog-utils';
-import { DEFAULT_PROFILE_PREFERENCES } from '@/app/utils/profile-utils';
+import { getProfilePreferences } from '@/app/utils/profile-utils';
 
 interface IParams {
     userId?: string;
@@ -100,20 +101,28 @@ async function loadProfilePageData(
             getPinnedRecipesByUserId(userId),
         ]);
 
-    const showActivityGraph =
-        user?.profilePreferences?.showActivityGraph ??
-        DEFAULT_PROFILE_PREFERENCES.showActivityGraph;
+    const preferences = getProfilePreferences(user);
+    const isOwnProfile = Boolean(currentUser && currentUser.id === userId);
     const language = currentUser?.language || user?.language || 'en';
 
-    const [userActivity, blogs] = await Promise.all([
-        showActivityGraph
+    const [userActivity, blogs, collections] = await Promise.all([
+        preferences.showActivityGraph
             ? getUserActivityForGraph({ userId })
             : Promise.resolve({
                   recipes: [],
                   comments: [],
                   challengeSubmissions: [],
               }),
-        getBlogsByAuthor(userId, user?.name || null, language),
+        preferences.showArticles
+            ? getBlogsByAuthor(userId, user?.name || null, language)
+            : Promise.resolve([]),
+        getProfileCollections({
+            userId,
+            includePrivate: isOwnProfile,
+            includeLists: preferences.showLists,
+            includeQuests: preferences.showQuests,
+            includePlannings: preferences.showPlannings,
+        }),
     ]);
 
     return {
@@ -124,6 +133,9 @@ async function loadProfilePageData(
         currentUser,
         pinnedRecipes,
         blogs,
+        lists: collections.lists,
+        quests: collections.quests,
+        plannings: collections.plannings,
         userActivity,
     };
 }
@@ -141,11 +153,19 @@ const ProfilePage = async (props: {
         currentUser,
         pinnedRecipes,
         blogs,
+        lists,
+        quests,
+        plannings,
         userActivity,
     } = data;
 
     const hasAnyContent =
-        Boolean(user) || recipesResponse.recipes.length > 0 || blogs.length > 0;
+        Boolean(user) ||
+        recipesResponse.recipes.length > 0 ||
+        blogs.length > 0 ||
+        lists.length > 0 ||
+        quests.length > 0 ||
+        plannings.length > 0;
 
     if (!hasAnyContent) {
         return (
@@ -180,6 +200,9 @@ const ProfilePage = async (props: {
                 totalRecipes={recipesResponse.totalRecipes}
                 searchParams={searchParams}
                 blogs={blogs}
+                lists={lists}
+                quests={quests}
+                plannings={plannings}
                 user={user}
                 graphRecipes={userActivity.recipes}
                 comments={userActivity.comments}

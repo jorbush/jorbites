@@ -12,6 +12,7 @@ interface TabNavigationProps {
     activeTab: string;
     onTabChange: (tabId: string) => void;
     className?: string;
+    'data-testid'?: string;
 }
 
 const TabNavigation: React.FC<TabNavigationProps> = ({
@@ -19,10 +20,12 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
     activeTab,
     onTabChange,
     className = '',
+    'data-testid': dataTestId,
 }) => {
     return (
         <div
             className={`-mx-4 min-w-0 overflow-x-auto px-4 sm:mx-0 sm:px-0 ${className}`}
+            data-testid={dataTestId}
         >
             <div className="flex min-w-max gap-2 py-0.5 pb-1 lg:pb-0.5">
                 {tabs.map((tab) => {
@@ -33,6 +36,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
                             type="button"
                             onClick={() => onTabChange(tab.id)}
                             data-cy={`tab-${tab.id}`}
+                            data-testid={`tab-${tab.id}`}
                             aria-pressed={isActive}
                             className={`flex-shrink-0 cursor-pointer rounded-full border px-4 py-2 text-sm transition-colors duration-200 ${
                                 isActive

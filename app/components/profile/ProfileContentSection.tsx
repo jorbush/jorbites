@@ -3,9 +3,19 @@ import ClientOnly from '@/app/components/utils/ClientOnly';
 import EmptyState from '@/app/components/utils/EmptyState';
 import ProfileClientSkeleton from '@/app/components/profile/ProfileClientSkeleton';
 import ProfileClient from '@/app/profile/[userId]/ProfileClient';
-import { SafeRecipe, SafeUser } from '@/app/types';
+import {
+    SafeList,
+    SafePlanning,
+    SafeQuest,
+    SafeRecipe,
+    SafeUser,
+} from '@/app/types';
 import { Blog } from '@/app/utils/markdownUtils';
 import { OrderByType } from '@/app/utils/filter';
+
+const EMPTY_LISTS: SafeList[] = [];
+const EMPTY_QUESTS: SafeQuest[] = [];
+const EMPTY_PLANNINGS: SafePlanning[] = [];
 
 interface ProfileContentSectionProps {
     userId: string;
@@ -23,6 +33,9 @@ interface ProfileContentSectionProps {
         search?: string;
     };
     blogs: Blog[];
+    lists?: SafeList[];
+    quests?: SafeQuest[];
+    plannings?: SafePlanning[];
     user?: SafeUser | null;
     graphRecipes?: Array<{
         id: string;
@@ -39,6 +52,54 @@ interface ProfileContentSectionProps {
     challengeSubmissions?: Array<{ id: string; createdAt: string }>;
 }
 
+const hasProfileClientContent = ({
+    recipes,
+    pinnedRecipes,
+    blogs,
+    lists,
+    quests,
+    plannings,
+    searchParams,
+    user,
+    graphRecipes,
+    comments,
+    challengeSubmissions,
+}: {
+    recipes: SafeRecipe[];
+    pinnedRecipes: SafeRecipe[];
+    blogs: Blog[];
+    lists: SafeList[];
+    quests: SafeQuest[];
+    plannings: SafePlanning[];
+    searchParams: ProfileContentSectionProps['searchParams'];
+    user?: SafeUser | null;
+    graphRecipes?: ProfileContentSectionProps['graphRecipes'];
+    comments?: ProfileContentSectionProps['comments'];
+    challengeSubmissions?: ProfileContentSectionProps['challengeSubmissions'];
+}): boolean => {
+    if (
+        recipes.length > 0 ||
+        pinnedRecipes.length > 0 ||
+        blogs.length > 0 ||
+        lists.length > 0 ||
+        quests.length > 0 ||
+        plannings.length > 0
+    ) {
+        return true;
+    }
+
+    if (searchParams?.search?.trim()) {
+        return true;
+    }
+
+    return (
+        Boolean(user?.recipeCount && user.recipeCount > 0) ||
+        Boolean(graphRecipes && graphRecipes.length > 0) ||
+        Boolean(comments && comments.length > 0) ||
+        Boolean(challengeSubmissions && challengeSubmissions.length > 0)
+    );
+};
+
 const ProfileContentSection: React.FC<ProfileContentSectionProps> = ({
     userId,
     tab = 'default',
@@ -50,21 +111,27 @@ const ProfileContentSection: React.FC<ProfileContentSectionProps> = ({
     totalRecipes,
     searchParams,
     blogs,
+    lists = EMPTY_LISTS,
+    quests = EMPTY_QUESTS,
+    plannings = EMPTY_PLANNINGS,
     user,
     graphRecipes,
     comments,
     challengeSubmissions,
 }) => {
-    const hasSearchQuery = Boolean(searchParams?.search?.trim());
-    const hasClientContent =
-        recipes.length > 0 ||
-        pinnedRecipes.length > 0 ||
-        blogs.length > 0 ||
-        hasSearchQuery ||
-        Boolean(user?.recipeCount && user.recipeCount > 0) ||
-        Boolean(graphRecipes && graphRecipes.length > 0) ||
-        Boolean(comments && comments.length > 0) ||
-        Boolean(challengeSubmissions && challengeSubmissions.length > 0);
+    const hasClientContent = hasProfileClientContent({
+        recipes,
+        pinnedRecipes,
+        blogs,
+        lists,
+        quests,
+        plannings,
+        searchParams,
+        user,
+        graphRecipes,
+        comments,
+        challengeSubmissions,
+    });
 
     if (!hasClientContent) {
         return (
@@ -91,6 +158,9 @@ const ProfileContentSection: React.FC<ProfileContentSectionProps> = ({
                     searchParams={searchParams}
                     profileUserId={userId}
                     blogs={blogs}
+                    lists={lists}
+                    quests={quests}
+                    plannings={plannings}
                     user={user}
                     graphRecipes={graphRecipes}
                     comments={comments}

@@ -13,6 +13,9 @@ const ALLOWED_KEYS = new Set([
     'showStats',
     'showActivityGraph',
     'showArticles',
+    'showLists',
+    'showQuests',
+    'showPlannings',
 ]);
 
 export async function GET() {

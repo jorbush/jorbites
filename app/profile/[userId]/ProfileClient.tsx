@@ -1,21 +1,28 @@
 'use client';
 
 import React from 'react';
-import { SafeRecipe, SafeUser, ProfilePreferences } from '@/app/types';
+import {
+    SafeList,
+    SafePlanning,
+    SafeQuest,
+    SafeRecipe,
+    SafeUser,
+    ProfilePreferences,
+} from '@/app/types';
 import { Blog } from '@/app/utils/markdownUtils';
 import Container from '@/app/components/utils/Container';
-import Tabs from '@/app/components/utils/Tabs';
+import TabNavigation from '@/app/components/utils/TabNavigation';
 import { OrderByType } from '@/app/utils/filter';
 import ProfileRecipesContent from '@/app/components/profile/ProfileRecipesContent';
 import ProfileBlogsContent from '@/app/components/profile/ProfileBlogsContent';
+import ProfileListsContent from '@/app/components/profile/ProfileListsContent';
+import ProfileQuestsContent from '@/app/components/profile/ProfileQuestsContent';
+import ProfilePlanningsContent from '@/app/components/profile/ProfilePlanningsContent';
 import UserStats from '@/app/components/stats/UserStats';
 import ActivityHeatmap, {
     ActivityItem,
 } from '@/app/components/profile/ActivityHeatmap';
-import {
-    getProfilePreferences,
-    DEFAULT_PROFILE_PREFERENCES,
-} from '@/app/utils/profile-utils';
+import { getProfilePreferences } from '@/app/utils/profile-utils';
 import { useProfileTabs } from '@/app/hooks/useProfileTabs';
 import useUrlSearch from '@/app/hooks/useUrlSearch';
 
@@ -36,6 +43,9 @@ interface ProfileClientProps {
     searchParams: SearchParams;
     profileUserId: string;
     blogs?: Blog[];
+    lists?: SafeList[];
+    quests?: SafeQuest[];
+    plannings?: SafePlanning[];
     user?: SafeUser | null;
     profileUser?: SafeUser | null;
     profilePreferences?: ProfilePreferences | null;
@@ -63,6 +73,9 @@ type GraphRecipe = {
 
 const EMPTY_RECIPES: SafeRecipe[] = [];
 const EMPTY_BLOGS: Blog[] = [];
+const EMPTY_LISTS: SafeList[] = [];
+const EMPTY_QUESTS: SafeQuest[] = [];
+const EMPTY_PLANNINGS: SafePlanning[] = [];
 const EMPTY_GRAPH_RECIPES: GraphRecipe[] = [];
 
 const resolveTargetUser = (
@@ -134,7 +147,7 @@ const ProfileActivitySection: React.FC<ProfileActivitySectionProps> = ({
 
 interface ProfileTabContentProps {
     activeTab: string;
-    showArticles: boolean;
+    preferences: Required<ProfilePreferences>;
     recipes: SafeRecipe[];
     pinnedRecipes: SafeRecipe[];
     currentUser?: SafeUser | null;
@@ -143,6 +156,9 @@ interface ProfileTabContentProps {
     currentPage: number;
     searchParams: SearchParams;
     blogs: Blog[];
+    lists: SafeList[];
+    quests: SafeQuest[];
+    plannings: SafePlanning[];
     searchQuery: string;
     isSearching: boolean;
     onSearchChange: (query: string) => void;
@@ -152,7 +168,7 @@ interface ProfileTabContentProps {
 
 const ProfileTabContent: React.FC<ProfileTabContentProps> = ({
     activeTab,
-    showArticles,
+    preferences,
     recipes,
     pinnedRecipes,
     currentUser,
@@ -161,6 +177,9 @@ const ProfileTabContent: React.FC<ProfileTabContentProps> = ({
     currentPage,
     searchParams,
     blogs,
+    lists,
+    quests,
+    plannings,
     searchQuery,
     isSearching,
     onSearchChange,
@@ -186,10 +205,52 @@ const ProfileTabContent: React.FC<ProfileTabContentProps> = ({
         );
     }
 
-    if (activeTab === 'blogs' && showArticles) {
+    if (activeTab === 'blogs' && preferences.showArticles) {
         return (
             <ProfileBlogsContent
                 blogs={blogs}
+                searchParams={searchParams}
+                searchQuery={searchQuery}
+                onSearchChange={onSearchChange}
+                onSearchSubmit={onSearchSubmit}
+                onClearSearch={onClearSearch}
+            />
+        );
+    }
+
+    if (activeTab === 'lists' && preferences.showLists) {
+        return (
+            <ProfileListsContent
+                lists={lists}
+                isOwnProfile={isOwnProfile}
+                searchParams={searchParams}
+                searchQuery={searchQuery}
+                onSearchChange={onSearchChange}
+                onSearchSubmit={onSearchSubmit}
+                onClearSearch={onClearSearch}
+            />
+        );
+    }
+
+    if (activeTab === 'quests' && preferences.showQuests) {
+        return (
+            <ProfileQuestsContent
+                quests={quests}
+                searchParams={searchParams}
+                searchQuery={searchQuery}
+                onSearchChange={onSearchChange}
+                onSearchSubmit={onSearchSubmit}
+                onClearSearch={onClearSearch}
+            />
+        );
+    }
+
+    if (activeTab === 'plannings' && preferences.showPlannings) {
+        return (
+            <ProfilePlanningsContent
+                plannings={plannings}
+                currentUser={currentUser}
+                isOwnProfile={isOwnProfile}
                 searchParams={searchParams}
                 searchQuery={searchQuery}
                 onSearchChange={onSearchChange}
@@ -211,6 +272,9 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
     searchParams,
     profileUserId,
     blogs = EMPTY_BLOGS,
+    lists = EMPTY_LISTS,
+    quests = EMPTY_QUESTS,
+    plannings = EMPTY_PLANNINGS,
     user,
     profileUser,
     profilePreferences,
@@ -228,15 +292,9 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
         currentUser,
         profileUserId
     );
-    const preferences = profilePreferences || getProfilePreferences(targetUser);
-
-    const showStats =
-        preferences.showStats ?? DEFAULT_PROFILE_PREFERENCES.showStats;
-    const showActivityGraph =
-        preferences.showActivityGraph ??
-        DEFAULT_PROFILE_PREFERENCES.showActivityGraph;
-    const showArticles =
-        preferences.showArticles ?? DEFAULT_PROFILE_PREFERENCES.showArticles;
+    const resolvedPreferences = getProfilePreferences(
+        profilePreferences ? ({ profilePreferences } as SafeUser) : targetUser
+    );
 
     const {
         searchQuery,
@@ -253,19 +311,25 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
         tabParam: searchParams?.tab,
         recipesCount: recipes.length + pinnedRecipes.length,
         blogsCount: blogs.length,
-        showArticles,
+        listsCount: lists.length,
+        questsCount: quests.length,
+        planningsCount: plannings.length,
+        showArticles: resolvedPreferences.showArticles,
+        showLists: resolvedPreferences.showLists,
+        showQuests: resolvedPreferences.showQuests,
+        showPlannings: resolvedPreferences.showPlannings,
         isSearching,
     });
 
     return (
         <>
             <ProfileCookingStats
-                show={showStats}
+                show={resolvedPreferences.showStats}
                 user={targetUser}
             />
 
             <ProfileActivitySection
-                show={showActivityGraph}
+                show={resolvedPreferences.showActivityGraph}
                 recipes={graphRecipes}
                 comments={comments}
                 challengeSubmissions={challengeSubmissions}
@@ -273,18 +337,20 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
             />
 
             <Container>
-                <div className="mt-2 mb-8">
-                    <Tabs
-                        tabs={tabs}
-                        activeTab={activeTab}
-                        onTabChange={handleTabChange}
-                        data-testid="profile-tabs"
-                    />
-                </div>
+                {tabs.length > 1 && (
+                    <div className="mt-2 mb-6">
+                        <TabNavigation
+                            tabs={tabs}
+                            activeTab={activeTab}
+                            onTabChange={handleTabChange}
+                            data-testid="profile-tabs"
+                        />
+                    </div>
+                )}
 
                 <ProfileTabContent
                     activeTab={activeTab}
-                    showArticles={showArticles}
+                    preferences={resolvedPreferences}
                     recipes={recipes}
                     pinnedRecipes={pinnedRecipes}
                     currentUser={currentUser}
@@ -293,6 +359,9 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
                     currentPage={currentPage}
                     searchParams={searchParams}
                     blogs={blogs}
+                    lists={lists}
+                    quests={quests}
+                    plannings={plannings}
                     searchQuery={searchQuery}
                     isSearching={isSearching}
                     onSearchChange={setSearchQuery}

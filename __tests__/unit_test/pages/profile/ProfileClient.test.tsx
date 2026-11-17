@@ -635,4 +635,112 @@ describe('ProfileClient', () => {
             ).toBe(true);
         });
     });
+
+    describe('Lists, Quests, and Plannings Tabs', () => {
+        const mockLists: SafeList[] = [
+            {
+                id: 'list-1',
+                name: 'Weekend Brunch',
+                isPrivate: false,
+                isDefault: false,
+                userId: 'user1',
+                recipeIds: ['recipe1'],
+                createdAt: '2026-06-01T00:00:00.000Z',
+                updatedAt: '2026-06-01T00:00:00.000Z',
+                recipes: [],
+            },
+        ];
+
+        const mockQuests: SafeQuest[] = [
+            {
+                id: 'quest-1',
+                title: 'Authentic Ramen Broth',
+                description: 'Looking for a 12-hour tonkotsu recipe',
+                status: 'open',
+                userId: 'user1',
+                acceptedRecipeId: null,
+                acceptedSolverId: null,
+                badgeEvaluated: false,
+                createdAt: '2026-06-01T00:00:00.000Z',
+                updatedAt: '2026-06-01T00:00:00.000Z',
+                recipes: [],
+            },
+        ];
+
+        const mockPlannings: SafePlanning[] = [
+            {
+                id: 'plan-1',
+                name: 'Mediterranean Week',
+                description: 'Healthy summer meal plan',
+                isPrivate: false,
+                userId: 'user1',
+                createdAt: '2026-06-01T00:00:00.000Z',
+                updatedAt: '2026-06-01T00:00:00.000Z',
+                meals: [],
+            },
+        ];
+
+        it('renders pill-style TabNavigation tabs for Lists, Quests, and Plannings by default and switches content', () => {
+            const { getByTestId, getByText, queryByText } = render(
+                <ProfileClient
+                    recipes={mockRecipes}
+                    lists={mockLists}
+                    quests={mockQuests}
+                    plannings={mockPlannings}
+                    currentUser={mockCurrentUser}
+                    totalPages={1}
+                    currentPage={1}
+                    searchParams={{}}
+                    profileUserId="user1"
+                />
+            );
+
+            const recipesTab = getByTestId('tab-recipes');
+            expect(recipesTab.className).toContain('bg-green-450');
+            expect(recipesTab.className).toContain('rounded-full');
+
+            fireEvent.click(getByTestId('tab-lists'));
+            expect(getByTestId('profile-lists-content')).toBeDefined();
+            expect(getByText('Weekend Brunch')).toBeDefined();
+            expect(queryByText('Recipe 1')).toBeNull();
+
+            fireEvent.click(getByTestId('tab-quests'));
+            expect(getByTestId('profile-quests-content')).toBeDefined();
+            expect(getByText('Authentic Ramen Broth')).toBeDefined();
+
+            fireEvent.click(getByTestId('tab-plannings'));
+            expect(getByTestId('profile-plannings-content')).toBeDefined();
+            expect(getByText('Mediterranean Week')).toBeDefined();
+        });
+
+        it('hides Lists, Quests, and Plannings tabs when disabled in profilePreferences and falls back to recipes', () => {
+            const { queryByTestId, getByText } = render(
+                <ProfileClient
+                    recipes={mockRecipes}
+                    lists={mockLists}
+                    quests={mockQuests}
+                    plannings={mockPlannings}
+                    currentUser={mockCurrentUser}
+                    totalPages={1}
+                    currentPage={1}
+                    searchParams={{ tab: 'lists' }}
+                    profileUserId="user1"
+                    profilePreferences={{
+                        showStats: true,
+                        showActivityGraph: false,
+                        showArticles: false,
+                        showLists: false,
+                        showQuests: false,
+                        showPlannings: false,
+                    }}
+                />
+            );
+
+            expect(queryByTestId('tab-lists')).toBeNull();
+            expect(queryByTestId('tab-quests')).toBeNull();
+            expect(queryByTestId('tab-plannings')).toBeNull();
+            expect(queryByTestId('profile-lists-content')).toBeNull();
+            expect(getByText('Recipe 1')).toBeDefined();
+        });
+    });
 });

@@ -56,7 +56,7 @@ describe('ProfilePreferencesForm', () => {
         expect(container.firstChild).toBeNull();
     });
 
-    it('renders all three profile display preference options with default checked values', () => {
+    it('renders all six profile display preference options with checked values', () => {
         render(<ProfilePreferencesForm currentUser={mockUser} />);
 
         expect(screen.getByTestId('profile-preferences-form')).toBeDefined();
@@ -69,16 +69,46 @@ describe('ProfilePreferencesForm', () => {
         expect(
             screen.getByTestId('profile-preference-row-showArticles')
         ).toBeDefined();
+        expect(
+            screen.getByTestId('profile-preference-row-showLists')
+        ).toBeDefined();
+        expect(
+            screen.getByTestId('profile-preference-row-showQuests')
+        ).toBeDefined();
+        expect(
+            screen.getByTestId('profile-preference-row-showPlannings')
+        ).toBeDefined();
 
-        const statsToggle = screen.getByTestId('pref-toggle-showStats');
-        const activityToggle = screen.getByTestId(
-            'pref-toggle-showActivityGraph'
-        );
-        const articlesToggle = screen.getByTestId('pref-toggle-showArticles');
-
-        expect(statsToggle.getAttribute('aria-checked')).toBe('true');
-        expect(activityToggle.getAttribute('aria-checked')).toBe('true');
-        expect(articlesToggle.getAttribute('aria-checked')).toBe('true');
+        expect(
+            screen
+                .getByTestId('pref-toggle-showStats')
+                .getAttribute('aria-checked')
+        ).toBe('true');
+        expect(
+            screen
+                .getByTestId('pref-toggle-showActivityGraph')
+                .getAttribute('aria-checked')
+        ).toBe('true');
+        expect(
+            screen
+                .getByTestId('pref-toggle-showArticles')
+                .getAttribute('aria-checked')
+        ).toBe('true');
+        expect(
+            screen
+                .getByTestId('pref-toggle-showLists')
+                .getAttribute('aria-checked')
+        ).toBe('true');
+        expect(
+            screen
+                .getByTestId('pref-toggle-showQuests')
+                .getAttribute('aria-checked')
+        ).toBe('true');
+        expect(
+            screen
+                .getByTestId('pref-toggle-showPlannings')
+                .getAttribute('aria-checked')
+        ).toBe('true');
     });
 
     it('renders existing saved false preferences correctly', () => {
@@ -88,20 +118,44 @@ describe('ProfilePreferencesForm', () => {
                 showStats: false,
                 showActivityGraph: false,
                 showArticles: true,
+                showLists: false,
+                showQuests: true,
+                showPlannings: false,
             },
         };
 
         render(<ProfilePreferencesForm currentUser={userWithCustomPrefs} />);
 
-        const statsToggle = screen.getByTestId('pref-toggle-showStats');
-        const activityToggle = screen.getByTestId(
-            'pref-toggle-showActivityGraph'
-        );
-        const articlesToggle = screen.getByTestId('pref-toggle-showArticles');
-
-        expect(statsToggle.getAttribute('aria-checked')).toBe('false');
-        expect(activityToggle.getAttribute('aria-checked')).toBe('false');
-        expect(articlesToggle.getAttribute('aria-checked')).toBe('true');
+        expect(
+            screen
+                .getByTestId('pref-toggle-showStats')
+                .getAttribute('aria-checked')
+        ).toBe('false');
+        expect(
+            screen
+                .getByTestId('pref-toggle-showActivityGraph')
+                .getAttribute('aria-checked')
+        ).toBe('false');
+        expect(
+            screen
+                .getByTestId('pref-toggle-showArticles')
+                .getAttribute('aria-checked')
+        ).toBe('true');
+        expect(
+            screen
+                .getByTestId('pref-toggle-showLists')
+                .getAttribute('aria-checked')
+        ).toBe('false');
+        expect(
+            screen
+                .getByTestId('pref-toggle-showQuests')
+                .getAttribute('aria-checked')
+        ).toBe('true');
+        expect(
+            screen
+                .getByTestId('pref-toggle-showPlannings')
+                .getAttribute('aria-checked')
+        ).toBe('false');
     });
 
     it('toggles a preference switch and calls PATCH /api/profilePreferences', async () => {
