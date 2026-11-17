@@ -8,6 +8,11 @@ import RecipeCard from '@/app/components/recipes/RecipeCard';
 import OrderByDropdown from '@/app/components/navbar/OrderByDropdown';
 import Pagination from '@/app/components/navigation/Pagination';
 import EmptyState from '@/app/components/utils/EmptyState';
+import EmptySearchResults from '@/app/components/utils/EmptySearchResults';
+import SearchBar from '@/app/components/inputs/SearchBar';
+
+const EMPTY_RECIPES: SafeRecipe[] = [];
+const NOOP = () => {};
 
 interface ProfileRecipesContentProps {
     recipes: SafeRecipe[];
@@ -17,21 +22,33 @@ interface ProfileRecipesContentProps {
     totalPages: number;
     currentPage: number;
     searchParams: any;
+    searchQuery?: string;
+    isSearching?: boolean;
+    onSearchChange?: (query: string) => void;
+    onSearchSubmit?: () => void;
+    onClearSearch?: () => void;
 }
 
 const ProfileRecipesContent: React.FC<ProfileRecipesContentProps> = ({
     recipes,
-    pinnedRecipes = [],
+    pinnedRecipes = EMPTY_RECIPES,
     currentUser,
     isOwnProfile,
     totalPages,
     currentPage,
     searchParams,
+    searchQuery,
+    isSearching = false,
+    onSearchChange,
+    onSearchSubmit,
+    onClearSearch,
 }) => {
     const { t } = useTranslation();
-    const hasRecipes = recipes.length > 0 || pinnedRecipes.length > 0;
+    const effectiveSearchQuery = searchQuery ?? searchParams?.search ?? '';
+    const hasContent =
+        recipes.length > 0 || pinnedRecipes.length > 0 || isSearching;
 
-    if (!hasRecipes) {
+    if (!hasContent) {
         return (
             <div
                 className="py-12"
@@ -51,7 +68,10 @@ const ProfileRecipesContent: React.FC<ProfileRecipesContentProps> = ({
     return (
         <div data-testid="profile-recipes-content">
             {pinnedRecipes.length > 0 && (
-                <div className="mb-8 w-full rounded-2xl border border-neutral-200/80 bg-neutral-50/50 p-4 sm:p-6 dark:border-neutral-800 dark:bg-neutral-800/40">
+                <div
+                    className="mb-8 w-full rounded-2xl border border-neutral-200/80 bg-neutral-50/50 p-4 sm:p-6 dark:border-neutral-800 dark:bg-neutral-800/40"
+                    data-testid="profile-pinned-recipes"
+                >
                     <div className="mb-4 flex items-center gap-2">
                         <span className="border-green-450/30 bg-green-450/20 dark:border-green-450/30 dark:bg-green-450/15 dark:text-green-450 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold text-neutral-800">
                             <BsPinAngleFill className="text-green-450 size-3" />
@@ -76,32 +96,82 @@ const ProfileRecipesContent: React.FC<ProfileRecipesContentProps> = ({
                 </div>
             )}
 
-            <div className="mb-4 flex justify-end">
-                <OrderByDropdown />
-            </div>
-
-            <div className="mt-6 grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-                {recipes.map((recipe: any) => (
-                    <RecipeCard
-                        currentUser={currentUser}
-                        key={recipe.id}
-                        data={recipe}
-                        canPin={
-                            !!(
-                                isOwnProfile &&
-                                currentUser?.id === recipe.userId
-                            )
-                        }
+            <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div className="w-full md:max-w-sm lg:w-72 lg:max-w-none xl:w-80">
+                    <SearchBar
+                        id="profile-search-input"
+                        value={effectiveSearchQuery}
+                        onChange={onSearchChange ?? NOOP}
+                        onSubmit={onSearchSubmit}
+                        onClear={onClearSearch}
+                        placeholder={String(
+                            t('search_profile_recipes', 'Search recipes...')
+                        )}
+                        clearLabel={String(t('clear_search', 'Clear search'))}
+                        inputWrapperClassName="w-full"
+                        dataTestId="profile-search-input"
+                        dataCy="profile-search-input"
                     />
-                ))}
+                </div>
+
+                <div className="flex justify-end">
+                    <OrderByDropdown />
+                </div>
             </div>
 
-            {totalPages > 1 && (
-                <Pagination
-                    totalPages={totalPages}
-                    currentPage={currentPage}
-                    searchParams={searchParams}
-                />
+            {recipes.length === 0 ? (
+                isSearching ? (
+                    <div
+                        className="mt-6"
+                        data-testid="profile-recipes-search-empty"
+                    >
+                        <EmptySearchResults
+                            title={String(
+                                t(
+                                    'no_recipes_matching_search',
+                                    'No recipes match your search'
+                                )
+                            )}
+                            subtitle={String(
+                                t(
+                                    'no_search_results_subtitle',
+                                    'Try searching with different keywords or check your spelling.'
+                                )
+                            )}
+                            clearLabel={String(
+                                t('clear_search', 'Clear search')
+                            )}
+                            onClearSearch={onClearSearch}
+                            clearTestId="profile-recipes-search-clear"
+                        />
+                    </div>
+                ) : null
+            ) : (
+                <>
+                    <div className="mt-6 grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+                        {recipes.map((recipe: any) => (
+                            <RecipeCard
+                                currentUser={currentUser}
+                                key={recipe.id}
+                                data={recipe}
+                                canPin={
+                                    !!(
+                                        isOwnProfile &&
+                                        currentUser?.id === recipe.userId
+                                    )
+                                }
+                            />
+                        ))}
+                    </div>
+
+                    {totalPages > 1 && (
+                        <Pagination
+                            totalPages={totalPages}
+                            currentPage={currentPage}
+                            searchParams={searchParams}
+                        />
+                    )}
+                </>
             )}
         </div>
     );

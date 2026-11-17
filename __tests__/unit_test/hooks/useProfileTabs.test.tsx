@@ -41,6 +41,10 @@ describe('useProfileTabs & getInitialTab', () => {
         it('defaults to recipes when both counts are 0', () => {
             expect(getInitialTab(undefined, 0, 0)).toBe('recipes');
         });
+
+        it('stays on recipes when searching yields 0 recipes even if blogsCount > 0', () => {
+            expect(getInitialTab(undefined, 0, 5, true)).toBe('recipes');
+        });
     });
 
     describe('useProfileTabs hook', () => {

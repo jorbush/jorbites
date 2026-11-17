@@ -17,11 +17,13 @@ import {
     DEFAULT_PROFILE_PREFERENCES,
 } from '@/app/utils/profile-utils';
 import { useProfileTabs } from '@/app/hooks/useProfileTabs';
+import useUrlSearch from '@/app/hooks/useUrlSearch';
 
 interface SearchParams {
     orderBy?: OrderByType;
     page?: string;
     tab?: string;
+    search?: string;
 }
 
 interface ProfileClientProps {
@@ -141,6 +143,11 @@ interface ProfileTabContentProps {
     currentPage: number;
     searchParams: SearchParams;
     blogs: Blog[];
+    searchQuery: string;
+    isSearching: boolean;
+    onSearchChange: (query: string) => void;
+    onSearchSubmit: () => void;
+    onClearSearch: () => void;
 }
 
 const ProfileTabContent: React.FC<ProfileTabContentProps> = ({
@@ -154,6 +161,11 @@ const ProfileTabContent: React.FC<ProfileTabContentProps> = ({
     currentPage,
     searchParams,
     blogs,
+    searchQuery,
+    isSearching,
+    onSearchChange,
+    onSearchSubmit,
+    onClearSearch,
 }) => {
     if (activeTab === 'recipes') {
         return (
@@ -165,6 +177,11 @@ const ProfileTabContent: React.FC<ProfileTabContentProps> = ({
                 totalPages={totalPages}
                 currentPage={currentPage}
                 searchParams={searchParams}
+                searchQuery={searchQuery}
+                isSearching={isSearching}
+                onSearchChange={onSearchChange}
+                onSearchSubmit={onSearchSubmit}
+                onClearSearch={onClearSearch}
             />
         );
     }
@@ -174,6 +191,10 @@ const ProfileTabContent: React.FC<ProfileTabContentProps> = ({
             <ProfileBlogsContent
                 blogs={blogs}
                 searchParams={searchParams}
+                searchQuery={searchQuery}
+                onSearchChange={onSearchChange}
+                onSearchSubmit={onSearchSubmit}
+                onClearSearch={onClearSearch}
             />
         );
     }
@@ -217,11 +238,23 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
     const showArticles =
         preferences.showArticles ?? DEFAULT_PROFILE_PREFERENCES.showArticles;
 
+    const {
+        searchQuery,
+        setSearchQuery,
+        submitSearch,
+        clearSearch,
+        isSearching,
+    } = useUrlSearch({
+        basePath: `/profile/${profileUserId}`,
+        initialSearch: searchParams?.search ?? '',
+    });
+
     const { activeTab, handleTabChange, tabs } = useProfileTabs({
         tabParam: searchParams?.tab,
         recipesCount: recipes.length + pinnedRecipes.length,
         blogsCount: blogs.length,
         showArticles,
+        isSearching,
     });
 
     return (
@@ -260,6 +293,11 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
                     currentPage={currentPage}
                     searchParams={searchParams}
                     blogs={blogs}
+                    searchQuery={searchQuery}
+                    isSearching={isSearching}
+                    onSearchChange={setSearchQuery}
+                    onSearchSubmit={submitSearch}
+                    onClearSearch={clearSearch}
                 />
             </Container>
         </>

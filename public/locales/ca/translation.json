@@ -617,6 +617,8 @@
     "no_quests_matching_search": "Cap missió coincideix amb la teva cerca",
     "search_blogs": "Cercar articles...",
     "no_blogs_matching_search": "Cap article coincideix amb la teva cerca",
+    "search_profile_recipes": "Cercar receptes...",
+    "no_recipes_matching_search": "Cap recepta coincideix amb la teva cerca",
     "filter_categories": "Filtrar categories",
     "title_a_z": "Títol (A-Z)",
     "title_z_a": "Títol (Z-A)",

@@ -140,4 +140,112 @@ describe('ProfileRecipesContent Component', () => {
             screen.getByRole('navigation', { name: 'Pagination' })
         ).toBeDefined();
     });
+
+    it('renders EmptySearchResults and triggers onClearSearch when searching with no results', () => {
+        const onClearSearch = vi.fn();
+        const pinnedRecipe = {
+            ...mockRecipe,
+            id: 'pinned-1',
+            title: 'Special Pizza',
+        };
+
+        render(
+            <ProfileRecipesContent
+                recipes={[]}
+                pinnedRecipes={[pinnedRecipe]}
+                currentUser={mockUser}
+                isOwnProfile={true}
+                totalPages={0}
+                currentPage={1}
+                searchParams={{ search: 'tacos' }}
+                isSearching={true}
+                onClearSearch={onClearSearch}
+            />
+        );
+
+        const pinnedSection = screen.getByTestId('profile-pinned-recipes');
+        const searchInput = screen.getByTestId('profile-search-input');
+        const emptySearch = screen.getByTestId('profile-recipes-search-empty');
+
+        expect(pinnedSection).toBeDefined();
+        expect(screen.getByText('Special Pizza')).toBeDefined();
+        expect(searchInput).toBeDefined();
+        expect(emptySearch).toBeDefined();
+        expect(screen.getByText('no_recipes_matching_search')).toBeDefined();
+
+        expect(
+            Boolean(
+                pinnedSection.compareDocumentPosition(searchInput) &
+                Node.DOCUMENT_POSITION_FOLLOWING
+            )
+        ).toBe(true);
+        expect(
+            Boolean(
+                searchInput.compareDocumentPosition(emptySearch) &
+                Node.DOCUMENT_POSITION_FOLLOWING
+            )
+        ).toBe(true);
+
+        screen.getByTestId('profile-recipes-search-clear').click();
+        expect(onClearSearch).toHaveBeenCalledTimes(1);
+    });
+
+    it('renders search bar below pinned recipes section', () => {
+        const pinnedRecipe = {
+            ...mockRecipe,
+            id: 'pinned-1',
+            title: 'Special Pizza',
+        };
+
+        render(
+            <ProfileRecipesContent
+                recipes={[mockRecipe]}
+                pinnedRecipes={[pinnedRecipe]}
+                currentUser={mockUser}
+                isOwnProfile={true}
+                totalPages={1}
+                currentPage={1}
+                searchParams={{ search: 'pasta' }}
+                isSearching={true}
+            />
+        );
+
+        const pinnedSection = screen.getByTestId('profile-pinned-recipes');
+        const searchInput = screen.getByTestId('profile-search-input');
+
+        expect(screen.getByText('Pasta Carbonara')).toBeDefined();
+        expect(screen.getByText('pinned_recipes')).toBeDefined();
+        expect(screen.getByText('Special Pizza')).toBeDefined();
+        expect(
+            Boolean(
+                pinnedSection.compareDocumentPosition(searchInput) &
+                Node.DOCUMENT_POSITION_FOLLOWING
+            )
+        ).toBe(true);
+    });
+
+    it('stacks search bar and order dropdown below md breakpoint instead of sm', () => {
+        const { container } = render(
+            <ProfileRecipesContent
+                recipes={[mockRecipe]}
+                currentUser={mockUser}
+                isOwnProfile={true}
+                totalPages={1}
+                currentPage={1}
+                searchParams={{}}
+            />
+        );
+
+        const toolbarRow = container.querySelector(
+            '[data-testid="profile-recipes-content"] > .flex-col'
+        );
+        const searchWrapper = toolbarRow?.firstElementChild;
+
+        expect(toolbarRow?.className).toContain('flex-col');
+        expect(toolbarRow?.className).toContain('md:flex-row');
+        expect(toolbarRow?.className).not.toContain('sm:flex-row');
+
+        expect(searchWrapper?.className).toContain('md:max-w-sm');
+        expect(searchWrapper?.className).not.toContain('sm:max-w-sm');
+    });
 });

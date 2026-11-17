@@ -20,6 +20,7 @@ interface ProfileContentSectionProps {
         orderBy?: OrderByType;
         page?: string;
         tab?: string;
+        search?: string;
     };
     blogs: Blog[];
     user?: SafeUser | null;
@@ -54,9 +55,12 @@ const ProfileContentSection: React.FC<ProfileContentSectionProps> = ({
     comments,
     challengeSubmissions,
 }) => {
+    const hasSearchQuery = Boolean(searchParams?.search?.trim());
     const hasClientContent =
         recipes.length > 0 ||
+        pinnedRecipes.length > 0 ||
         blogs.length > 0 ||
+        hasSearchQuery ||
         Boolean(user?.recipeCount && user.recipeCount > 0) ||
         Boolean(graphRecipes && graphRecipes.length > 0) ||
         Boolean(comments && comments.length > 0) ||

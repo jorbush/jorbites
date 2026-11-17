@@ -136,4 +136,26 @@ describe('ProfileContentSection', () => {
             ).toBeDefined();
         });
     });
+
+    it('renders ProfileClient when search query is active even if recipes and blogs are empty', async () => {
+        render(
+            <ProfileContentSection
+                userId="user-1"
+                recipes={[]}
+                pinnedRecipes={[]}
+                totalPages={0}
+                currentPage={1}
+                totalRecipes={0}
+                searchParams={{ search: 'pizza' }}
+                blogs={[]}
+            />
+        );
+
+        await waitFor(() => {
+            expect(screen.getByTestId('profile-client')).toBeDefined();
+            expect(
+                screen.getByText('ProfileClient for user-1: 0 recipes, 0 blogs')
+            ).toBeDefined();
+        });
+    });
 });

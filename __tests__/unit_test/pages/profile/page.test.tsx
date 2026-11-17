@@ -291,4 +291,44 @@ describe('ProfilePage', () => {
 
         expect(getPinnedRecipesByUserId).toHaveBeenCalledWith('user1');
     });
+
+    it('forwards search query parameter to getRecipesByUserId', async () => {
+        vi.mocked(getRecipesByUserId).mockResolvedValue({
+            recipes: mockRecipes as any,
+            totalRecipes: 2,
+            totalPages: 1,
+            currentPage: 1,
+        });
+        vi.mocked(getRecipesForGraph).mockResolvedValue([]);
+        vi.mocked(getUserById).mockResolvedValue({
+            createdAt: '',
+            updatedAt: '',
+            emailVerified: null,
+            id: mockUser.id,
+            name: mockUser.name,
+            email: null,
+            image: null,
+            favoriteIds: [],
+            emailNotifications: false,
+            level: 0,
+            verified: false,
+            badges: [],
+            resetToken: null,
+            resetTokenExpiry: null,
+        });
+        vi.mocked(getCurrentUser).mockResolvedValue(null);
+
+        await ProfilePage({
+            params: Promise.resolve({ userId: 'user1' }),
+            searchParams: Promise.resolve({ search: 'pasta', page: '2' }),
+        });
+
+        expect(getRecipesByUserId).toHaveBeenCalledWith({
+            userId: 'user1',
+            orderBy: undefined,
+            page: 2,
+            limit: 12,
+            search: 'pasta',
+        });
+    });
 });
