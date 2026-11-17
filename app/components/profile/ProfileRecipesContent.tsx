@@ -78,7 +78,7 @@ const ProfileRecipesContent: React.FC<ProfileRecipesContentProps> = ({
                             {t('pinned_recipes')}
                         </span>
                     </div>
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
                         {pinnedRecipes.map((recipe: any) => (
                             <RecipeCard
                                 currentUser={currentUser}
@@ -148,7 +148,7 @@ const ProfileRecipesContent: React.FC<ProfileRecipesContentProps> = ({
                 ) : null
             ) : (
                 <>
-                    <div className="mt-6 grid grid-cols-1 gap-8 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+                    <div className="mt-6 grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
                         {recipes.map((recipe: any) => (
                             <RecipeCard
                                 currentUser={currentUser}

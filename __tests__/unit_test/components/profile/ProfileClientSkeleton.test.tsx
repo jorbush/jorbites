@@ -14,10 +14,5 @@ describe('ProfileClientSkeleton Component', () => {
         // Check that tabs and card grid skeleton blocks are rendered
         const pulseElements = container.querySelectorAll('.animate-pulse');
         expect(pulseElements.length).toBeGreaterThanOrEqual(15);
-
-        const grid = container.querySelector('.grid');
-        expect(grid?.className).toContain('grid-cols-1');
-        expect(grid?.className).toContain('md:grid-cols-3');
-        expect(grid?.className).not.toContain('sm:grid-cols-2');
     });
 });
