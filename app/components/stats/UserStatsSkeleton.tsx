@@ -35,7 +35,7 @@ const UserStatsSkeleton = () => {
                 {/* Preferences Header Skeleton */}
                 <div className="mt-8 mb-3 h-6 w-44 animate-pulse rounded-md bg-neutral-200 px-1 dark:bg-neutral-800" />
 
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+                <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2">
                     {/* Preference Cards Skeleton - match PreferenceCard layout */}
                     {[1, 2].map((index) => (
                         <div

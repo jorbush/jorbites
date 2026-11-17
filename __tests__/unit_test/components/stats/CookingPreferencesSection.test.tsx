@@ -46,4 +46,18 @@ describe('CookingPreferencesSection', () => {
         const hyphens = screen.getAllByText('-');
         expect(hyphens).toHaveLength(2);
     });
+
+    it('uses single column below md and two columns on md and larger screens', () => {
+        const user: SafeUser = {
+            id: 'user-3',
+            mostUsedCategory: 'pasta',
+            mostUsedMethod: 'baking',
+        } as unknown as SafeUser;
+
+        const { container } = render(<CookingPreferencesSection user={user} />);
+        const grid = container.querySelector('.grid');
+
+        expect(grid).toHaveClass('grid-cols-1', 'md:grid-cols-2');
+        expect(grid).not.toHaveClass('sm:grid-cols-2');
+    });
 });
