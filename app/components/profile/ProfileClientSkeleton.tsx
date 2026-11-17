@@ -16,8 +16,8 @@ const ProfileClientSkeleton = () => {
             </div>
 
             {/* Search bar & Dropdown filter skeleton */}
-            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="h-10 w-full animate-pulse rounded-xl bg-neutral-200 sm:max-w-sm lg:w-72 xl:w-80 dark:bg-neutral-700"></div>
+            <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div className="h-10 w-full animate-pulse rounded-xl bg-neutral-200 md:max-w-sm lg:w-72 xl:w-80 dark:bg-neutral-700"></div>
                 <div className="flex justify-end">
                     <div className="h-9 w-36 animate-pulse rounded-md bg-neutral-200 dark:bg-neutral-700"></div>
                 </div>

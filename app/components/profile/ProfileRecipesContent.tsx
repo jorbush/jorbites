@@ -96,8 +96,8 @@ const ProfileRecipesContent: React.FC<ProfileRecipesContentProps> = ({
                 </div>
             )}
 
-            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="w-full sm:max-w-sm lg:w-72 lg:max-w-none xl:w-80">
+            <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div className="w-full md:max-w-sm lg:w-72 lg:max-w-none xl:w-80">
                     <SearchBar
                         id="profile-search-input"
                         value={effectiveSearchQuery}

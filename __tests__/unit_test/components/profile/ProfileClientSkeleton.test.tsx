@@ -14,5 +14,9 @@ describe('ProfileClientSkeleton Component', () => {
         // Check that tabs and card grid skeleton blocks are rendered
         const pulseElements = container.querySelectorAll('.animate-pulse');
         expect(pulseElements.length).toBeGreaterThanOrEqual(15);
+
+        const toolbarRow = container.querySelector('.flex-col');
+        expect(toolbarRow?.className).toContain('md:flex-row');
+        expect(toolbarRow?.className).not.toContain('sm:flex-row');
     });
 });

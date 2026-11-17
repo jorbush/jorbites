@@ -223,4 +223,29 @@ describe('ProfileRecipesContent Component', () => {
             )
         ).toBe(true);
     });
+
+    it('stacks search bar and order dropdown below md breakpoint instead of sm', () => {
+        const { container } = render(
+            <ProfileRecipesContent
+                recipes={[mockRecipe]}
+                currentUser={mockUser}
+                isOwnProfile={true}
+                totalPages={1}
+                currentPage={1}
+                searchParams={{}}
+            />
+        );
+
+        const toolbarRow = container.querySelector(
+            '[data-testid="profile-recipes-content"] > .flex-col'
+        );
+        const searchWrapper = toolbarRow?.firstElementChild;
+
+        expect(toolbarRow?.className).toContain('flex-col');
+        expect(toolbarRow?.className).toContain('md:flex-row');
+        expect(toolbarRow?.className).not.toContain('sm:flex-row');
+
+        expect(searchWrapper?.className).toContain('md:max-w-sm');
+        expect(searchWrapper?.className).not.toContain('sm:max-w-sm');
+    });
 });
