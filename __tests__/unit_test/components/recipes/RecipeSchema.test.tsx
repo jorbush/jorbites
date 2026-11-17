@@ -321,4 +321,114 @@ describe('RecipeSchema', () => {
             'Test </script><script>alert(1)</script> Recipe'
         );
     });
+
+    it('includes recipeCuisine, recipeYield, and nutrition when provided', () => {
+        const props = {
+            ...mockProps,
+            recipeCuisine: 'Mediterranean',
+            recipeYield: 4,
+            calories: 450,
+        };
+        const { container } = render(<RecipeSchema {...props} />);
+
+        const scriptTag = container.querySelector(
+            'script[type="application/ld+json"]'
+        );
+        const data = JSON.parse(scriptTag?.innerHTML || '{}');
+
+        expect(data.recipeCuisine).toBe('Mediterranean');
+        expect(data.recipeYield).toBe('4 servings');
+        expect(data.nutrition).toEqual({
+            '@type': 'NutritionInformation',
+            calories: '450 calories',
+        });
+    });
+
+    it('includes cooksnap reviews and combines them with comment reviews', () => {
+        const props = {
+            ...mockProps,
+            cooksnaps: [
+                {
+                    id: 'cs1',
+                    userId: 'u1',
+                    recipeId: 'recipe1',
+                    imageSrc: 'https://example.com/snap1.jpg',
+                    comment: null,
+                    rating: 4,
+                    createdAt: '2023-02-01T10:00:00.000Z',
+                    updatedAt: '2023-02-01T10:00:00.000Z',
+                    user: {
+                        id: 'u1',
+                        name: 'Cook Alice',
+                        image: null,
+                        level: 2,
+                        verified: false,
+                        badges: [],
+                    },
+                },
+                {
+                    id: 'cs2',
+                    userId: 'u2',
+                    recipeId: 'recipe1',
+                    imageSrc: 'https://example.com/snap2.jpg',
+                    comment: 'No rating snap',
+                    rating: 0,
+                    createdAt: '2023-02-02T10:00:00.000Z',
+                    updatedAt: '2023-02-02T10:00:00.000Z',
+                    user: {
+                        id: 'u2',
+                        name: 'Cook Bob',
+                        image: null,
+                        level: 1,
+                        verified: false,
+                        badges: [],
+                    },
+                },
+            ],
+        };
+        const { container } = render(<RecipeSchema {...props} />);
+
+        const scriptTag = container.querySelector(
+            'script[type="application/ld+json"]'
+        );
+        const data = JSON.parse(scriptTag?.innerHTML || '{}');
+
+        expect(data.review).toHaveLength(1);
+        expect(data.review[0]).toMatchObject({
+            '@type': 'Review',
+            author: {
+                '@type': 'Person',
+                name: 'Cook Alice',
+            },
+            reviewBody: 'Cooksnap photo remake',
+            reviewRating: {
+                '@type': 'Rating',
+                ratingValue: 4,
+            },
+        });
+    });
+
+    it('handles multiple categories and fallback defaults', () => {
+        const { container } = render(
+            <RecipeSchema
+                title="Minimal Recipe"
+                createdAt="2023-01-01T00:00:00.000Z"
+                categories={['Dinner', 'Quick']}
+                averageRating={0}
+                ratingCount={5}
+            />
+        );
+
+        const scriptTag = container.querySelector(
+            'script[type="application/ld+json"]'
+        );
+        const data = JSON.parse(scriptTag?.innerHTML || '{}');
+
+        expect(data.author.name).toBe('Usuario de Jorbites');
+        expect(data.totalTime).toBe('PT30M');
+        expect(data.recipeCategory).toEqual(['Dinner', 'Quick']);
+        expect(data.keywords).toBe('Dinner, Quick');
+        expect(data.recipeInstructions).toEqual([]);
+        expect(data.aggregateRating).toBeUndefined();
+    });
 });
