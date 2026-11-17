@@ -31,7 +31,7 @@ const CookingPreferencesSection: React.FC<CookingPreferencesSectionProps> = ({
                 {String(t('cooking_preferences'))}
             </h2>
 
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2">
                 <PreferenceCard
                     title={String(t('most_used_category'))}
                     value={categoryDisplay}
