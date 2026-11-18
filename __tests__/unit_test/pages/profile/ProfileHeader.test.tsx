@@ -144,6 +144,17 @@ describe('ProfileHeader', () => {
         expect(router.push).toHaveBeenCalledWith('/profile/user1');
     });
 
+    it('applies green underline hover styling on user name button', () => {
+        const { getByText } = render(<ProfileHeader user={mockUser} />);
+
+        const nameButton = getByText('Test User');
+        expect(nameButton.className).not.toContain('hover:text-green-450');
+        expect(nameButton.className).toContain('hover:underline');
+        expect(nameButton.className).toContain('decoration-green-450');
+        expect(nameButton.className).toContain('decoration-2');
+        expect(nameButton.className).toContain('underline-offset-4');
+    });
+
     it('renders correctly with unverified user', () => {
         const unverifiedUser = {
             ...mockUser,

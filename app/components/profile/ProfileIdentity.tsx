@@ -37,7 +37,7 @@ const ProfileIdentity: React.FC<ProfileIdentityProps> = ({ user }) => {
                 <div className="flex items-center gap-1.5 sm:gap-2">
                     <button
                         type="button"
-                        className="cursor-pointer truncate text-left focus:outline-hidden"
+                        className="decoration-green-450 cursor-pointer truncate text-left decoration-2 underline-offset-4 transition-colors duration-200 hover:underline focus:outline-hidden"
                         onClick={() => push('/profile/' + user?.id)}
                     >
                         {getUserDisplayName(user, isMdOrSmaller, isSmOrSmaller)}
