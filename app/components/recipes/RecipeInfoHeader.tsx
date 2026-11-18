@@ -64,7 +64,7 @@ export const RecipeInfoHeader: React.FC<RecipeInfoHeaderProps> = ({
                         <div className="flex items-center gap-1.5">
                             <button
                                 type="button"
-                                className="hover:text-green-450 dark:hover:text-green-450 cursor-pointer truncate text-left text-base font-bold text-neutral-900 transition-colors duration-200 focus:outline-hidden dark:text-white"
+                                className="decoration-green-450 cursor-pointer truncate text-left text-base font-bold text-neutral-900 decoration-2 underline-offset-4 transition-colors duration-200 hover:underline focus:outline-hidden dark:text-white"
                                 onClick={() => push('/profile/' + user.id)}
                             >
                                 {getUserDisplayName(

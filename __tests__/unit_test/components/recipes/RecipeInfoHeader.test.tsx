@@ -79,6 +79,33 @@ describe('RecipeInfoHeader', () => {
         expect(screen.getByTestId('star-rating')).toBeDefined();
     });
 
+    it('applies green underline hover styling on author name button', () => {
+        render(
+            <RecipeInfoHeader
+                user={mockUser}
+                id="recipe-1"
+                likes={10}
+                stepsCount={3}
+                ingredientsCount={5}
+                averageRating={4.5}
+                ratingCount={2}
+                mounted={true}
+                t={t}
+                push={push}
+                isMdOrSmaller={false}
+                isSmOrSmaller={false}
+            />
+        );
+
+        const nameButton = screen.getByText('John Doe');
+        expect(nameButton.className).not.toContain('hover:text-green-450');
+        expect(nameButton.className).not.toContain('dark:hover:text-green-450');
+        expect(nameButton.className).toContain('hover:underline');
+        expect(nameButton.className).toContain('decoration-green-450');
+        expect(nameButton.className).toContain('decoration-2');
+        expect(nameButton.className).toContain('underline-offset-4');
+    });
+
     it('calls push with correct URL when likes count is clicked', () => {
         render(
             <RecipeInfoHeader
