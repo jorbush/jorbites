@@ -22,18 +22,15 @@ try {
     throw err;
 }
 
+const cloudinaryApiKey =
+    process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY ||
+    process.env.CLOUDINARY_API_KEY;
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    env: {
-        ...(process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY ||
-        process.env.CLOUDINARY_API_KEY
-            ? {
-                  NEXT_PUBLIC_CLOUDINARY_API_KEY:
-                      process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY ||
-                      process.env.CLOUDINARY_API_KEY,
-              }
-            : {}),
-    },
+    env: cloudinaryApiKey
+        ? { NEXT_PUBLIC_CLOUDINARY_API_KEY: cloudinaryApiKey }
+        : {},
     images: {
         remotePatterns: [
             {
