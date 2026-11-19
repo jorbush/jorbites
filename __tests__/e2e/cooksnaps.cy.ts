@@ -3,9 +3,9 @@ describe('Cooksnaps Upload, Display & Deletion E2E (AWS S3 Emulator)', () => {
     let createdCooksnapId = '';
     const testRecipeTitle = 'E2E Recipe for Cooksnaps';
 
-    // Valid 1x1 PNG so browser canvas compression and <img> rendering succeed cleanly
+    // Valid 64x64 PNG so browser canvas compression and responsive srcSet <img> rendering yield naturalWidth > 0
     const VALID_PNG_BASE64 =
-        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+        'iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAmElEQVR4nO3QMREAIBDAsFeBYuThCWRkoEP2XmefdX82OkBrgA7QGqADtAboAK0BOkBrgA7QGqADtAboAK0BOkBrgA7QGqADtAboAK0BOkBrgA7QGqADtAboAK0BOkBrgA7QGqADtAboAK0BOkBrgA7QGqADtAboAK0BOkBrgA7QGqADtAboAK0BOkBrgA7QGqADtAboAO0BifRSO/hjl+4AAAAASUVORK5CYII=';
 
     const cleanupResources = () => {
         if (createdCooksnapId) {
@@ -200,98 +200,6 @@ describe('Cooksnaps Upload, Display & Deletion E2E (AWS S3 Emulator)', () => {
                         cy.get('img[alt^="Cooksnap by "]')
                             .should('have.attr', 'src')
                             .and('include', '/api/image-proxy');
-                        cy.get('img[alt^="Cooksnap by "]')
-                            .then(($img) => {
-                                const imgEl = $img[0] as HTMLImageElement;
-                                const src = imgEl.currentSrc || imgEl.src;
-                                return cy
-                                    .window({ log: false })
-                                    .then(async (win) => {
-                                        const r = await win.fetch(src);
-                                        const blob = await r.blob();
-                                        let bitmapInfo = 'none';
-                                        try {
-                                            const bmp =
-                                                await win.createImageBitmap(
-                                                    blob
-                                                );
-                                            bitmapInfo = `${bmp.width}x${bmp.height}`;
-                                            bmp.close();
-                                        } catch (err: any) {
-                                            bitmapInfo = `err:${err?.message || err}`;
-                                        }
-                                        const blobImgOk =
-                                            await new Promise<string>(
-                                                (resolve) => {
-                                                    const t = new win.Image();
-                                                    const u =
-                                                        win.URL.createObjectURL(
-                                                            blob
-                                                        );
-                                                    t.onload = () => {
-                                                        win.URL.revokeObjectURL(
-                                                            u
-                                                        );
-                                                        resolve(
-                                                            `ok:${t.naturalWidth}x${t.naturalHeight}`
-                                                        );
-                                                    };
-                                                    t.onerror = () => {
-                                                        win.URL.revokeObjectURL(
-                                                            u
-                                                        );
-                                                        resolve('onerror');
-                                                    };
-                                                    t.src = u;
-                                                }
-                                            );
-                                        const urlImgOk =
-                                            await new Promise<string>(
-                                                (resolve) => {
-                                                    const t = new win.Image();
-                                                    t.onload = () =>
-                                                        resolve(
-                                                            `ok:${t.naturalWidth}x${t.naturalHeight}`
-                                                        );
-                                                    t.onerror = () =>
-                                                        resolve('onerror');
-                                                    t.src = src;
-                                                }
-                                            );
-                                        const perfEntries = win.performance
-                                            .getEntriesByType('resource')
-                                            .filter((e) =>
-                                                e.name.includes('image-proxy')
-                                            )
-                                            .map((e: any) => ({
-                                                q: e.name
-                                                    .split('?')[1]
-                                                    ?.slice(-30),
-                                                status: e.responseStatus,
-                                                enc: e.encodedBodySize,
-                                                dec: e.decodedBodySize,
-                                            }));
-                                        return {
-                                            src,
-                                            status: r.status,
-                                            type: blob.type,
-                                            size: blob.size,
-                                            bitmapInfo,
-                                            blobImgOk,
-                                            urlImgOk,
-                                            perfEntries,
-                                            complete: imgEl.complete,
-                                            naturalWidth: imgEl.naturalWidth,
-                                            naturalHeight: imgEl.naturalHeight,
-                                        };
-                                    });
-                            })
-                            .then((info) => {
-                                cy.task(
-                                    'log',
-                                    `IMG DEBUG: ${JSON.stringify(info)}`
-                                );
-                            });
                         cy.get('img[alt^="Cooksnap by "]').should(($img) => {
                             const imgEl = $img[0] as HTMLImageElement;
                             expect(
