@@ -135,6 +135,7 @@ jobs:
                   NEXT_PUBLIC_SKIP_IMAGE_VALIDATION: true
                   NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
                   NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET }}
+                  NEXT_PUBLIC_CLOUDINARY_API_KEY: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_API_KEY || 'cypress-test-cloudinary-api-key' }}
                   REDIS_URL: redis://localhost:6379
                   REDIS_URL_CACHING: redis://localhost:6379
                   SKIP_ENV_VALIDATION: 'true'

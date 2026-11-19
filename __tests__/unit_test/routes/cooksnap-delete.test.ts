@@ -58,7 +58,7 @@ describe('DELETE /api/cooksnaps/[cooksnapId]', () => {
         userId: 'cook-123',
         recipeId: 'recipe-100',
         rating: 5,
-        imageSrc: 'https://images.jorbites.com/remakes/photo1.webp',
+        imageSrc: 'https://images.jorbites.com/remakes/cook-123/photo1.webp',
         recipe: {
             id: 'recipe-100',
             userId: 'author-456',
@@ -146,7 +146,7 @@ describe('DELETE /api/cooksnaps/[cooksnapId]', () => {
 
         expect(recomputeRecipeRating).toHaveBeenCalledWith('recipe-100');
         expect(deleteFromR2).toHaveBeenCalledWith(
-            'https://images.jorbites.com/remakes/photo1.webp'
+            'https://images.jorbites.com/remakes/cook-123/photo1.webp'
         );
         expect(redisCache.del).toHaveBeenCalledWith(
             'recipe:cooksnaps:recipe-100'

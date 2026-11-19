@@ -58,6 +58,7 @@ export interface RecipeModalStepBodyProps {
     removeQuest: () => void;
     imageSrc?: string;
     draftId?: string;
+    userId?: string;
 }
 
 type RecipeStepContentProps = RecipeModalStepBodyProps;
@@ -99,6 +100,7 @@ const RecipeStepContent: React.FC<RecipeStepContentProps> = ({
     removeQuest,
     imageSrc,
     draftId: _draftId,
+    userId,
 }) => {
     switch (step) {
         case STEPS.INGREDIENTS:
@@ -187,6 +189,7 @@ const RecipeStepContent: React.FC<RecipeStepContentProps> = ({
                     onImageChange={(field, value) =>
                         setCustomValue(field, value)
                     }
+                    userId={userId}
                 />
             );
         case STEPS.CATEGORY:

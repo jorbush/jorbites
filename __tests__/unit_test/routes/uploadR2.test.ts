@@ -107,6 +107,43 @@ describe('Cloudflare R2 Upload API', () => {
         expect(response.status).toBe(200);
         expect(data.uploadUrl).toBeDefined();
         expect(data.publicUrl).toBeDefined();
-        expect(data.key).toContain('remakes/');
+        expect(data.key).toMatch(/^remakes\/user-123\/\d+-[0-9a-f]+\.png$/);
+    });
+
+    it('should reject image/svg+xml uploads to prevent stored XSS', async () => {
+        mockCurrentUser = { id: 'user-123', name: 'Tester' };
+
+        const mockRequest = {
+            json: jest.fn().mockResolvedValue({
+                filename: 'xss.svg',
+                contentType: 'image/svg+xml',
+            }),
+        } as unknown as Request;
+
+        const response = await UploadR2POST(mockRequest);
+        const data = await response.json();
+
+        expect(response.status).toBe(400);
+        expect(data.error).toBe(
+            'Invalid content type. Only image files are allowed.'
+        );
+    });
+
+    it('should reject uploads exceeding the 10MB size limit', async () => {
+        mockCurrentUser = { id: 'user-123', name: 'Tester' };
+
+        const mockRequest = {
+            json: jest.fn().mockResolvedValue({
+                filename: 'huge.webp',
+                contentType: 'image/webp',
+                contentLength: 15 * 1024 * 1024,
+            }),
+        } as unknown as Request;
+
+        const response = await UploadR2POST(mockRequest);
+        const data = await response.json();
+
+        expect(response.status).toBe(400);
+        expect(data.error).toContain('File size must be between');
     });
 });

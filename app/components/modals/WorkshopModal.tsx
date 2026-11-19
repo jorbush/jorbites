@@ -15,9 +15,7 @@ interface WorkshopModalProps {
     currentUser?: SafeUser | null;
 }
 
-const WorkshopModal: React.FC<WorkshopModalProps> = ({
-    currentUser: _currentUser,
-}) => {
+const WorkshopModal: React.FC<WorkshopModalProps> = ({ currentUser }) => {
     const { t } = useTranslation();
     const workshopModal = useWorkshopModal();
 
@@ -93,6 +91,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
             <WorkshopImageStep
                 imageSrc={imageSrc}
                 onImageChange={(value) => setCustomValue('imageSrc', value)}
+                userId={currentUser?.id}
             />
         );
     }

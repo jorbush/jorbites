@@ -50,6 +50,8 @@ export function getEventsDirectory(language: string = 'en'): string {
     return candidate1;
 }
 
+const SAFE_SLUG_REGEX = /^[a-zA-Z0-9_-]+$/;
+
 /**
  * Extract localized titles and descriptions for an event slug across all allowed languages
  */
@@ -60,9 +62,16 @@ export function getEventTranslations(slug: string): {
     const titles: Record<string, string> = {};
     const descriptions: Record<string, string> = {};
 
+    if (!slug || typeof slug !== 'string' || !SAFE_SLUG_REGEX.test(slug)) {
+        return { titles, descriptions };
+    }
+
     for (const lang of ALLOWED_LANGUAGES) {
-        const eventsDirectory = getEventsDirectory(lang);
-        const langFilePath = path.join(eventsDirectory, `${slug}.md`);
+        const eventsDirectory = path.resolve(getEventsDirectory(lang));
+        const langFilePath = path.resolve(eventsDirectory, `${slug}.md`);
+        if (!langFilePath.startsWith(eventsDirectory + path.sep)) {
+            continue;
+        }
         if (fs.existsSync(langFilePath)) {
             const { frontmatter } = readEventFile(langFilePath);
             if (frontmatter.title && frontmatter.title !== 'Error') {
@@ -88,8 +97,20 @@ export async function getEventBySlug(
     language: string = 'en',
     includeTranslations: boolean = false
 ): Promise<Event | null> {
-    const eventsDirectory = getEventsDirectory(language);
-    const filePath = path.join(eventsDirectory, `${slug}.md`);
+    if (!slug || typeof slug !== 'string' || !SAFE_SLUG_REGEX.test(slug)) {
+        return null;
+    }
+
+    const safeLanguage = (ALLOWED_LANGUAGES as readonly string[]).includes(
+        language
+    )
+        ? language
+        : 'en';
+    const eventsDirectory = path.resolve(getEventsDirectory(safeLanguage));
+    const filePath = path.resolve(eventsDirectory, `${slug}.md`);
+    if (!filePath.startsWith(eventsDirectory + path.sep)) {
+        return null;
+    }
 
     if (!fs.existsSync(filePath)) {
         return null;
@@ -101,7 +122,7 @@ export async function getEventBySlug(
         slug,
         frontmatter,
         content,
-        language,
+        language: safeLanguage,
     };
 
     if (includeTranslations) {

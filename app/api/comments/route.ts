@@ -9,6 +9,7 @@ import { extractMentionedUserIds } from '@/app/utils/mentionUtils';
 import {
     unauthorizedResponse,
     badRequest,
+    forbiddenResponse,
     validationError,
     internalServerError,
     rateLimitExceeded,
@@ -17,6 +18,7 @@ import { logger } from '@/app/lib/axiom/server';
 import { contentCreationRatelimit } from '@/app/lib/ratelimit';
 import { redisCache } from '@/app/lib/redis';
 import { isValidR2Url } from '@/app/utils/r2';
+import { isR2AssetOwnedByUser } from '@/app/utils/mediaSecurity';
 import { recomputeRecipeRating } from '@/app/utils/recipeRating';
 
 export async function POST(request: Request) {
@@ -87,7 +89,12 @@ export async function POST(request: Request) {
                 id: recipeId,
             },
             include: {
-                user: true,
+                user: {
+                    select: {
+                        id: true,
+                        email: true,
+                    },
+                },
             },
         });
 
@@ -96,6 +103,14 @@ export async function POST(request: Request) {
         }
 
         const validImageSrc = isValidR2Url(imageSrc);
+        if (
+            validImageSrc &&
+            !isR2AssetOwnedByUser(validImageSrc, currentUser.id)
+        ) {
+            return forbiddenResponse(
+                'You do not have permission to attach this image'
+            );
+        }
         const isAuthor = currentRecipe?.userId === currentUser.id;
 
         const updateRecipePromise = prisma.recipe.update({

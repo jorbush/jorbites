@@ -73,11 +73,15 @@ const ChangeUserImageSelector = ({
             <div className="flex items-center">
                 <CldUploadWidget
                     onSuccess={handleUpload}
+                    signatureEndpoint="/api/upload/cloudinary-sign"
                     uploadPreset={
                         process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
                     }
                     options={{
                         maxFiles: 1,
+                        folder: currentUser?.id
+                            ? `users/${currentUser.id}`
+                            : undefined,
                     }}
                 >
                     {({ open }) => {

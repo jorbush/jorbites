@@ -72,7 +72,12 @@ export async function POST(
                     id: recipeId,
                 },
                 include: {
-                    user: true,
+                    user: {
+                        select: {
+                            id: true,
+                            email: true,
+                        },
+                    },
                 },
             });
 
@@ -193,7 +198,12 @@ export async function DELETE(
                     id: recipeId,
                 },
                 include: {
-                    user: true,
+                    user: {
+                        select: {
+                            id: true,
+                            email: true,
+                        },
+                    },
                 },
             });
 

@@ -24,9 +24,13 @@ vi.mock('fs', () => ({
 
 vi.mock('path', () => ({
     default: {
-        join: vi.fn((...args) => args.join('/')),
+        join: vi.fn((...args) => args.filter(Boolean).join('/')),
+        resolve: vi.fn((...args) => args.filter(Boolean).join('/')),
+        sep: '/',
     },
-    join: vi.fn((...args) => args.join('/')),
+    join: vi.fn((...args) => args.filter(Boolean).join('/')),
+    resolve: vi.fn((...args) => args.filter(Boolean).join('/')),
+    sep: '/',
 }));
 
 // Mock gray-matter
@@ -113,6 +117,23 @@ Test content`;
             expect(result?.id).toBe('test-blog');
             expect(result?.slug).toBe('test-blog');
             expect(result?.language).toBe('en');
+        });
+
+        it('should reject path traversal attempts and return null', async () => {
+            vi.mocked(fs.existsSync).mockReturnValue(true);
+
+            const maliciousIds = [
+                '../../../../GEMINI',
+                '../README',
+                'releases/../../secret',
+                'foo\\bar',
+                'blog.md',
+            ];
+            for (const badId of maliciousIds) {
+                const result = await getBlogById(badId);
+                expect(result).toBeNull();
+            }
+            expect(fs.readFileSync).not.toHaveBeenCalled();
         });
 
         it('should return blog for specific language', async () => {

@@ -80,6 +80,7 @@ export default async function getPlannings() {
                     id: {
                         in: currentUser.savedPlanningIds,
                     },
+                    OR: [{ isPrivate: false }, { userId: currentUser.id }],
                 },
                 include: {
                     user: {

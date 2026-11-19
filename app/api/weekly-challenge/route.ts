@@ -9,6 +9,7 @@ import {
     notFoundResponse,
     unauthorizedResponse,
 } from '@/app/utils/apiErrors';
+import { safeCompareSecret } from '@/app/utils/cryptoUtils';
 
 export async function GET() {
     try {
@@ -55,7 +56,10 @@ export async function POST(request: Request) {
         }
 
         const [scheme, token] = authHeader.trim().split(/\s+/);
-        if (scheme.toLowerCase() !== 'bearer' || token !== cronSecret) {
+        if (
+            scheme.toLowerCase() !== 'bearer' ||
+            !safeCompareSecret(token, cronSecret)
+        ) {
             logger.error('api/weekly-challenge POST - invalid token or scheme');
             return unauthorizedResponse('Invalid token or scheme');
         }

@@ -35,7 +35,15 @@ const sendNotification = async ({
     }
 
     try {
-        logger.info('sendNotification - start', { type, userEmail, params });
+        const { resetUrl: rawResetUrl, ...loggableParams } = params;
+        logger.info('sendNotification - start', {
+            type,
+            userEmail,
+            params: {
+                ...loggableParams,
+                ...(rawResetUrl ? { resetUrl: '[REDACTED]' } : {}),
+            },
+        });
         const metadata: Record<string, string> = {};
 
         if (params.userName) metadata.authorName = params.userName;

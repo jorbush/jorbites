@@ -22,6 +22,16 @@ export async function generateMetadata(props: {
         };
     }
 
+    if (workshop.isPrivate) {
+        return {
+            title: 'Private Workshop | Jorbites Workshops',
+            robots: {
+                index: false,
+                follow: false,
+            },
+        };
+    }
+
     return {
         title: `${workshop.title} | Jorbites Workshops`,
         description:
@@ -66,6 +76,25 @@ const WorkshopPage = async (props: { params: Promise<IParams> }) => {
                 />
             </ClientOnly>
         );
+    }
+
+    if (workshop.isPrivate) {
+        const isHost = currentUser?.id === workshop.hostId;
+        const isWhitelisted =
+            Boolean(currentUser?.id) &&
+            Array.isArray(workshop.whitelistedUserIds) &&
+            workshop.whitelistedUserIds.includes(currentUser!.id);
+
+        if (!isHost && !isWhitelisted) {
+            return (
+                <ClientOnly>
+                    <EmptyState
+                        title="Private Workshop"
+                        subtitle="This workshop is private and only visible to invited participants."
+                    />
+                </ClientOnly>
+            );
+        }
     }
 
     return (

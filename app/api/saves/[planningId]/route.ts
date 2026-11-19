@@ -4,6 +4,7 @@ import prisma from '@/app/lib/prismadb';
 import {
     unauthorizedResponse,
     invalidInput,
+    notFoundResponse,
     internalServerError,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
@@ -37,6 +38,18 @@ export async function POST(
             return invalidInput(
                 'Planning ID is required and must be a valid string'
             );
+        }
+
+        const planning = await prisma.planning.findUnique({
+            where: { id: planningId },
+            select: { id: true, isPrivate: true, userId: true },
+        });
+
+        if (
+            !planning ||
+            (planning.isPrivate && planning.userId !== currentUser.id)
+        ) {
+            return notFoundResponse('Planning not found');
         }
 
         let savedPlanningIds = [...(currentUser.savedPlanningIds || [])];

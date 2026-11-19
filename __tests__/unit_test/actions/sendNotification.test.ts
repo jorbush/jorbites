@@ -141,4 +141,26 @@ describe('sendNotification Server Action', () => {
         );
         expect(result).toBeUndefined();
     });
+
+    it('should redact resetUrl when logging FORGOT_PASSWORD notifications', async () => {
+        const { logger } = require('@/app/lib/axiom/server');
+        const infoSpy = jest.spyOn(logger, 'info');
+        jest.mocked(fetch).mockResolvedValue({
+            ok: true,
+            json: jest.fn().mockResolvedValue({ status: 'sent' }),
+        } as any);
+
+        const secretToken = 'super-secret-reset-token-12345';
+        await sendNotification({
+            type: NotificationType.FORGOT_PASSWORD,
+            userEmail: 'user@example.com',
+            params: {
+                resetUrl: `https://jorbites.com/reset-password/${secretToken}`,
+            },
+        });
+
+        const loggedCalls = JSON.stringify(infoSpy.mock.calls);
+        expect(loggedCalls).not.toContain(secretToken);
+        expect(loggedCalls).toContain('[REDACTED]');
+    });
 });
