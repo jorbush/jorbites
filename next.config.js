@@ -6,18 +6,34 @@ const path = require('path');
 try {
     const eventsDir = path.join(process.cwd(), 'app/content/events');
     const challengesFile = path.join(eventsDir, 'weekly-challenges.json');
-    if (!process.env._CONTENT_SYNCED && (!fs.existsSync(challengesFile) || process.env.VERCEL)) {
+    if (
+        !process.env._CONTENT_SYNCED &&
+        (!fs.existsSync(challengesFile) || process.env.VERCEL)
+    ) {
         process.env._CONTENT_SYNCED = 'true';
         console.log('🔄 [next.config.js] Syncing content (events & blogs)...');
         execSync('npx tsx scripts/sync-content.ts', { stdio: 'inherit' });
     }
 } catch (err) {
-    console.error('❌ [next.config.js] Failed to run sync-content:', err.message);
+    console.error(
+        '❌ [next.config.js] Failed to run sync-content:',
+        err.message
+    );
     throw err;
 }
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    env: {
+        ...(process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY ||
+        process.env.CLOUDINARY_API_KEY
+            ? {
+                  NEXT_PUBLIC_CLOUDINARY_API_KEY:
+                      process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY ||
+                      process.env.CLOUDINARY_API_KEY,
+              }
+            : {}),
+    },
     images: {
         remotePatterns: [
             {
@@ -48,9 +64,10 @@ const nextConfig = {
                 ? [
                       {
                           protocol: 'https',
-                          hostname: process.env.R2_PUBLIC_DOMAIN
-                              .replace(/^https?:\/\//, '')
-                              .replace(/\/.*$/, ''),
+                          hostname: process.env.R2_PUBLIC_DOMAIN.replace(
+                              /^https?:\/\//,
+                              ''
+                          ).replace(/\/.*$/, ''),
                       },
                   ]
                 : []),
