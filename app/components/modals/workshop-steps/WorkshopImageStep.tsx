@@ -7,11 +7,13 @@ import ImageUpload from '@/app/components/inputs/ImageUpload';
 interface WorkshopImageStepProps {
     imageSrc: string;
     onImageChange: (value: string) => void;
+    userId?: string;
 }
 
 const WorkshopImageStep: React.FC<WorkshopImageStepProps> = ({
     imageSrc,
     onImageChange,
+    userId,
 }) => {
     const { t } = useTranslation();
 
@@ -25,6 +27,7 @@ const WorkshopImageStep: React.FC<WorkshopImageStepProps> = ({
                 value={imageSrc}
                 onChange={onImageChange}
                 text={t('workshop_image') ?? 'Workshop image'}
+                userId={userId}
             />
         </div>
     );

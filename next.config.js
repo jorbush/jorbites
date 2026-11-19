@@ -6,18 +6,31 @@ const path = require('path');
 try {
     const eventsDir = path.join(process.cwd(), 'app/content/events');
     const challengesFile = path.join(eventsDir, 'weekly-challenges.json');
-    if (!process.env._CONTENT_SYNCED && (!fs.existsSync(challengesFile) || process.env.VERCEL)) {
+    if (
+        !process.env._CONTENT_SYNCED &&
+        (!fs.existsSync(challengesFile) || process.env.VERCEL)
+    ) {
         process.env._CONTENT_SYNCED = 'true';
         console.log('🔄 [next.config.js] Syncing content (events & blogs)...');
         execSync('npx tsx scripts/sync-content.ts', { stdio: 'inherit' });
     }
 } catch (err) {
-    console.error('❌ [next.config.js] Failed to run sync-content:', err.message);
+    console.error(
+        '❌ [next.config.js] Failed to run sync-content:',
+        err.message
+    );
     throw err;
 }
 
+const cloudinaryApiKey =
+    process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY ||
+    process.env.CLOUDINARY_API_KEY;
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    env: cloudinaryApiKey
+        ? { NEXT_PUBLIC_CLOUDINARY_API_KEY: cloudinaryApiKey }
+        : {},
     images: {
         remotePatterns: [
             {
@@ -38,11 +51,11 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
-                hostname: '*.r2.dev',
+                hostname: 'images.jorbites.com',
             },
             {
                 protocol: 'https',
-                hostname: '*.r2.cloudflarestorage.com',
+                hostname: 'pub-4c3d704cf6de499a9ef3964908533212.r2.dev',
             },
             ...(process.env.R2_PUBLIC_DOMAIN
                 ? [
@@ -88,6 +101,10 @@ const nextConfig = {
                         key: 'Permissions-Policy',
                         value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
                     },
+                    {
+                        key: 'Content-Security-Policy',
+                        value: "object-src 'none'; base-uri 'self'; frame-ancestors 'none'",
+                    },
                 ],
             },
             {
@@ -113,6 +130,10 @@ const nextConfig = {
                     {
                         key: 'Cache-Control',
                         value: 'public, max-age=31536000, immutable',
+                    },
+                    {
+                        key: 'Content-Security-Policy',
+                        value: "default-src 'none'; sandbox",
                     },
                 ],
             },

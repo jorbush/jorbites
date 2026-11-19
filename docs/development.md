@@ -43,9 +43,10 @@ GITHUB_SECRET=your_github_oauth_app_secret
 GOOGLE_CLIENT_ID=your_google_oauth_client_id
 GOOGLE_CLIENT_SECRET=your_google_oauth_client_secret
 
-# Cloudinary (Image Storage)
+# Cloudinary (Image Storage - Signed Uploads)
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
-NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=your_cloudinary_upload_preset
+NEXT_PUBLIC_CLOUDINARY_API_KEY=your_cloudinary_api_key
+NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=your_signed_cloudinary_upload_preset
 CLOUDINARY_API_KEY=your_cloudinary_api_key
 CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 

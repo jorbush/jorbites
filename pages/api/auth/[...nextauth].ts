@@ -40,9 +40,39 @@ export const authOptions: AuthOptions = {
                     throw new Error('Invalid credentials');
                 }
 
+                const normalizedEmail = credentials.email.trim().toLowerCase();
+
+                if (
+                    (process.env.NODE_ENV === 'production' ||
+                        process.env.ENV === 'production') &&
+                    process.env.UPSTASH_REDIS_REST_URL &&
+                    process.env.UPSTASH_REDIS_REST_TOKEN
+                ) {
+                    try {
+                        const { Ratelimit } =
+                            await import('@upstash/ratelimit');
+                        const { Redis } = await import('@upstash/redis');
+                        const loginLimiter = new Ratelimit({
+                            redis: Redis.fromEnv(),
+                            limiter: Ratelimit.slidingWindow(10, '15 m'),
+                            prefix: '@upstash/ratelimit/password-login',
+                        });
+                        const { success } = await loginLimiter.limit(
+                            `login:${normalizedEmail}`
+                        );
+                        if (!success) {
+                            throw new Error('TOO_MANY_LOGIN_ATTEMPTS');
+                        }
+                    } catch (err: any) {
+                        if (err.message === 'TOO_MANY_LOGIN_ATTEMPTS') {
+                            throw err;
+                        }
+                    }
+                }
+
                 const user = await prisma.user.findUnique({
                     where: {
-                        email: credentials.email,
+                        email: normalizedEmail,
                     },
                 });
 

@@ -204,6 +204,7 @@ jest.mock('@/app/utils/r2', () => ({
         .mockResolvedValue({ successful: [], failed: [] }),
     isR2Url: jest.fn().mockReturnValue(false),
     extractR2Key: jest.fn().mockReturnValue(null),
+    extractR2KeyOwner: jest.fn().mockReturnValue(null),
     uploadToR2: jest
         .fn()
         .mockResolvedValue('https://images.jorbites.com/mock.jpg'),

@@ -201,8 +201,15 @@ describe('Cooksnaps Upload, Display & Deletion E2E (AWS S3 Emulator)', () => {
                             .should('have.attr', 'src')
                             .and('include', '/api/image-proxy');
                         cy.get('img[alt^="Cooksnap by "]').should(($img) => {
-                            expect($img[0].complete).to.eq(true);
-                            expect($img[0].naturalWidth).to.be.greaterThan(0);
+                            const imgEl = $img[0] as HTMLImageElement;
+                            expect(
+                                imgEl.complete,
+                                `complete for ${imgEl.currentSrc}`
+                            ).to.eq(true);
+                            expect(
+                                imgEl.naturalWidth,
+                                `naturalWidth for ${imgEl.currentSrc}`
+                            ).to.be.greaterThan(0);
                         });
                     });
 

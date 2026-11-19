@@ -31,7 +31,9 @@ export async function trackUserInteraction(
         unauthorized();
     }
 
-    const { recipeId, userId, metadata } = data;
+    const sessionUserId = (session.user as { id?: string } | undefined)?.id;
+    const { recipeId, metadata } = data;
+    const userId = sessionUserId || data.userId;
 
     if (!producer) {
         if (process.env.NODE_ENV !== 'production') {

@@ -5,6 +5,7 @@ import {
     unauthorizedResponse,
     internalServerError,
 } from '@/app/utils/apiErrors';
+import { safeCompareSecret } from '@/app/utils/cryptoUtils';
 
 export async function GET(request: Request) {
     return handleOutbox(request);
@@ -33,7 +34,7 @@ async function handleOutbox(request: Request) {
             providedToken = apiKeyHeader.trim();
         }
 
-        if (!providedToken || providedToken !== cronSecret) {
+        if (!safeCompareSecret(providedToken, cronSecret)) {
             return unauthorizedResponse(
                 'Invalid cron/outbox authorization key'
             );

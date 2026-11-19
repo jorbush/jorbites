@@ -11,10 +11,19 @@ import {
     internalServerError,
     unauthorizedResponse,
 } from '@/app/utils/apiErrors';
+import { safeCompareSecret } from '@/app/utils/cryptoUtils';
 
 export async function POST(request: Request) {
+    const indexNowSecret = process.env.INDEXNOW_SECRET;
+    if (!indexNowSecret) {
+        return internalServerError('IndexNow secret is not configured');
+    }
+
     const authHeader = request.headers.get('authorization');
-    if (authHeader !== `Bearer ${process.env.INDEXNOW_SECRET}`) {
+    const providedToken = authHeader?.startsWith('Bearer ')
+        ? authHeader.slice(7).trim()
+        : null;
+    if (!safeCompareSecret(providedToken, indexNowSecret)) {
         return unauthorizedResponse('Invalid or missing IndexNow secret');
     }
 

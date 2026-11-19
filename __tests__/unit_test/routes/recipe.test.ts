@@ -491,4 +491,83 @@ describe('Recipe API Error Handling', () => {
             );
         });
     });
+
+    describe('POST /api/recipe/[recipeId] security (no user credential leakage)', () => {
+        it('should not leak author user credentials on no-op decrement response', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: { name: 'test', email: 'test@a.com' },
+            };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+                ...mockUser,
+                favoriteIds: [],
+            });
+            (prisma.recipe.findUnique as jest.Mock).mockResolvedValue({
+                id: 'recipe-123',
+                title: 'Secret Pasta',
+                numLikes: 5,
+                userId: 'author-id',
+                user: {
+                    id: 'author-id',
+                    email: 'author@example.com',
+                    hashedPassword: '$2b$12$hashedpassword',
+                    twoFactorSecret: 'enc:secret',
+                    resetToken: 'hashed-reset-token',
+                },
+            });
+
+            const mockRequest = {
+                json: jest.fn().mockResolvedValue({ operation: 'decrement' }),
+            } as unknown as Request;
+            const mockParams = {
+                params: Promise.resolve({ recipeId: 'recipe-123' }),
+            };
+
+            const response = await RecipePOST(mockRequest, mockParams);
+            const data = await response.json();
+
+            expect(response.status).toBe(200);
+            expect(data.id).toBe('recipe-123');
+            expect(data.user).toBeUndefined();
+            expect(JSON.stringify(data)).not.toContain('hashedpassword');
+            expect(JSON.stringify(data)).not.toContain('enc:secret');
+            expect(JSON.stringify(data)).not.toContain('author@example.com');
+        });
+
+        it('should not leak author user credentials on no-op increment response', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: { name: 'test', email: 'test@a.com' },
+            };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+                ...mockUser,
+                favoriteIds: ['recipe-123'],
+            });
+            (prisma.recipe.findUnique as jest.Mock).mockResolvedValue({
+                id: 'recipe-123',
+                title: 'Secret Pasta',
+                numLikes: 5,
+                userId: 'author-id',
+                user: {
+                    id: 'author-id',
+                    email: 'author@example.com',
+                    hashedPassword: '$2b$12$hashedpassword',
+                },
+            });
+
+            const mockRequest = {
+                json: jest.fn().mockResolvedValue({ operation: 'increment' }),
+            } as unknown as Request;
+            const mockParams = {
+                params: Promise.resolve({ recipeId: 'recipe-123' }),
+            };
+
+            const response = await RecipePOST(mockRequest, mockParams);
+            const data = await response.json();
+
+            expect(response.status).toBe(200);
+            expect(data.user).toBeUndefined();
+            expect(JSON.stringify(data)).not.toContain('hashedpassword');
+        });
+    });
 });

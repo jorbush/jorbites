@@ -194,7 +194,7 @@ async function main() {
                     return;
                 }
                 console.log(
-                    `[e2e-s3-proxy] GET /${key} -> 200 (${bytes.byteLength} bytes, ${getRes.ContentType})`
+                    `[e2e-s3-proxy] GET /${key} -> 200 (${bytes.byteLength} bytes, ${getRes.ContentType}, head=${Buffer.from(bytes.slice(0, 16)).toString('hex')})`
                 );
                 res.writeHead(200, {
                     'Content-Type':

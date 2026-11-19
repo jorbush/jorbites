@@ -13,6 +13,7 @@ import {
 import { logger } from '@/app/lib/axiom/server';
 import { redisCache } from '@/app/lib/redis';
 import { deleteFromR2 } from '@/app/utils/r2';
+import { canDeleteR2Asset } from '@/app/utils/mediaSecurity';
 import { recomputeRecipeRating } from '@/app/utils/recipeRating';
 
 interface IParams {
@@ -68,7 +69,10 @@ export async function DELETE(
             await recomputeRecipeRating(comment.recipeId);
         }
 
-        if (comment.imageSrc) {
+        if (
+            comment.imageSrc &&
+            canDeleteR2Asset(comment.imageSrc, comment.userId)
+        ) {
             try {
                 await deleteFromR2(comment.imageSrc);
             } catch (r2Error: any) {

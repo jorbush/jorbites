@@ -298,10 +298,112 @@ describe('GET /api/image-proxy', () => {
         const response = await ImageProxyGET(request);
 
         expect(response.status).toBe(200);
+        expect(response.headers.get('Content-Security-Policy')).toBe(
+            "default-src 'none'; sandbox"
+        );
+        expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff');
         expect(mockFetch).toHaveBeenCalledWith(
             'https://images.jorbites.com/remakes/123-test.webp',
-            expect.any(Object)
+            expect.objectContaining({ redirect: 'error' })
         );
+    });
+
+    it('should allow Jorbites owned R2.dev bucket URL', async () => {
+        const mockImageData = new ArrayBuffer(1024);
+        const mockFetch = global.fetch as jest.Mock;
+        mockFetch.mockResolvedValueOnce({
+            ok: true,
+            status: 200,
+            headers: {
+                get: jest.fn((name: string) =>
+                    name.toLowerCase() === 'content-type' ? 'image/webp' : null
+                ),
+            },
+            arrayBuffer: jest.fn().mockResolvedValueOnce(mockImageData),
+        });
+
+        const ownedUrl =
+            'https://pub-4c3d704cf6de499a9ef3964908533212.r2.dev/remakes/u1/123-test.webp';
+        const request = new NextRequest(
+            `http://localhost:3000/api/image-proxy?url=${encodeURIComponent(ownedUrl)}`
+        );
+
+        const response = await ImageProxyGET(request);
+        expect(response.status).toBe(200);
+        expect(mockFetch).toHaveBeenCalledWith(
+            ownedUrl,
+            expect.objectContaining({ redirect: 'error' })
+        );
+    });
+
+    it('should reject third-party *.r2.dev and *.r2.cloudflarestorage.com domains', async () => {
+        const urls = [
+            'https://pub-attacker.r2.dev/payload.html',
+            'https://attacker-account.r2.cloudflarestorage.com/payload.svg',
+        ];
+        for (const target of urls) {
+            const request = new NextRequest(
+                `http://localhost:3000/api/image-proxy?url=${encodeURIComponent(target)}`
+            );
+            const response = await ImageProxyGET(request);
+            const data = await response.json();
+            expect(response.status).toBe(400);
+            expect(data.error).toBe('URL domain not allowed');
+        }
+    });
+
+    it('should reject non-raster upstream Content-Types like image/svg+xml and text/html', async () => {
+        const mockFetch = global.fetch as jest.Mock;
+        for (const badType of ['image/svg+xml', 'text/html; charset=utf-8']) {
+            mockFetch.mockResolvedValueOnce({
+                ok: true,
+                status: 200,
+                headers: {
+                    get: jest.fn((name: string) =>
+                        name.toLowerCase() === 'content-type' ? badType : null
+                    ),
+                },
+                arrayBuffer: jest
+                    .fn()
+                    .mockResolvedValueOnce(new ArrayBuffer(64)),
+            });
+
+            const request = new NextRequest(
+                'http://localhost:3000/api/image-proxy?url=https://images.jorbites.com/remakes/file.svg'
+            );
+            const response = await ImageProxyGET(request);
+            const data = await response.json();
+
+            expect(response.status).toBe(400);
+            expect(data.error).toBe('Unsupported image content type');
+        }
+    });
+
+    it('should reject images exceeding the maximum allowed size', async () => {
+        const mockFetch = global.fetch as jest.Mock;
+        mockFetch.mockResolvedValueOnce({
+            ok: true,
+            status: 200,
+            headers: {
+                get: jest.fn((name: string) => {
+                    if (name.toLowerCase() === 'content-type')
+                        return 'image/webp';
+                    if (name.toLowerCase() === 'content-length')
+                        return String(20 * 1024 * 1024);
+                    return null;
+                }),
+            },
+            arrayBuffer: jest.fn(),
+        });
+
+        const request = new NextRequest(
+            'http://localhost:3000/api/image-proxy?url=https://images.jorbites.com/remakes/huge.webp'
+        );
+        const response = await ImageProxyGET(request);
+        const data = await response.json();
+
+        expect(response.status).toBe(400);
+        expect(data.error).toBe('Image exceeds maximum allowed size');
     });
 
     it('should allow R2_PUBLIC_DOMAIN with scheme and port and reject mismatched ports', async () => {

@@ -95,8 +95,35 @@ function matchesConfiguredPublicDomain(
     }
 }
 
+const OWNED_R2_DOMAINS = new Set([
+    'images.jorbites.com',
+    'pub-4c3d704cf6de499a9ef3964908533212.r2.dev',
+]);
+
 /**
- * Validates whether an image URL is from an allowed trusted host (R2 or Cloudinary).
+ * Checks whether a parsed URL belongs strictly to this application's R2 bucket.
+ */
+function isOwnedR2Url(parsedUrl: URL): boolean {
+    const { publicDomain } = getR2Config();
+    const normalizedHost = parsedUrl.hostname.toLowerCase();
+    if (
+        matchesConfiguredPublicDomain(parsedUrl, publicDomain) ||
+        OWNED_R2_DOMAINS.has(normalizedHost)
+    ) {
+        return true;
+    }
+    const configuredAccountId = process.env.R2_ACCOUNT_ID?.toLowerCase();
+    if (
+        configuredAccountId &&
+        normalizedHost === `${configuredAccountId}.r2.cloudflarestorage.com`
+    ) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Validates whether an image URL is from an allowed trusted host (owned R2 domain or Cloudinary).
  * @param urlStr - The candidate URL
  * @returns string | null - Cleaned URL if valid, null otherwise
  */
@@ -107,12 +134,7 @@ export function isValidR2Url(urlStr: unknown): string | null {
         if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:')
             return null;
         const host = parsed.hostname.toLowerCase();
-        const { publicDomain } = getR2Config();
-        const isAllowed =
-            matchesConfiguredPublicDomain(parsed, publicDomain) ||
-            host.endsWith('.r2.cloudflarestorage.com') ||
-            host.endsWith('.r2.dev') ||
-            host === 'res.cloudinary.com';
+        const isAllowed = isOwnedR2Url(parsed) || host === 'res.cloudinary.com';
         return isAllowed ? urlStr : null;
     } catch {
         return null;
@@ -120,24 +142,35 @@ export function isValidR2Url(urlStr: unknown): string | null {
 }
 
 /**
- * Checks if a URL is an R2 resource
+ * Checks if a URL is an owned R2 resource
  * @param url - The URL to check
- * @returns boolean - true if it's an R2 URL
+ * @returns boolean - true if it's an owned R2 URL
  */
 export function isR2Url(url: string): boolean {
     if (!url || typeof url !== 'string') return false;
     try {
         const parsed = new URL(url);
-        const host = parsed.hostname.toLowerCase();
-        const { publicDomain } = getR2Config();
-        return (
-            matchesConfiguredPublicDomain(parsed, publicDomain) ||
-            host.endsWith('.r2.cloudflarestorage.com') ||
-            host.endsWith('.r2.dev')
-        );
+        if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+            return false;
+        }
+        return isOwnedR2Url(parsed);
     } catch {
         return url.startsWith('remakes/');
     }
+}
+
+/**
+ * Extracts the owner userId from a user-namespaced R2 key (`remakes/<userId>/<filename>`).
+ * Returns null for legacy keys (`remakes/<filename>`) or non-matching keys.
+ */
+export function extractR2KeyOwner(imageUrlOrKey: string): string | null {
+    const key = extractR2Key(imageUrlOrKey);
+    if (!key) return null;
+    const parts = key.split('/');
+    if (parts.length === 3 && parts[0] === 'remakes' && parts[1]) {
+        return parts[1];
+    }
+    return null;
 }
 
 /**
@@ -166,7 +199,7 @@ export function extractR2Key(r2Url: string): string | null {
  * @returns Promise<boolean> - true if deletion was successful
  */
 export async function deleteFromR2(imageUrlOrKey: string): Promise<boolean> {
-    if (!imageUrlOrKey) return false;
+    if (!imageUrlOrKey || !isR2Url(imageUrlOrKey)) return false;
 
     const key = extractR2Key(imageUrlOrKey);
     if (!key) return false;
@@ -219,6 +252,7 @@ export async function deleteMultipleFromR2(
     }
 
     const keys = imageUrlsOrKeys
+        .filter((item) => isR2Url(item))
         .map(extractR2Key)
         .filter((k): k is string => Boolean(k));
 

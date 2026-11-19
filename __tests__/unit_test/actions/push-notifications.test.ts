@@ -50,7 +50,7 @@ describe('Push Notifications Server Actions', () => {
             );
 
             const result = await subscribeUser({
-                endpoint: 'http://push.com/endpoint',
+                endpoint: 'https://fcm.googleapis.com/fcm/send/token123',
                 keys: { p256dh: 'key123', auth: 'auth123' },
             });
 
@@ -58,11 +58,38 @@ describe('Push Notifications Server Actions', () => {
             expect(prisma.pushSubscription.create).toHaveBeenCalledWith({
                 data: {
                     userId: 'user-1',
-                    endpoint: 'http://push.com/endpoint',
+                    endpoint: 'https://fcm.googleapis.com/fcm/send/token123',
                     p256dh: 'key123',
                     auth: 'auth123',
                 },
             });
+        });
+
+        it('should reject untrusted or non-HTTPS push endpoints to prevent SSRF', async () => {
+            jest.mocked(auth).mockResolvedValue({
+                user: { email: 'test@example.com' },
+            } as any);
+            jest.mocked(getCurrentUser).mockResolvedValue({
+                id: 'user-1',
+            } as any);
+
+            const badEndpoints = [
+                'http://169.254.169.254/latest/meta-data/',
+                'http://localhost:8080/internal',
+                'https://attacker.example.com/push',
+                'http://fcm.googleapis.com/fcm/send/insecure',
+                'https://fcm.googleapis.com:8443/fcm/send/customport',
+            ];
+
+            for (const endpoint of badEndpoints) {
+                await expect(
+                    subscribeUser({
+                        endpoint,
+                        keys: { p256dh: 'key123', auth: 'auth123' },
+                    })
+                ).rejects.toThrow('Invalid push subscription endpoint');
+            }
+            expect(prisma.pushSubscription.create).not.toHaveBeenCalled();
         });
 
         it('should return success true when duplicate P2002 error occurs', async () => {
@@ -77,7 +104,7 @@ describe('Push Notifications Server Actions', () => {
             });
 
             const result = await subscribeUser({
-                endpoint: 'http://push.com/endpoint',
+                endpoint: 'https://fcm.googleapis.com/fcm/send/token123',
                 keys: { p256dh: 'key123', auth: 'auth123' },
             });
 

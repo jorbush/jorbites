@@ -240,6 +240,7 @@ const RecipeModalContent: React.FC<{
             body={
                 <RecipeModalStepBody
                     step={step}
+                    userId={currentUser?.id}
                     lockState={{
                         isCurrentStepLocked,
                         lockOwner,

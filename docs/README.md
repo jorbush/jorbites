@@ -22,6 +22,7 @@ Welcome to the Jorbites documentation! This directory contains comprehensive doc
 - **[Cooksnaps Workflow](workflows/cooksnaps_workflow.md)** - 1-click submission, community photo gallery, notifier, and badge gamification workflow
 - **[Image Optimization](image_optimization.md)** - Custom image proxy implementation and optimization techniques
 - **[Rate Limiting](rate_limit.md)** - Security implementation with Upstash Redis
+- **[Security Audit & Remediation (Nov 2026)](security/security_audit_nov_2026.md)** - Full-stack security audit findings, fixes, and verification across all services
 
 ## 🏗️ Architecture Overview
 

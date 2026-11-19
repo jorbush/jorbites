@@ -7,6 +7,7 @@ import { NotificationType } from '@/app/types/notification';
 import {
     unauthorizedResponse,
     badRequest,
+    forbiddenResponse,
     validationError,
     internalServerError,
     rateLimitExceeded,
@@ -16,6 +17,7 @@ import { contentCreationRatelimit } from '@/app/lib/ratelimit';
 import { redisCache } from '@/app/lib/redis';
 import { triggerBadgeForgeEvaluation } from '@/app/lib/badgeForge';
 import { isValidR2Url } from '@/app/utils/r2';
+import { isR2AssetOwnedByUser } from '@/app/utils/mediaSecurity';
 import { recomputeRecipeRating } from '@/app/utils/recipeRating';
 
 const COOKSNAP_NOTE_MAX_LENGTH = 500;
@@ -72,6 +74,11 @@ export async function POST(request: Request) {
         if (!validImageSrc) {
             return validationError('Invalid image URL format or domain');
         }
+        if (!isR2AssetOwnedByUser(validImageSrc, currentUser.id)) {
+            return forbiddenResponse(
+                'You do not have permission to attach this image'
+            );
+        }
 
         if (comment && comment.length > COOKSNAP_NOTE_MAX_LENGTH) {
             return validationError(
@@ -97,7 +104,12 @@ export async function POST(request: Request) {
                 id: recipeId,
             },
             include: {
-                user: true,
+                user: {
+                    select: {
+                        id: true,
+                        email: true,
+                    },
+                },
             },
         });
 

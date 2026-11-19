@@ -16,7 +16,11 @@ export async function GET(request: Request) {
             return NextResponse.json([]);
         }
 
-        const ids = idsParam.split(',');
+        const ids = idsParam
+            .split(',')
+            .map((id) => id.trim())
+            .filter(Boolean)
+            .slice(0, 50);
 
         if (ids.length === 0) {
             return NextResponse.json([]);
