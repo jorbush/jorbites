@@ -110,19 +110,25 @@ describe('Cooksnaps Upload, Display & Deletion E2E (AWS S3 Emulator)', () => {
                 'be.visible'
             );
 
-            cy.get('[data-testid="star-5"]').click();
             const noteText =
                 'Turned out crispy and delicious! Verified with S3 emulator.';
             cy.get('[data-testid="cooksnap-note-input"]')
-                .should('be.visible')
-                .type(noteText);
+                .closest('[data-modal-backdrop]')
+                .within(() => {
+                    cy.get('[data-testid="star-5"]').click();
+                    cy.get('[data-testid="cooksnap-note-input"]')
+                        .should('be.visible')
+                        .type(noteText);
+                });
 
             cy.intercept('POST', '/api/upload/r2').as('presignR2');
             cy.intercept('PUT', 'http://127.0.0.1:9298/**').as('s3PutUpload');
             cy.intercept('POST', '/api/cooksnaps').as('createCooksnap');
 
             cy.task('log', '=== Submitting cooksnap ===');
-            cy.get('[data-cy="modal-action-button"]')
+            cy.get('[data-testid="cooksnap-note-input"]')
+                .closest('[data-modal-backdrop]')
+                .find('[data-cy="modal-action-button"]')
                 .should('not.be.disabled')
                 .click();
 
@@ -171,10 +177,10 @@ describe('Cooksnaps Upload, Display & Deletion E2E (AWS S3 Emulator)', () => {
                     .within(() => {
                         cy.contains(noteText).should('be.visible');
                         cy.contains('5').should('be.visible');
-                        cy.get('img')
+                        cy.get('img[alt^="Cooksnap by "]')
                             .should('have.attr', 'src')
                             .and('include', '/api/image-proxy');
-                        cy.get('img').should(($img) => {
+                        cy.get('img[alt^="Cooksnap by "]').should(($img) => {
                             expect($img[0].complete).to.eq(true);
                             expect($img[0].naturalWidth).to.be.greaterThan(0);
                         });
