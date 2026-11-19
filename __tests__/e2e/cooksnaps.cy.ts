@@ -204,38 +204,72 @@ describe('Cooksnaps Upload, Display & Deletion E2E (AWS S3 Emulator)', () => {
                             .then(($img) => {
                                 const imgEl = $img[0] as HTMLImageElement;
                                 const src = imgEl.currentSrc || imgEl.src;
-                                return cy.window({ log: false }).then((win) =>
-                                    win.fetch(src).then((r) =>
-                                        r.blob().then((blob) =>
-                                            blob
-                                                .slice(0, 16)
-                                                .arrayBuffer()
-                                                .then((ab) => ({
-                                                    src,
-                                                    status: r.status,
-                                                    type: blob.type,
-                                                    size: blob.size,
-                                                    hex: Array.from(
-                                                        new Uint8Array(ab)
-                                                    )
-                                                        .map((b) =>
-                                                            b
-                                                                .toString(16)
-                                                                .padStart(
-                                                                    2,
-                                                                    '0'
-                                                                )
-                                                        )
-                                                        .join(''),
-                                                    complete: imgEl.complete,
-                                                    naturalWidth:
-                                                        imgEl.naturalWidth,
-                                                    naturalHeight:
-                                                        imgEl.naturalHeight,
-                                                }))
-                                        )
-                                    )
-                                );
+                                return cy
+                                    .window({ log: false })
+                                    .then(async (win) => {
+                                        const r = await win.fetch(src);
+                                        const blob = await r.blob();
+                                        const ab = await blob.arrayBuffer();
+                                        const bytes = new Uint8Array(ab);
+                                        let bin = '';
+                                        for (let i = 0; i < bytes.length; i++) {
+                                            bin += String.fromCharCode(
+                                                bytes[i]
+                                            );
+                                        }
+                                        const b64 = win.btoa(bin);
+                                        let bitmapInfo = 'none';
+                                        try {
+                                            const bmp =
+                                                await win.createImageBitmap(
+                                                    blob
+                                                );
+                                            bitmapInfo = `${bmp.width}x${bmp.height}`;
+                                            bmp.close();
+                                        } catch (err: any) {
+                                            bitmapInfo = `err:${err?.message || err}`;
+                                        }
+                                        const blobImgOk =
+                                            await new Promise<string>(
+                                                (resolve) => {
+                                                    const t = new win.Image();
+                                                    const u =
+                                                        win.URL.createObjectURL(
+                                                            blob
+                                                        );
+                                                    t.onload = () => {
+                                                        win.URL.revokeObjectURL(
+                                                            u
+                                                        );
+                                                        resolve(
+                                                            `ok:${t.naturalWidth}x${t.naturalHeight}`
+                                                        );
+                                                    };
+                                                    t.onerror = () => {
+                                                        win.URL.revokeObjectURL(
+                                                            u
+                                                        );
+                                                        resolve('onerror');
+                                                    };
+                                                    t.src = u;
+                                                }
+                                            );
+                                        return {
+                                            src,
+                                            status: r.status,
+                                            type: blob.type,
+                                            size: blob.size,
+                                            csp: r.headers.get(
+                                                'content-security-policy'
+                                            ),
+                                            bitmapInfo,
+                                            blobImgOk,
+                                            b64,
+                                            complete: imgEl.complete,
+                                            naturalWidth: imgEl.naturalWidth,
+                                            naturalHeight: imgEl.naturalHeight,
+                                        };
+                                    });
                             })
                             .then((info) => {
                                 cy.task(
