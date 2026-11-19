@@ -38,11 +38,11 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
-                hostname: '*.r2.dev',
+                hostname: 'images.jorbites.com',
             },
             {
                 protocol: 'https',
-                hostname: '*.r2.cloudflarestorage.com',
+                hostname: 'pub-4c3d704cf6de499a9ef3964908533212.r2.dev',
             },
             ...(process.env.R2_PUBLIC_DOMAIN
                 ? [

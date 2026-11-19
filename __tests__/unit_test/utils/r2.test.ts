@@ -54,6 +54,11 @@ describe('r2 utils', () => {
             ).toBe(true);
             expect(
                 isR2Url(
+                    'https://pub-4c3d704cf6de499a9ef3964908533212.r2.dev/remakes/sample.webp'
+                )
+            ).toBe(true);
+            expect(
+                isR2Url(
                     'https://test-account.r2.cloudflarestorage.com/remakes/sample.webp'
                 )
             ).toBe(true);
@@ -93,9 +98,14 @@ describe('r2 utils', () => {
             expect(isValidR2Url(url)).toBe(url);
         });
 
-        it('should reject arbitrary third-party r2.dev domains', () => {
+        it('should return URL for owned Jorbites r2.dev bucket domain', () => {
             const url =
                 'https://pub-4c3d704cf6de499a9ef3964908533212.r2.dev/remakes/photo.webp';
+            expect(isValidR2Url(url)).toBe(url);
+        });
+
+        it('should reject arbitrary third-party r2.dev domains', () => {
+            const url = 'https://pub-attacker-bucket.r2.dev/remakes/photo.webp';
             expect(isValidR2Url(url)).toBeNull();
         });
 

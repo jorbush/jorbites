@@ -308,6 +308,34 @@ describe('GET /api/image-proxy', () => {
         );
     });
 
+    it('should allow Jorbites owned R2.dev bucket URL', async () => {
+        const mockImageData = new ArrayBuffer(1024);
+        const mockFetch = global.fetch as jest.Mock;
+        mockFetch.mockResolvedValueOnce({
+            ok: true,
+            status: 200,
+            headers: {
+                get: jest.fn((name: string) =>
+                    name.toLowerCase() === 'content-type' ? 'image/webp' : null
+                ),
+            },
+            arrayBuffer: jest.fn().mockResolvedValueOnce(mockImageData),
+        });
+
+        const ownedUrl =
+            'https://pub-4c3d704cf6de499a9ef3964908533212.r2.dev/remakes/u1/123-test.webp';
+        const request = new NextRequest(
+            `http://localhost:3000/api/image-proxy?url=${encodeURIComponent(ownedUrl)}`
+        );
+
+        const response = await ImageProxyGET(request);
+        expect(response.status).toBe(200);
+        expect(mockFetch).toHaveBeenCalledWith(
+            ownedUrl,
+            expect.objectContaining({ redirect: 'error' })
+        );
+    });
+
     it('should reject third-party *.r2.dev and *.r2.cloudflarestorage.com domains', async () => {
         const urls = [
             'https://pub-attacker.r2.dev/payload.html',

@@ -39,13 +39,18 @@ function getNormalizedR2Domain(): string {
         .replace(/\/.*$/, '');
 }
 
+const OWNED_R2_DOMAINS = new Set([
+    'images.jorbites.com',
+    'pub-4c3d704cf6de499a9ef3964908533212.r2.dev',
+]);
+
 /**
  * Checks whether a hostname belongs strictly to this application's R2 bucket.
  */
 function isOwnedR2Hostname(host: string): boolean {
     const normalizedHost = host.toLowerCase();
     const r2Domain = getNormalizedR2Domain();
-    if (normalizedHost === r2Domain) {
+    if (normalizedHost === r2Domain || OWNED_R2_DOMAINS.has(normalizedHost)) {
         return true;
     }
     const configuredAccountId = process.env.R2_ACCOUNT_ID?.toLowerCase();

@@ -6,11 +6,15 @@ const r2PublicDomain = (process.env.R2_PUBLIC_DOMAIN || 'images.jorbites.com')
     .replace(/^https?:\/\//, '')
     .replace(/\/.*$/, '');
 
+const OWNED_R2_DEV_DOMAIN = 'pub-4c3d704cf6de499a9ef3964908533212.r2.dev';
+
 const ALLOWED_DOMAINS = new Set([
     'res.cloudinary.com',
     'lh3.googleusercontent.com',
     'avatars.githubusercontent.com',
     'img.youtube.com',
+    'images.jorbites.com',
+    OWNED_R2_DEV_DOMAIN,
     r2PublicDomain,
 ]);
 
