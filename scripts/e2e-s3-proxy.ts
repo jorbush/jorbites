@@ -162,6 +162,7 @@ async function main() {
                             Key: key,
                         })
                     );
+                    console.log(`[e2e-s3-proxy] HEAD /${key} -> 200`);
                     res.writeHead(200, {
                         'Content-Type':
                             headRes.ContentType || 'application/octet-stream',
@@ -185,10 +186,16 @@ async function main() {
                 );
                 const bytes = await getRes.Body?.transformToByteArray();
                 if (!bytes) {
+                    console.warn(
+                        `[e2e-s3-proxy] GET /${key} -> 404 (empty body)`
+                    );
                     res.writeHead(404, { 'Content-Type': 'text/plain' });
                     res.end('Not found');
                     return;
                 }
+                console.log(
+                    `[e2e-s3-proxy] GET /${key} -> 200 (${bytes.byteLength} bytes, ${getRes.ContentType})`
+                );
                 res.writeHead(200, {
                     'Content-Type':
                         getRes.ContentType || 'application/octet-stream',
@@ -202,6 +209,11 @@ async function main() {
                     err?.name === 'NotFound'
                         ? 404
                         : 500;
+                console.error(
+                    `[e2e-s3-proxy] ${req.method} /${key} -> ${statusCode}:`,
+                    err?.name,
+                    err?.message
+                );
                 res.writeHead(statusCode, { 'Content-Type': 'text/plain' });
                 res.end(statusCode === 404 ? 'Not found' : 'S3 proxy error');
             }
@@ -229,6 +241,9 @@ async function main() {
                 agent: upstreamAgent,
             },
             (upstreamRes) => {
+                console.log(
+                    `[e2e-s3-proxy] ${req.method} ${parsedUrl.pathname} (signed) -> ${upstreamRes.statusCode}`
+                );
                 const responseHeaders: http.OutgoingHttpHeaders = {
                     ...upstreamRes.headers,
                     'access-control-allow-origin': '*',

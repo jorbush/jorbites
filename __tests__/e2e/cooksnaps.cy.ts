@@ -172,6 +172,26 @@ describe('Cooksnaps Upload, Display & Deletion E2E (AWS S3 Emulator)', () => {
             }).should('be.visible');
 
             cy.then(() => {
+                cy.request(uploadedImageSrc).then((res) => {
+                    expect(res.status).to.eq(200);
+                    expect(res.headers['content-type']).to.include('image/');
+                    expect(res.body.length).to.be.greaterThan(0);
+                });
+
+                cy.request({
+                    url: '/api/image-proxy',
+                    qs: {
+                        url: uploadedImageSrc,
+                        w: 400,
+                        h: 400,
+                        q: 'auto:good',
+                    },
+                }).then((res) => {
+                    expect(res.status).to.eq(200);
+                    expect(res.headers['content-type']).to.include('image/');
+                    expect(res.body.length).to.be.greaterThan(0);
+                });
+
                 cy.get(`[data-testid="cooksnap-card-${createdCooksnapId}"]`)
                     .should('be.visible')
                     .within(() => {
@@ -185,11 +205,6 @@ describe('Cooksnaps Upload, Display & Deletion E2E (AWS S3 Emulator)', () => {
                             expect($img[0].naturalWidth).to.be.greaterThan(0);
                         });
                     });
-
-                cy.request(uploadedImageSrc).then((res) => {
-                    expect(res.status).to.eq(200);
-                    expect(res.headers['content-type']).to.include('image/');
-                });
 
                 cy.reload();
                 cy.get('[data-testid="cooked-gallery"]', {
