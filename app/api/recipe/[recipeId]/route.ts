@@ -6,6 +6,7 @@ import sendNotification from '@/app/actions/sendNotification';
 import getRecipeById from '@/app/actions/getRecipeById';
 import updateUserLevel from '@/app/actions/updateUserLevel';
 import { deleteMultipleFromCloudinary } from '@/app/utils/cloudinary';
+import { filterDeletableCloudinaryAssets } from '@/app/utils/mediaSecurity';
 import { NotificationType } from '@/app/types/notification';
 import {
     unauthorizedResponse,
@@ -95,13 +96,20 @@ export async function POST(
                 id: recipeId,
             },
             include: {
-                user: true,
+                user: {
+                    select: {
+                        id: true,
+                        email: true,
+                    },
+                },
             },
         });
 
         if (!currentRecipe) {
             return notFoundResponse('Recipe not found');
         }
+
+        const { user: recipeAuthor, ...safeCurrentRecipe } = currentRecipe;
 
         let numLikes = currentRecipe.numLikes;
         const favoriteIds = [...(currentUser.favoriteIds || [])];
@@ -126,7 +134,7 @@ export async function POST(
                 const [, recipe] = await Promise.all([
                     sendNotification({
                         type: NotificationType.NEW_LIKE,
-                        userEmail: currentRecipe.user.email,
+                        userEmail: recipeAuthor.email,
                         params: {
                             userName: currentUser.name,
                             recipeId: recipeId,
@@ -141,7 +149,7 @@ export async function POST(
                         },
                     }),
                     updateUserLevel({
-                        userId: currentRecipe.user.id,
+                        userId: recipeAuthor.id,
                     }),
                 ]);
 
@@ -173,7 +181,7 @@ export async function POST(
                         numLikes: currentRecipe.numLikes,
                     }
                 );
-                return NextResponse.json(currentRecipe);
+                return NextResponse.json(safeCurrentRecipe);
             }
         } else {
             // decrement
@@ -206,7 +214,7 @@ export async function POST(
                         },
                     }),
                     updateUserLevel({
-                        userId: currentRecipe.user.id,
+                        userId: recipeAuthor.id,
                     }),
                 ]);
 
@@ -238,7 +246,7 @@ export async function POST(
                         numLikes: currentRecipe.numLikes,
                     }
                 );
-                return NextResponse.json(currentRecipe);
+                return NextResponse.json(safeCurrentRecipe);
             }
         }
     } catch (error: any) {
@@ -268,8 +276,15 @@ async function cleanupOldImages(
     }
     if (imagesToDelete.length > 0) {
         try {
+            const safeImagesToDelete = filterDeletableCloudinaryAssets(
+                imagesToDelete,
+                recipe.userId
+            );
+            if (safeImagesToDelete.length === 0) {
+                return;
+            }
             const { successful, failed } =
-                await deleteMultipleFromCloudinary(imagesToDelete);
+                await deleteMultipleFromCloudinary(safeImagesToDelete);
             if (successful.length > 0) {
                 console.log(
                     `Successfully deleted ${successful.length} old images from Cloudinary for recipe ${recipeId}`
@@ -528,18 +543,24 @@ export async function DELETE(
         }
         if (imageUrls.length > 0) {
             try {
-                const { successful, failed } =
-                    await deleteMultipleFromCloudinary(imageUrls);
-                if (successful.length > 0) {
-                    console.log(
-                        `Successfully deleted ${successful.length} images from Cloudinary for recipe ${recipeId}`
-                    );
-                }
-                if (failed.length > 0) {
-                    console.warn(
-                        `Failed to delete ${failed.length} images from Cloudinary for recipe ${recipeId}:`,
-                        failed
-                    );
+                const safeImageUrls = filterDeletableCloudinaryAssets(
+                    imageUrls,
+                    recipe.userId
+                );
+                if (safeImageUrls.length > 0) {
+                    const { successful, failed } =
+                        await deleteMultipleFromCloudinary(safeImageUrls);
+                    if (successful.length > 0) {
+                        console.log(
+                            `Successfully deleted ${successful.length} images from Cloudinary for recipe ${recipeId}`
+                        );
+                    }
+                    if (failed.length > 0) {
+                        console.warn(
+                            `Failed to delete ${failed.length} images from Cloudinary for recipe ${recipeId}:`,
+                            failed
+                        );
+                    }
                 }
             } catch (error) {
                 console.error('Error deleting images from Cloudinary:', error);

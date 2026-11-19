@@ -31,6 +31,21 @@ describe('POST /api/indexnow', () => {
         expect(data.error).toBe('Invalid or missing IndexNow secret');
     });
 
+    it('should return 500 and refuse Bearer undefined when INDEXNOW_SECRET is not configured', async () => {
+        delete process.env.INDEXNOW_SECRET;
+
+        const request = new Request('http://localhost/api/indexnow', {
+            method: 'POST',
+            headers: { authorization: 'Bearer undefined' },
+        });
+
+        const response = await IndexNowPOST(request);
+        const data = await response.json();
+
+        expect(response.status).toBe(500);
+        expect(data.error).toBe('IndexNow secret is not configured');
+    });
+
     it('should submit sitemap URLs to IndexNow successfully', async () => {
         jest.mocked(getSitemapData).mockResolvedValue([
             { url: 'https://jorbites.com/recipes/1' },

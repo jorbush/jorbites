@@ -22,9 +22,13 @@ vi.mock('fs', () => ({
 
 vi.mock('path', () => ({
     default: {
-        join: vi.fn((...args) => args.join('/')),
+        join: vi.fn((...args) => args.filter(Boolean).join('/')),
+        resolve: vi.fn((...args) => args.filter(Boolean).join('/')),
+        sep: '/',
     },
-    join: vi.fn((...args) => args.join('/')),
+    join: vi.fn((...args) => args.filter(Boolean).join('/')),
+    resolve: vi.fn((...args) => args.filter(Boolean).join('/')),
+    sep: '/',
 }));
 
 // Mock gray-matter
@@ -110,6 +114,23 @@ describe('event-utils', () => {
 
             const result = getEventsDirectory('es');
             expect(result).toContain('jorbites/app/content/events/es');
+        });
+    });
+
+    describe('getEventBySlug path traversal protection', () => {
+        it('should reject path traversal slugs and return null', async () => {
+            vi.mocked(fs.existsSync).mockReturnValue(true);
+
+            for (const badSlug of [
+                '../../../../GEMINI',
+                '../README',
+                'a/b',
+                'event.md',
+            ]) {
+                const result = await getEventBySlug(badSlug, 'en');
+                expect(result).toBeNull();
+            }
+            expect(fs.readFileSync).not.toHaveBeenCalled();
         });
     });
 

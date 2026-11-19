@@ -189,4 +189,33 @@ describe('trackUserInteraction', () => {
         expect(connect).toHaveBeenCalledTimes(1);
         expect(send).toHaveBeenCalledTimes(1);
     });
+
+    it('overrides client-supplied userId with authenticated session userId', async () => {
+        const { auth } = require('@/app/actions/getCurrentUser');
+        (auth as jest.Mock).mockResolvedValueOnce({
+            user: { id: 'real-session-user', email: 'real@test.com' },
+        });
+        (auth as jest.Mock).mockResolvedValueOnce({
+            user: { id: 'real-session-user', email: 'real@test.com' },
+        });
+        const mockProducer = makeMockProducer();
+        (global as any).__mockProducer = mockProducer;
+
+        const p = trackRecipeView('recipe-1', 'spoofed-victim-id');
+        await jest.runAllTimersAsync();
+        await p;
+
+        expect(mockProducer.send).toHaveBeenCalledWith(
+            expect.objectContaining({
+                messages: [
+                    expect.objectContaining({
+                        key: 'real-session-user',
+                        value: expect.stringContaining(
+                            '"userId":"real-session-user"'
+                        ),
+                    }),
+                ],
+            })
+        );
+    });
 });

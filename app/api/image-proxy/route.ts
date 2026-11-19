@@ -21,6 +21,14 @@ const ALLOWED_QUALITIES = new Set([
     'auto:best',
     'low',
 ]);
+const ALLOWED_RESPONSE_CONTENT_TYPES = new Set([
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+    'image/avif',
+    'image/gif',
+]);
+const MAX_IMAGE_BYTES = 15 * 1024 * 1024; // 15 MB
 
 function parseDimension(val: string | null): number | undefined {
     if (!val) return undefined;
@@ -58,10 +66,7 @@ export async function GET(request: NextRequest) {
         return badRequest('Invalid URL format');
     }
 
-    const isAllowedDomain =
-        ALLOWED_DOMAINS.has(parsedUrl.hostname) ||
-        parsedUrl.hostname.endsWith('.r2.cloudflarestorage.com') ||
-        parsedUrl.hostname.endsWith('.r2.dev');
+    const isAllowedDomain = ALLOWED_DOMAINS.has(parsedUrl.hostname);
 
     if (
         (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') ||
@@ -214,6 +219,7 @@ export async function GET(request: NextRequest) {
                 'User-Agent': 'Jorbites Image Proxy',
                 Accept: 'image/avif,image/webp,image/*',
             },
+            redirect: 'error',
             cache: 'force-cache',
             next: {
                 revalidate: 60 * 60 * 24 * 30, // 30 days
@@ -228,9 +234,37 @@ export async function GET(request: NextRequest) {
             return badRequest('Failed to fetch image');
         }
 
+        const rawContentType = imageResponse.headers.get('Content-Type') || '';
+        const contentType = rawContentType.split(';')[0].trim().toLowerCase();
+        if (!ALLOWED_RESPONSE_CONTENT_TYPES.has(contentType)) {
+            logger.warn(
+                'GET /api/image-proxy - disallowed upstream content type',
+                {
+                    contentType,
+                    hostname: parsedUrl.hostname,
+                }
+            );
+            return badRequest('Unsupported image content type');
+        }
+
+        const contentLengthHeader = imageResponse.headers.get('Content-Length');
+        if (
+            contentLengthHeader &&
+            Number(contentLengthHeader) > MAX_IMAGE_BYTES
+        ) {
+            logger.warn('GET /api/image-proxy - upstream image too large', {
+                contentLength: contentLengthHeader,
+            });
+            return badRequest('Image exceeds maximum allowed size');
+        }
+
         const imageData = await imageResponse.arrayBuffer();
-        const contentType =
-            imageResponse.headers.get('Content-Type') || 'image/jpeg';
+        if (imageData.byteLength > MAX_IMAGE_BYTES) {
+            logger.warn('GET /api/image-proxy - image payload too large', {
+                byteLength: imageData.byteLength,
+            });
+            return badRequest('Image exceeds maximum allowed size');
+        }
 
         logger.info('GET /api/image-proxy - success', {
             url: imageUrl.substring(0, 100),
@@ -243,6 +277,8 @@ export async function GET(request: NextRequest) {
                 'Content-Type': contentType,
                 'Cache-Control': 'public, max-age=31536000, immutable',
                 'Access-Control-Allow-Origin': '*',
+                'Content-Security-Policy': "default-src 'none'; sandbox",
+                'X-Content-Type-Options': 'nosniff',
             },
         });
     } catch (error: unknown) {

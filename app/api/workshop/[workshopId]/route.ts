@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { deleteMultipleFromCloudinary } from '@/app/utils/cloudinary';
+import { canDeleteCloudinaryAsset } from '@/app/utils/mediaSecurity';
 import {
     unauthorizedResponse,
     invalidInput,
@@ -149,8 +150,13 @@ export async function PATCH(
             }
         }
 
-        // Handle image deletion if changed
-        if (workshop.imageSrc && imageSrc && workshop.imageSrc !== imageSrc) {
+        // Handle image deletion if changed and owned by the workshop host
+        if (
+            workshop.imageSrc &&
+            imageSrc &&
+            workshop.imageSrc !== imageSrc &&
+            canDeleteCloudinaryAsset(workshop.imageSrc, workshop.hostId)
+        ) {
             try {
                 await deleteMultipleFromCloudinary([workshop.imageSrc]);
             } catch (error) {
@@ -227,8 +233,11 @@ export async function DELETE(
             return forbiddenResponse('You can only delete your own workshops');
         }
 
-        // Delete workshop image from Cloudinary if exists
-        if (workshop.imageSrc) {
+        // Delete workshop image from Cloudinary if exists and owned by the workshop host
+        if (
+            workshop.imageSrc &&
+            canDeleteCloudinaryAsset(workshop.imageSrc, workshop.hostId)
+        ) {
             try {
                 await deleteMultipleFromCloudinary([workshop.imageSrc]);
             } catch (error) {

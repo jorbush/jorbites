@@ -8,8 +8,10 @@ import {
     badRequest,
     forbiddenResponse,
     internalServerError,
+    rateLimitExceeded,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
+import { twoFactorRatelimit } from '@/app/lib/ratelimit';
 
 interface IParams {
     userId?: string;
@@ -42,6 +44,25 @@ export async function PATCH(
 
         if (userId !== currentUser.id) {
             return forbiddenResponse('You can only change your own password');
+        }
+
+        if (
+            process.env.NODE_ENV === 'production' ||
+            process.env.ENV === 'production'
+        ) {
+            const { success, reset } = await twoFactorRatelimit.limit(
+                `password_change:${currentUser.id}`
+            );
+            if (!success) {
+                const retryAfterSeconds = Math.max(
+                    1,
+                    Math.ceil((reset - Date.now()) / 1000)
+                );
+                return rateLimitExceeded(
+                    'Too many password change attempts. Please try again later.',
+                    retryAfterSeconds
+                );
+            }
         }
 
         const body = await request.json();

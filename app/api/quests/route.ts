@@ -104,8 +104,13 @@ export async function GET(request: Request) {
         const status = searchParams.get('status');
         const userId = searchParams.get('userId');
         const q = searchParams.get('q');
-        const page = parseInt(searchParams.get('page') || '1', 10);
-        const limit = parseInt(searchParams.get('limit') || '10', 10);
+        const rawPage = parseInt(searchParams.get('page') || '1', 10);
+        const rawLimit = parseInt(searchParams.get('limit') || '10', 10);
+        const page = Number.isFinite(rawPage) && rawPage >= 1 ? rawPage : 1;
+        const limit =
+            Number.isFinite(rawLimit) && rawLimit >= 1
+                ? Math.min(rawLimit, 50)
+                : 10;
 
         let query: any = {};
 

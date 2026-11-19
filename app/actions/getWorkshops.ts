@@ -29,45 +29,50 @@ export default async function getWorkshops(
         const { search, limit = 100, isPrivate, hostId } = params;
 
         const currentUser = await getCurrentUser();
-        let query: any = {};
+        const andConditions: any[] = [];
 
         // Filter by search
         if (typeof search === 'string' && search.trim()) {
-            query.OR = [
-                {
-                    title: {
-                        contains: search.trim(),
-                        mode: 'insensitive',
+            andConditions.push({
+                OR: [
+                    {
+                        title: {
+                            contains: search.trim(),
+                            mode: 'insensitive',
+                        },
                     },
-                },
-                {
-                    description: {
-                        contains: search.trim(),
-                        mode: 'insensitive',
+                    {
+                        description: {
+                            contains: search.trim(),
+                            mode: 'insensitive',
+                        },
                     },
-                },
-                {
-                    location: {
-                        contains: search.trim(),
-                        mode: 'insensitive',
+                    {
+                        location: {
+                            contains: search.trim(),
+                            mode: 'insensitive',
+                        },
                     },
-                },
-            ];
+                ],
+            });
         }
 
         // Filter by host
         if (hostId) {
-            query.hostId = hostId;
+            andConditions.push({ hostId });
         }
 
         // Filter private workshops - only show if user is host or whitelisted
         if (isPrivate !== undefined) {
             if (isPrivate) {
                 if (currentUser) {
-                    query.OR = [
-                        { hostId: currentUser.id },
-                        { whitelistedUserIds: { has: currentUser.id } },
-                    ];
+                    andConditions.push({ isPrivate: true });
+                    andConditions.push({
+                        OR: [
+                            { hostId: currentUser.id },
+                            { whitelistedUserIds: { has: currentUser.id } },
+                        ],
+                    });
                 } else {
                     // Anonymous users can't see private workshops
                     return {
@@ -78,20 +83,25 @@ export default async function getWorkshops(
                     };
                 }
             } else {
-                query.isPrivate = false;
+                andConditions.push({ isPrivate: false });
             }
         } else {
             // By default, show public workshops and private ones user has access to
             if (currentUser) {
-                query.OR = [
-                    { isPrivate: false },
-                    { hostId: currentUser.id },
-                    { whitelistedUserIds: { has: currentUser.id } },
-                ];
+                andConditions.push({
+                    OR: [
+                        { isPrivate: false },
+                        { hostId: currentUser.id },
+                        { whitelistedUserIds: { has: currentUser.id } },
+                    ],
+                });
             } else {
-                query.isPrivate = false;
+                andConditions.push({ isPrivate: false });
             }
         }
+
+        const query: any =
+            andConditions.length > 0 ? { AND: andConditions } : {};
 
         const workshops = await prisma.workshop.findMany({
             where: query,

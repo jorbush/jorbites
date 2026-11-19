@@ -246,7 +246,14 @@ export async function POST(request: Request) {
         if (finalQuestId) {
             const quest = await prisma.quest.findUnique({
                 where: { id: finalQuestId },
-                include: { user: true },
+                include: {
+                    user: {
+                        select: {
+                            id: true,
+                            email: true,
+                        },
+                    },
+                },
             });
 
             if (quest?.user?.email) {

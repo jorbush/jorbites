@@ -83,6 +83,10 @@ const nextConfig = {
                         key: 'Permissions-Policy',
                         value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
                     },
+                    {
+                        key: 'Content-Security-Policy',
+                        value: "object-src 'none'; base-uri 'self'; frame-ancestors 'none'",
+                    },
                 ],
             },
             {
@@ -108,6 +112,10 @@ const nextConfig = {
                     {
                         key: 'Cache-Control',
                         value: 'public, max-age=31536000, immutable',
+                    },
+                    {
+                        key: 'Content-Security-Policy',
+                        value: "default-src 'none'; sandbox",
                     },
                 ],
             },

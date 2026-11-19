@@ -21,6 +21,9 @@ jest.mock('@/app/lib/prismadb', () => ({
         findUnique: jest.fn(),
         update: jest.fn(),
     },
+    planning: {
+        findUnique: jest.fn(),
+    },
 }));
 
 import prisma from '@/app/lib/prismadb';
@@ -119,6 +122,57 @@ describe('Saves API Error Handling', () => {
             );
             expect(data.code).toBe('INVALID_INPUT');
             expect(data.timestamp).toBeDefined();
+        });
+
+        it('should return 404 when attempting to save another user private planning', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: { name: 'test', email: 'test@a.com' },
+            };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+            (prisma.planning.findUnique as jest.Mock).mockResolvedValue({
+                id: 'private-plan-id',
+                isPrivate: true,
+                userId: 'other-user-id',
+            });
+
+            const mockParams = {
+                params: Promise.resolve({ planningId: 'private-plan-id' }),
+            };
+
+            const response = await SavesPOST({} as Request, mockParams);
+            const data = await response.json();
+
+            expect(response.status).toBe(404);
+            expect(data.error).toBe('Planning not found');
+            expect(prisma.user.update).not.toHaveBeenCalled();
+        });
+
+        it('should allow saving a public planning', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: { name: 'test', email: 'test@a.com' },
+            };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+            (prisma.planning.findUnique as jest.Mock).mockResolvedValue({
+                id: 'public-plan-id',
+                isPrivate: false,
+                userId: 'other-user-id',
+            });
+            (prisma.user.update as jest.Mock).mockResolvedValue({
+                id: mockUser.id,
+                savedPlanningIds: ['public-plan-id'],
+            });
+
+            const mockParams = {
+                params: Promise.resolve({ planningId: 'public-plan-id' }),
+            };
+
+            const response = await SavesPOST({} as Request, mockParams);
+            const data = await response.json();
+
+            expect(response.status).toBe(200);
+            expect(data.savedPlanningIds).toEqual(['public-plan-id']);
         });
     });
 
