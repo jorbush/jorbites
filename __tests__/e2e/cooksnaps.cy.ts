@@ -200,6 +200,49 @@ describe('Cooksnaps Upload, Display & Deletion E2E (AWS S3 Emulator)', () => {
                         cy.get('img[alt^="Cooksnap by "]')
                             .should('have.attr', 'src')
                             .and('include', '/api/image-proxy');
+                        cy.get('img[alt^="Cooksnap by "]')
+                            .then(($img) => {
+                                const imgEl = $img[0] as HTMLImageElement;
+                                const src = imgEl.currentSrc || imgEl.src;
+                                return cy.window({ log: false }).then((win) =>
+                                    win.fetch(src).then((r) =>
+                                        r.blob().then((blob) =>
+                                            blob
+                                                .slice(0, 16)
+                                                .arrayBuffer()
+                                                .then((ab) => ({
+                                                    src,
+                                                    status: r.status,
+                                                    type: blob.type,
+                                                    size: blob.size,
+                                                    hex: Array.from(
+                                                        new Uint8Array(ab)
+                                                    )
+                                                        .map((b) =>
+                                                            b
+                                                                .toString(16)
+                                                                .padStart(
+                                                                    2,
+                                                                    '0'
+                                                                )
+                                                        )
+                                                        .join(''),
+                                                    complete: imgEl.complete,
+                                                    naturalWidth:
+                                                        imgEl.naturalWidth,
+                                                    naturalHeight:
+                                                        imgEl.naturalHeight,
+                                                }))
+                                        )
+                                    )
+                                );
+                            })
+                            .then((info) => {
+                                cy.task(
+                                    'log',
+                                    `IMG DEBUG: ${JSON.stringify(info)}`
+                                );
+                            });
                         cy.get('img[alt^="Cooksnap by "]').should(($img) => {
                             const imgEl = $img[0] as HTMLImageElement;
                             expect(
