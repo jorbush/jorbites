@@ -209,15 +209,6 @@ describe('Cooksnaps Upload, Display & Deletion E2E (AWS S3 Emulator)', () => {
                                     .then(async (win) => {
                                         const r = await win.fetch(src);
                                         const blob = await r.blob();
-                                        const ab = await blob.arrayBuffer();
-                                        const bytes = new Uint8Array(ab);
-                                        let bin = '';
-                                        for (let i = 0; i < bytes.length; i++) {
-                                            bin += String.fromCharCode(
-                                                bytes[i]
-                                            );
-                                        }
-                                        const b64 = win.btoa(bin);
                                         let bitmapInfo = 'none';
                                         try {
                                             const bmp =
@@ -254,17 +245,41 @@ describe('Cooksnaps Upload, Display & Deletion E2E (AWS S3 Emulator)', () => {
                                                     t.src = u;
                                                 }
                                             );
+                                        const urlImgOk =
+                                            await new Promise<string>(
+                                                (resolve) => {
+                                                    const t = new win.Image();
+                                                    t.onload = () =>
+                                                        resolve(
+                                                            `ok:${t.naturalWidth}x${t.naturalHeight}`
+                                                        );
+                                                    t.onerror = () =>
+                                                        resolve('onerror');
+                                                    t.src = src;
+                                                }
+                                            );
+                                        const perfEntries = win.performance
+                                            .getEntriesByType('resource')
+                                            .filter((e) =>
+                                                e.name.includes('image-proxy')
+                                            )
+                                            .map((e: any) => ({
+                                                q: e.name
+                                                    .split('?')[1]
+                                                    ?.slice(-30),
+                                                status: e.responseStatus,
+                                                enc: e.encodedBodySize,
+                                                dec: e.decodedBodySize,
+                                            }));
                                         return {
                                             src,
                                             status: r.status,
                                             type: blob.type,
                                             size: blob.size,
-                                            csp: r.headers.get(
-                                                'content-security-policy'
-                                            ),
                                             bitmapInfo,
                                             blobImgOk,
-                                            b64,
+                                            urlImgOk,
+                                            perfEntries,
                                             complete: imgEl.complete,
                                             naturalWidth: imgEl.naturalWidth,
                                             naturalHeight: imgEl.naturalHeight,
