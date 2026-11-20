@@ -104,4 +104,27 @@ describe('getProxyImageSrcAndSrcSet', () => {
         expect(result.srcSet).toContain('w=200&h=200');
         expect(result.srcSet).toContain('w=300&h=300');
     });
+
+    it('routes NEXT_PUBLIC_R2_PUBLIC_DOMAIN URLs with scheme and port through image-proxy', () => {
+        const originalNextPublicR2 = process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN;
+        process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN = 'http://127.0.0.1:9298';
+
+        try {
+            const result = getProxyImageSrcAndSrcSet({
+                src: 'http://127.0.0.1:9298/remakes/sample.webp',
+                width: 400,
+                height: 400,
+            });
+            expect(result.src).toContain('/api/image-proxy');
+            expect(result.src).toContain(
+                'url=http%3A%2F%2F127.0.0.1%3A9298%2Fremakes%2Fsample.webp'
+            );
+        } finally {
+            if (originalNextPublicR2 === undefined) {
+                delete process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN;
+            } else {
+                process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN = originalNextPublicR2;
+            }
+        }
+    });
 });

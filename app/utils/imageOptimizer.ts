@@ -34,7 +34,11 @@ export function getProxyImageSrcAndSrcSet({
         return { src, srcSet: '' };
     }
 
-    const r2Domain = (process.env.R2_PUBLIC_DOMAIN || 'images.jorbites.com')
+    const r2Domain = (
+        process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN ||
+        process.env.R2_PUBLIC_DOMAIN ||
+        'images.jorbites.com'
+    )
         .replace(/^https?:\/\//, '')
         .replace(/\/.*$/, '');
 

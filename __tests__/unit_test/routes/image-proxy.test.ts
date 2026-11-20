@@ -405,4 +405,48 @@ describe('GET /api/image-proxy', () => {
         expect(response.status).toBe(400);
         expect(data.error).toBe('Image exceeds maximum allowed size');
     });
+
+    it('should allow R2_PUBLIC_DOMAIN with scheme and port and reject mismatched ports', async () => {
+        const originalPublicDomain = process.env.R2_PUBLIC_DOMAIN;
+        process.env.R2_PUBLIC_DOMAIN = 'http://127.0.0.1:9298';
+
+        try {
+            const mockImageData = new ArrayBuffer(512);
+            const mockFetch = global.fetch as jest.Mock;
+            mockFetch.mockResolvedValueOnce({
+                ok: true,
+                status: 200,
+                headers: {
+                    get: jest.fn().mockReturnValue('image/webp'),
+                },
+                arrayBuffer: jest.fn().mockResolvedValueOnce(mockImageData),
+            });
+
+            const validRequest = new NextRequest(
+                'http://localhost:3000/api/image-proxy?url=http://127.0.0.1:9298/remakes/123-test.webp'
+            );
+            const validResponse = await ImageProxyGET(validRequest);
+
+            expect(validResponse.status).toBe(200);
+            expect(mockFetch).toHaveBeenCalledWith(
+                'http://127.0.0.1:9298/remakes/123-test.webp',
+                expect.any(Object)
+            );
+
+            const wrongPortRequest = new NextRequest(
+                'http://localhost:3000/api/image-proxy?url=http://127.0.0.1:9999/remakes/123-test.webp'
+            );
+            const wrongPortResponse = await ImageProxyGET(wrongPortRequest);
+            const wrongPortData = await wrongPortResponse.json();
+
+            expect(wrongPortResponse.status).toBe(400);
+            expect(wrongPortData.error).toBe('URL domain not allowed');
+        } finally {
+            if (originalPublicDomain === undefined) {
+                delete process.env.R2_PUBLIC_DOMAIN;
+            } else {
+                process.env.R2_PUBLIC_DOMAIN = originalPublicDomain;
+            }
+        }
+    });
 });

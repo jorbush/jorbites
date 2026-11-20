@@ -2,21 +2,42 @@ import { NextRequest, NextResponse } from 'next/server';
 import { badRequest, internalServerError } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
 
-const r2PublicDomain = (process.env.R2_PUBLIC_DOMAIN || 'images.jorbites.com')
-    .replace(/^https?:\/\//, '')
-    .replace(/\/.*$/, '');
-
 const OWNED_R2_DEV_DOMAIN = 'pub-4c3d704cf6de499a9ef3964908533212.r2.dev';
 
-const ALLOWED_DOMAINS = new Set([
+const STATIC_ALLOWED_DOMAINS = new Set([
     'res.cloudinary.com',
     'lh3.googleusercontent.com',
     'avatars.githubusercontent.com',
     'img.youtube.com',
     'images.jorbites.com',
     OWNED_R2_DEV_DOMAIN,
-    r2PublicDomain,
 ]);
+
+function isConfiguredR2Domain(parsedUrl: URL): boolean {
+    const rawDomain = process.env.R2_PUBLIC_DOMAIN || 'images.jorbites.com';
+    try {
+        const normalized = rawDomain.includes('://')
+            ? rawDomain
+            : `https://${rawDomain}`;
+        const parsedConfigured = new URL(normalized);
+        if (parsedConfigured.port) {
+            return (
+                parsedUrl.host.toLowerCase() ===
+                parsedConfigured.host.toLowerCase()
+            );
+        }
+        return (
+            parsedUrl.hostname.toLowerCase() ===
+            parsedConfigured.hostname.toLowerCase()
+        );
+    } catch {
+        const stripped = rawDomain
+            .toLowerCase()
+            .replace(/^https?:\/\//, '')
+            .replace(/\/.*$/, '');
+        return parsedUrl.hostname.toLowerCase() === stripped;
+    }
+}
 
 const ALLOWED_FORMATS = new Set(['auto', 'webp', 'png', 'jpg', 'jpeg', 'avif']);
 const ALLOWED_QUALITIES = new Set([
@@ -70,7 +91,9 @@ export async function GET(request: NextRequest) {
         return badRequest('Invalid URL format');
     }
 
-    const isAllowedDomain = ALLOWED_DOMAINS.has(parsedUrl.hostname);
+    const isAllowedDomain =
+        STATIC_ALLOWED_DOMAINS.has(parsedUrl.hostname) ||
+        isConfiguredR2Domain(parsedUrl);
 
     if (
         (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') ||

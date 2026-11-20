@@ -59,13 +59,17 @@ const nextConfig = {
             },
             ...(process.env.R2_PUBLIC_DOMAIN
                 ? [
-                      {
-                          protocol: 'https',
-                          hostname: process.env.R2_PUBLIC_DOMAIN.replace(
-                              /^https?:\/\//,
-                              ''
-                          ).replace(/\/.*$/, ''),
-                      },
+                      (() => {
+                          const raw = process.env.R2_PUBLIC_DOMAIN;
+                          const parsed = new URL(
+                              raw.includes('://') ? raw : `https://${raw}`
+                          );
+                          return {
+                              protocol: parsed.protocol.replace(':', ''),
+                              hostname: parsed.hostname,
+                              ...(parsed.port ? { port: parsed.port } : {}),
+                          };
+                      })(),
                   ]
                 : []),
         ],

@@ -5,38 +5,94 @@ import {
 } from '@aws-sdk/client-s3';
 import { logger } from '@/app/lib/axiom/server';
 
-const accountId = process.env.R2_ACCOUNT_ID || 'mock-account-id';
-const accessKeyId = process.env.R2_ACCESS_KEY_ID || 'mock-access-key';
-const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY || 'mock-secret-key';
-const bucketName = process.env.R2_BUCKET_NAME || 'jorbites-remakes';
-const publicDomain = (
-    process.env.R2_PUBLIC_DOMAIN || 'images.jorbites.com'
-).toLowerCase();
+const DEFAULT_R2_PUBLIC_DOMAIN = 'images.jorbites.com';
+
+export interface R2Config {
+    accountId: string;
+    accessKeyId: string;
+    secretAccessKey: string;
+    bucketName: string;
+    publicDomain: string;
+    endpoint: string;
+    region: string;
+    forcePathStyle: boolean;
+}
+
+export function getR2Config(): R2Config {
+    const accountId = process.env.R2_ACCOUNT_ID || 'mock-account-id';
+    const accessKeyId = process.env.R2_ACCESS_KEY_ID || 'mock-access-key';
+    const secretAccessKey =
+        process.env.R2_SECRET_ACCESS_KEY || 'mock-secret-key';
+    const bucketName = process.env.R2_BUCKET_NAME || 'jorbites-remakes';
+    const publicDomain =
+        process.env.R2_PUBLIC_DOMAIN || DEFAULT_R2_PUBLIC_DOMAIN;
+    const endpoint =
+        process.env.R2_ENDPOINT ||
+        `https://${accountId}.r2.cloudflarestorage.com`;
+    const region = process.env.R2_REGION || 'auto';
+    const forcePathStyle =
+        process.env.R2_FORCE_PATH_STYLE === 'true' ||
+        Boolean(process.env.R2_ENDPOINT);
+
+    return {
+        accountId,
+        accessKeyId,
+        secretAccessKey,
+        bucketName,
+        publicDomain,
+        endpoint,
+        region,
+        forcePathStyle,
+    };
+}
 
 let s3ClientInstance: S3Client | null = null;
+let s3ClientCacheKey: string | null = null;
 
-function getS3Client(): S3Client {
-    if (!s3ClientInstance) {
+export function getS3Client(): S3Client {
+    const config = getR2Config();
+    const cacheKey = `${config.endpoint}|${config.region}|${config.forcePathStyle}|${config.accessKeyId}|${config.secretAccessKey}`;
+    if (!s3ClientInstance || s3ClientCacheKey !== cacheKey) {
         s3ClientInstance = new S3Client({
-            region: 'auto',
-            endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
+            region: config.region,
+            endpoint: config.endpoint,
+            forcePathStyle: config.forcePathStyle,
             credentials: {
-                accessKeyId,
-                secretAccessKey,
+                accessKeyId: config.accessKeyId,
+                secretAccessKey: config.secretAccessKey,
             },
         });
+        s3ClientCacheKey = cacheKey;
     }
     return s3ClientInstance;
 }
 
-/**
- * Returns the normalized hostname for the configured R2 public domain.
- */
-function getNormalizedR2Domain(): string {
-    return (process.env.R2_PUBLIC_DOMAIN || publicDomain)
-        .toLowerCase()
-        .replace(/^https?:\/\//, '')
-        .replace(/\/.*$/, '');
+function matchesConfiguredPublicDomain(
+    parsedUrl: URL,
+    configuredDomain: string
+): boolean {
+    try {
+        const normalized = configuredDomain.includes('://')
+            ? configuredDomain
+            : `https://${configuredDomain}`;
+        const parsedConfigured = new URL(normalized);
+        if (parsedConfigured.port) {
+            return (
+                parsedUrl.host.toLowerCase() ===
+                parsedConfigured.host.toLowerCase()
+            );
+        }
+        return (
+            parsedUrl.hostname.toLowerCase() ===
+            parsedConfigured.hostname.toLowerCase()
+        );
+    } catch {
+        const stripped = configuredDomain
+            .toLowerCase()
+            .replace(/^https?:\/\//, '')
+            .replace(/\/.*$/, '');
+        return parsedUrl.hostname.toLowerCase() === stripped;
+    }
 }
 
 const OWNED_R2_DOMAINS = new Set([
@@ -45,12 +101,15 @@ const OWNED_R2_DOMAINS = new Set([
 ]);
 
 /**
- * Checks whether a hostname belongs strictly to this application's R2 bucket.
+ * Checks whether a parsed URL belongs strictly to this application's R2 bucket.
  */
-function isOwnedR2Hostname(host: string): boolean {
-    const normalizedHost = host.toLowerCase();
-    const r2Domain = getNormalizedR2Domain();
-    if (normalizedHost === r2Domain || OWNED_R2_DOMAINS.has(normalizedHost)) {
+function isOwnedR2Url(parsedUrl: URL): boolean {
+    const { publicDomain } = getR2Config();
+    const normalizedHost = parsedUrl.hostname.toLowerCase();
+    if (
+        matchesConfiguredPublicDomain(parsedUrl, publicDomain) ||
+        OWNED_R2_DOMAINS.has(normalizedHost)
+    ) {
         return true;
     }
     const configuredAccountId = process.env.R2_ACCOUNT_ID?.toLowerCase();
@@ -75,8 +134,7 @@ export function isValidR2Url(urlStr: unknown): string | null {
         if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:')
             return null;
         const host = parsed.hostname.toLowerCase();
-        const isAllowed =
-            isOwnedR2Hostname(host) || host === 'res.cloudinary.com';
+        const isAllowed = isOwnedR2Url(parsed) || host === 'res.cloudinary.com';
         return isAllowed ? urlStr : null;
     } catch {
         return null;
@@ -95,7 +153,7 @@ export function isR2Url(url: string): boolean {
         if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
             return false;
         }
-        return isOwnedR2Hostname(parsed.hostname);
+        return isOwnedR2Url(parsed);
     } catch {
         return url.startsWith('remakes/');
     }
@@ -162,6 +220,7 @@ export async function deleteFromR2(imageUrlOrKey: string): Promise<boolean> {
     }
 
     try {
+        const { bucketName } = getR2Config();
         const client = getS3Client();
         const command = new DeleteObjectCommand({
             Bucket: bucketName,
@@ -212,6 +271,7 @@ export async function deleteMultipleFromR2(
     }
 
     try {
+        const { bucketName } = getR2Config();
         const client = getS3Client();
         const command = new DeleteObjectsCommand({
             Bucket: bucketName,

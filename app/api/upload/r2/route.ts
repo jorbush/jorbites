@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { NextResponse } from 'next/server';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import {
@@ -11,6 +11,7 @@ import {
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
 import { contentCreationRatelimit } from '@/app/lib/ratelimit';
+import { getR2Config, getS3Client } from '@/app/utils/r2';
 
 const ALLOWED_IMAGE_MIME_TYPES: Record<string, string> = {
     'image/webp': 'webp',
@@ -31,21 +32,6 @@ const ALLOWED_IMAGE_EXTENSIONS = new Set([
 ]);
 
 const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // 10 MB
-
-const accountId = process.env.R2_ACCOUNT_ID || 'mock-account-id';
-const accessKeyId = process.env.R2_ACCESS_KEY_ID || 'mock-access-key';
-const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY || 'mock-secret-key';
-const bucketName = process.env.R2_BUCKET_NAME || 'jorbites-remakes';
-const publicDomain = process.env.R2_PUBLIC_DOMAIN || 'images.jorbites.com';
-
-const s3Client = new S3Client({
-    region: 'auto',
-    endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
-    credentials: {
-        accessKeyId,
-        secretAccessKey,
-    },
-});
 
 export async function POST(request: Request) {
     try {
@@ -139,6 +125,9 @@ export async function POST(request: Request) {
         const timestamp = Date.now();
         const randomString = crypto.randomBytes(6).toString('hex');
         const key = `remakes/${currentUser.id}/${timestamp}-${randomString}.${extension}`;
+
+        const { bucketName, publicDomain } = getR2Config();
+        const s3Client = getS3Client();
 
         const command = new PutObjectCommand({
             Bucket: bucketName,

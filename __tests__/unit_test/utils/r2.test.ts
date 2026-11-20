@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
+    getR2Config,
     isR2Url,
     extractR2Key,
     extractR2KeyOwner,
@@ -243,6 +244,49 @@ describe('r2 utils', () => {
         it('should return true for empty array', async () => {
             const result = await deleteMultipleFromR2([]);
             expect(result).toBe(true);
+        });
+    });
+
+    describe('emulator configuration and port-aware public domain', () => {
+        it('returns default R2 configuration when optional emulator env vars are unset', () => {
+            delete process.env.R2_ENDPOINT;
+            delete process.env.R2_REGION;
+            delete process.env.R2_FORCE_PATH_STYLE;
+
+            const config = getR2Config();
+            expect(config.endpoint).toBe(
+                'https://test-account.r2.cloudflarestorage.com'
+            );
+            expect(config.region).toBe('auto');
+            expect(config.forcePathStyle).toBe(false);
+        });
+
+        it('uses R2_ENDPOINT, R2_REGION, and defaults forcePathStyle to true when R2_ENDPOINT is set', () => {
+            process.env.R2_ENDPOINT = 'http://127.0.0.1:9298';
+            process.env.R2_REGION = 'us-east-1';
+
+            const config = getR2Config();
+            expect(config.endpoint).toBe('http://127.0.0.1:9298');
+            expect(config.region).toBe('us-east-1');
+            expect(config.forcePathStyle).toBe(true);
+        });
+
+        it('matches R2_PUBLIC_DOMAIN with scheme and port and rejects mismatched ports', () => {
+            process.env.R2_PUBLIC_DOMAIN = 'http://127.0.0.1:9298';
+
+            const validEmulatorUrl =
+                'http://127.0.0.1:9298/remakes/1700000000-sample.webp';
+            const wrongPortUrl =
+                'http://127.0.0.1:9999/remakes/1700000000-sample.webp';
+
+            expect(isValidR2Url(validEmulatorUrl)).toBe(validEmulatorUrl);
+            expect(isR2Url(validEmulatorUrl)).toBe(true);
+            expect(extractR2Key(validEmulatorUrl)).toBe(
+                'remakes/1700000000-sample.webp'
+            );
+
+            expect(isValidR2Url(wrongPortUrl)).toBeNull();
+            expect(isR2Url(wrongPortUrl)).toBe(false);
         });
     });
 });
