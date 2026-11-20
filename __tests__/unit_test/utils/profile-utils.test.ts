@@ -324,6 +324,9 @@ describe('profile-utils', () => {
                 showStats: true,
                 showActivityGraph: false,
                 showArticles: false,
+                showLists: true,
+                showQuests: true,
+                showPlannings: true,
             });
         });
 
@@ -333,6 +336,9 @@ describe('profile-utils', () => {
                 showStats: true,
                 showActivityGraph: false,
                 showArticles: false,
+                showLists: true,
+                showQuests: true,
+                showPlannings: true,
             });
         });
 
@@ -341,6 +347,7 @@ describe('profile-utils', () => {
                 id: 'user-1',
                 profilePreferences: {
                     showStats: false,
+                    showLists: false,
                 },
             } as any;
 
@@ -348,6 +355,9 @@ describe('profile-utils', () => {
                 showStats: false,
                 showActivityGraph: false,
                 showArticles: false,
+                showLists: false,
+                showQuests: true,
+                showPlannings: true,
             });
         });
     });

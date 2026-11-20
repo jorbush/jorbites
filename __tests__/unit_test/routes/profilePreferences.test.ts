@@ -50,6 +50,9 @@ describe('Profile Preferences API (/api/profilePreferences)', () => {
                 showStats: true,
                 showActivityGraph: false,
                 showArticles: false,
+                showLists: true,
+                showQuests: true,
+                showPlannings: true,
             });
         });
 
@@ -59,6 +62,7 @@ describe('Profile Preferences API (/api/profilePreferences)', () => {
                 profilePreferences: {
                     showStats: false,
                     showArticles: true,
+                    showLists: false,
                 },
             });
 
@@ -70,6 +74,9 @@ describe('Profile Preferences API (/api/profilePreferences)', () => {
                 showStats: false,
                 showActivityGraph: false,
                 showArticles: true,
+                showLists: false,
+                showQuests: true,
+                showPlannings: true,
             });
         });
 
@@ -203,6 +210,9 @@ describe('Profile Preferences API (/api/profilePreferences)', () => {
                     showStats: true,
                     showActivityGraph: false,
                     showArticles: false,
+                    showLists: true,
+                    showQuests: true,
+                    showPlannings: true,
                 },
             });
             (prisma.user.update as jest.Mock).mockResolvedValue({
@@ -211,6 +221,9 @@ describe('Profile Preferences API (/api/profilePreferences)', () => {
                     showStats: false,
                     showActivityGraph: false,
                     showArticles: false,
+                    showLists: false,
+                    showQuests: true,
+                    showPlannings: false,
                 },
             });
 
@@ -218,7 +231,11 @@ describe('Profile Preferences API (/api/profilePreferences)', () => {
                 'http://localhost:3000/api/profilePreferences',
                 {
                     method: 'PATCH',
-                    body: JSON.stringify({ showStats: false }),
+                    body: JSON.stringify({
+                        showStats: false,
+                        showLists: false,
+                        showPlannings: false,
+                    }),
                 }
             );
 
@@ -230,6 +247,9 @@ describe('Profile Preferences API (/api/profilePreferences)', () => {
                 showStats: false,
                 showActivityGraph: false,
                 showArticles: false,
+                showLists: false,
+                showQuests: true,
+                showPlannings: false,
             });
             expect(prisma.user.update).toHaveBeenCalledWith({
                 where: { id: 'user-123' },
@@ -238,6 +258,9 @@ describe('Profile Preferences API (/api/profilePreferences)', () => {
                         showStats: false,
                         showActivityGraph: false,
                         showArticles: false,
+                        showLists: false,
+                        showQuests: true,
+                        showPlannings: false,
                     },
                 },
                 select: {

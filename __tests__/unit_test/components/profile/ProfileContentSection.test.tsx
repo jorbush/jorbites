@@ -158,4 +158,37 @@ describe('ProfileContentSection', () => {
             ).toBeDefined();
         });
     });
+
+    it('renders ProfileClient when lists, quests, or plannings are present with no recipes', async () => {
+        render(
+            <ProfileContentSection
+                userId="user-1"
+                recipes={[]}
+                pinnedRecipes={[]}
+                totalPages={0}
+                currentPage={1}
+                totalRecipes={0}
+                searchParams={{}}
+                blogs={[]}
+                quests={[
+                    {
+                        id: 'q1',
+                        title: 'Need Ramen',
+                        description: 'Recipe request',
+                        status: 'open',
+                        userId: 'user-1',
+                        acceptedRecipeId: null,
+                        acceptedSolverId: null,
+                        badgeEvaluated: false,
+                        createdAt: '2026-01-01T00:00:00.000Z',
+                        updatedAt: '2026-01-01T00:00:00.000Z',
+                    },
+                ]}
+            />
+        );
+
+        await waitFor(() => {
+            expect(screen.getByTestId('profile-client')).toBeDefined();
+        });
+    });
 });

@@ -66,6 +66,9 @@ type ProfilePreferences {
   showStats         Boolean @default(true)
   showActivityGraph Boolean @default(false)
   showArticles      Boolean @default(false)
+  showLists         Boolean @default(true)
+  showQuests        Boolean @default(true)
+  showPlannings     Boolean @default(true)
 }
 
 model Account {

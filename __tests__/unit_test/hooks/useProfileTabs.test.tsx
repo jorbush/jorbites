@@ -113,5 +113,61 @@ describe('useProfileTabs & getInitialTab', () => {
             expect(result.current.activeTab).toBe('recipes');
             expect(mockPush).not.toHaveBeenCalled();
         });
+
+        it('includes lists, quests, and plannings tabs when enabled and supports switching', () => {
+            const { result } = renderHook(() =>
+                useProfileTabs({
+                    tabParam: 'recipes',
+                    recipesCount: 2,
+                    blogsCount: 0,
+                    listsCount: 1,
+                    questsCount: 1,
+                    planningsCount: 1,
+                    showArticles: false,
+                    showLists: true,
+                    showQuests: true,
+                    showPlannings: true,
+                })
+            );
+
+            expect(result.current.tabs.map((tab) => tab.id)).toEqual([
+                'recipes',
+                'lists',
+                'quests',
+                'plannings',
+            ]);
+
+            act(() => {
+                result.current.handleTabChange('quests');
+            });
+
+            expect(result.current.activeTab).toBe('quests');
+            expect(mockPush).toHaveBeenCalledWith('?tab=quests', {
+                scroll: false,
+            });
+        });
+
+        it('falls back to recipes and prevents navigation when lists/quests/plannings are disabled', () => {
+            const { result } = renderHook(() =>
+                useProfileTabs({
+                    tabParam: 'lists',
+                    recipesCount: 2,
+                    blogsCount: 0,
+                    showArticles: false,
+                    showLists: false,
+                    showQuests: false,
+                    showPlannings: false,
+                })
+            );
+
+            expect(result.current.activeTab).toBe('recipes');
+
+            act(() => {
+                result.current.handleTabChange('plannings');
+            });
+
+            expect(result.current.activeTab).toBe('recipes');
+            expect(mockPush).not.toHaveBeenCalled();
+        });
     });
 });

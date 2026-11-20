@@ -216,6 +216,9 @@ export const DEFAULT_PROFILE_PREFERENCES: Required<ProfilePreferences> = {
     showStats: true,
     showActivityGraph: false,
     showArticles: false,
+    showLists: true,
+    showQuests: true,
+    showPlannings: true,
 };
 
 export const getProfilePreferences = (
@@ -231,5 +234,14 @@ export const getProfilePreferences = (
         showArticles:
             user?.profilePreferences?.showArticles ??
             DEFAULT_PROFILE_PREFERENCES.showArticles,
+        showLists:
+            user?.profilePreferences?.showLists ??
+            DEFAULT_PROFILE_PREFERENCES.showLists,
+        showQuests:
+            user?.profilePreferences?.showQuests ??
+            DEFAULT_PROFILE_PREFERENCES.showQuests,
+        showPlannings:
+            user?.profilePreferences?.showPlannings ??
+            DEFAULT_PROFILE_PREFERENCES.showPlannings,
     };
 };

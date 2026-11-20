@@ -7,7 +7,14 @@ import { SafeUser } from '@/app/types';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import ToggleSwitch from '@/app/components/inputs/ToggleSwitch';
-import { FiBookOpen, FiCalendar, FiBarChart2 } from 'react-icons/fi';
+import {
+    FiBookOpen,
+    FiCalendar,
+    FiBarChart2,
+    FiBookmark,
+    FiFlag,
+    FiClipboard,
+} from 'react-icons/fi';
 import { DEFAULT_PROFILE_PREFERENCES } from '@/app/utils/profile-utils';
 
 interface ProfilePreferencesFormProps {
@@ -17,7 +24,10 @@ interface ProfilePreferencesFormProps {
 export type ProfilePreferenceCategory =
     | 'showStats'
     | 'showActivityGraph'
-    | 'showArticles';
+    | 'showArticles'
+    | 'showLists'
+    | 'showQuests'
+    | 'showPlannings';
 
 const PREFERENCE_CONFIG: {
     key: ProfilePreferenceCategory;
@@ -43,6 +53,24 @@ const PREFERENCE_CONFIG: {
         descKey: 'display_authored_articles_desc',
         icon: FiBookOpen,
     },
+    {
+        key: 'showLists',
+        labelKey: 'display_lists',
+        descKey: 'display_lists_desc',
+        icon: FiBookmark,
+    },
+    {
+        key: 'showQuests',
+        labelKey: 'display_quests',
+        descKey: 'display_quests_desc',
+        icon: FiFlag,
+    },
+    {
+        key: 'showPlannings',
+        labelKey: 'display_plannings',
+        descKey: 'display_plannings_desc',
+        icon: FiClipboard,
+    },
 ];
 
 const ProfilePreferencesForm: React.FC<ProfilePreferencesFormProps> = ({
@@ -65,6 +93,12 @@ const ProfilePreferencesForm: React.FC<ProfilePreferencesFormProps> = ({
                 DEFAULT_PROFILE_PREFERENCES.showActivityGraph,
             showArticles:
                 prefs.showArticles ?? DEFAULT_PROFILE_PREFERENCES.showArticles,
+            showLists: prefs.showLists ?? DEFAULT_PROFILE_PREFERENCES.showLists,
+            showQuests:
+                prefs.showQuests ?? DEFAULT_PROFILE_PREFERENCES.showQuests,
+            showPlannings:
+                prefs.showPlannings ??
+                DEFAULT_PROFILE_PREFERENCES.showPlannings,
         };
     }, [currentUser?.profilePreferences]);
 
