@@ -668,6 +668,7 @@ const ContestManagerClient: React.FC<ContestManagerClientProps> = ({
                 <div className="space-y-6">
                     {!isTestPassed ? (
                         <CourseTest
+                            courseId="contest-manager"
                             questions={contestManagerQuestions}
                             onPass={() => markModuleCompleted('test')}
                         />

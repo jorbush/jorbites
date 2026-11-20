@@ -101,29 +101,46 @@ jest.mock('@/app/lib/redis', () => ({
 
 // Mock redisLock
 jest.mock('@/app/lib/redisLock', () => ({
-    acquireLock: jest.fn().mockResolvedValue({ success: true, lockedBy: 'mock-user' }),
+    acquireLock: jest
+        .fn()
+        .mockResolvedValue({ success: true, lockedBy: 'mock-user' }),
     releaseLock: jest.fn().mockResolvedValue(true),
     getActiveLocks: jest.fn().mockResolvedValue({}),
     releaseAllLocks: jest.fn().mockResolvedValue(undefined),
     isLockHeldByUser: jest.fn().mockResolvedValue(false),
     renewLockIfHeld: jest.fn().mockResolvedValue({ renewed: false }),
-    getLockKey: (targetId: string, fieldKey: string) => `lock:recipe:${targetId}:field:${fieldKey}`,
+    getLockKey: (targetId: string, fieldKey: string) =>
+        `lock:recipe:${targetId}:field:${fieldKey}`,
 }));
 
 // Mock Ratelimit
 jest.mock('@/app/lib/ratelimit', () => ({
-    authenticatedRatelimit: { limit: jest.fn().mockResolvedValue({ success: true, reset: 0 }) },
-    unauthenticatedRatelimit: { limit: jest.fn().mockResolvedValue({ success: true, reset: 0 }) },
-    registrationRatelimit: { limit: jest.fn().mockResolvedValue({ success: true, reset: 0 }) },
-    passwordResetRatelimit: { limit: jest.fn().mockResolvedValue({ success: true, reset: 0 }) },
-    contentCreationRatelimit: { limit: jest.fn().mockResolvedValue({ success: true, reset: 0 }) },
-    recipeBookRatelimit: { limit: jest.fn().mockResolvedValue({ success: true, reset: 0 }) },
+    authenticatedRatelimit: {
+        limit: jest.fn().mockResolvedValue({ success: true, reset: 0 }),
+    },
+    unauthenticatedRatelimit: {
+        limit: jest.fn().mockResolvedValue({ success: true, reset: 0 }),
+    },
+    registrationRatelimit: {
+        limit: jest.fn().mockResolvedValue({ success: true, reset: 0 }),
+    },
+    passwordResetRatelimit: {
+        limit: jest.fn().mockResolvedValue({ success: true, reset: 0 }),
+    },
+    contentCreationRatelimit: {
+        limit: jest.fn().mockResolvedValue({ success: true, reset: 0 }),
+    },
+    recipeBookRatelimit: {
+        limit: jest.fn().mockResolvedValue({ success: true, reset: 0 }),
+    },
 }));
 
 // Mock Cloudinary
 jest.mock('@/app/utils/cloudinary', () => ({
     deleteFromCloudinary: jest.fn().mockResolvedValue(true),
-    deleteMultipleFromCloudinary: jest.fn().mockResolvedValue({ successful: [], failed: [] }),
+    deleteMultipleFromCloudinary: jest
+        .fn()
+        .mockResolvedValue({ successful: [], failed: [] }),
     extractPublicId: jest.fn((url: string) => url),
 }));
 
@@ -164,12 +181,30 @@ jest.mock(
 );
 
 jest.mock('@/app/utils/r2', () => ({
+    getR2Config: jest.fn(() => ({
+        accountId: process.env.R2_ACCOUNT_ID || 'mock-account-id',
+        accessKeyId: process.env.R2_ACCESS_KEY_ID || 'mock-access-key',
+        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || 'mock-secret-key',
+        bucketName: process.env.R2_BUCKET_NAME || 'jorbites-remakes',
+        publicDomain: process.env.R2_PUBLIC_DOMAIN || 'images.jorbites.com',
+        endpoint:
+            process.env.R2_ENDPOINT ||
+            `https://${process.env.R2_ACCOUNT_ID || 'mock-account-id'}.r2.cloudflarestorage.com`,
+        region: process.env.R2_REGION || 'auto',
+        forcePathStyle:
+            process.env.R2_FORCE_PATH_STYLE === 'true' ||
+            Boolean(process.env.R2_ENDPOINT),
+    })),
+    getS3Client: jest.fn(() => ({
+        send: jest.fn().mockResolvedValue({}),
+    })),
     deleteFromR2: jest.fn().mockResolvedValue(true),
     deleteMultipleFromR2: jest
         .fn()
         .mockResolvedValue({ successful: [], failed: [] }),
     isR2Url: jest.fn().mockReturnValue(false),
     extractR2Key: jest.fn().mockReturnValue(null),
+    extractR2KeyOwner: jest.fn().mockReturnValue(null),
     uploadToR2: jest
         .fn()
         .mockResolvedValue('https://images.jorbites.com/mock.jpg'),

@@ -33,6 +33,8 @@ export function readBlogFile(filePath: string): {
     }
 }
 
+const SAFE_SLUG_REGEX = /^[a-zA-Z0-9_-]+$/;
+
 /**
  * Get a specific blog by id and language
  * If not found in specified language, tries all languages
@@ -41,19 +43,30 @@ export async function getBlogById(
     id: string,
     language: string = 'en'
 ): Promise<Blog | null> {
+    if (!id || typeof id !== 'string' || !SAFE_SLUG_REGEX.test(id)) {
+        return null;
+    }
+
     const languages = Array.from(new Set([language, ...ALLOWED_LANGUAGES]));
 
     const subdirs = ['', 'releases']; // Check root and releases folder
 
     for (const lang of languages) {
-        const blogsDirectory = path.join(
+        if (!(ALLOWED_LANGUAGES as readonly string[]).includes(lang)) {
+            continue;
+        }
+        const blogsDirectory = path.resolve(
             process.cwd(),
             'app/content/blogs',
             lang
         );
 
         for (const subdir of subdirs) {
-            const filePath = path.join(blogsDirectory, subdir, `${id}.md`);
+            const targetDir = path.resolve(blogsDirectory, subdir);
+            const filePath = path.resolve(targetDir, `${id}.md`);
+            if (!filePath.startsWith(targetDir + path.sep)) {
+                continue;
+            }
             if (fs.existsSync(filePath)) {
                 const { frontmatter, content } = readBlogFile(filePath);
                 const category = subdir === 'releases' ? 'releases' : 'general';

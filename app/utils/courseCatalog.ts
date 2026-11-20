@@ -72,3 +72,7 @@ export function getCourseCatalogEntry(
 ): CourseCatalogEntry | undefined {
     return COURSE_CATALOG[courseId.trim()];
 }
+
+export function getCompletionTokenStorageKey(courseId: string): string {
+    return `jorbites:course-completion:${courseId.trim()}`;
+}

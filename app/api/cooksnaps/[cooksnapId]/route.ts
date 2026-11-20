@@ -11,6 +11,7 @@ import {
 import { logger } from '@/app/lib/axiom/server';
 import { redisCache } from '@/app/lib/redis';
 import { deleteFromR2 } from '@/app/utils/r2';
+import { canDeleteR2Asset } from '@/app/utils/mediaSecurity';
 import { recomputeRecipeRating } from '@/app/utils/recipeRating';
 
 interface IParams {
@@ -67,7 +68,10 @@ export async function DELETE(
             await recomputeRecipeRating(cooksnap.recipeId);
         }
 
-        if (cooksnap.imageSrc) {
+        if (
+            cooksnap.imageSrc &&
+            canDeleteR2Asset(cooksnap.imageSrc, cooksnap.userId)
+        ) {
             try {
                 await deleteFromR2(cooksnap.imageSrc);
             } catch (r2Error: any) {

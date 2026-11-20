@@ -35,6 +35,9 @@ jobs:
                       spec: '__tests__/e2e/collaborative_roles_invites.cy.ts'
                     - name: 'Recipe Remix Spec'
                       spec: '__tests__/e2e/recipe_remix.cy.ts'
+                    - name: 'Cooksnaps Spec'
+                      spec: '__tests__/e2e/cooksnaps.cy.ts'
+                      use_aws_emulator: true
         services:
             redis:
                 image: redis
@@ -73,6 +76,50 @@ jobs:
 
             - name: Install Cypress binary
               run: npx cypress install
+
+            - name: Install & Start AWS Emulator
+              if: matrix.containers.use_aws_emulator
+              run: |
+                  curl -fsSLo /tmp/aws-emulator.deb https://downloads.aws.com/aws-emulator/packages/aws-emulator/LTS/latest/aws-emulator_amd64.deb
+                  sudo apt-get update -qq && sudo apt-get install -y /tmp/aws-emulator.deb
+                  EMULATOR_TELEMETRY=off aws-emulator --telemetry off -p 9297 > /tmp/aws-emulator.log 2>&1 &
+                  for i in $(seq 1 30); do
+                    if [ -f "$HOME/.aws/emulator/9297/ca.pem" ] && curl -sf --cacert "$HOME/.aws/emulator/9297/ca.pem" https://127.0.0.1:9297/__admin/health > /dev/null; then
+                      break
+                    fi
+                    sleep 1
+                  done
+                  curl -sf --cacert "$HOME/.aws/emulator/9297/ca.pem" https://127.0.0.1:9297/__admin/health || { cat /tmp/aws-emulator.log; exit 1; }
+                  CREDS_FILE="$HOME/.aws/emulator/9297/emulator_credentials"
+                  AWS_ACCESS_KEY_ID=$(grep -E '^aws_access_key_id' "$CREDS_FILE" | head -n1 | cut -d'=' -f2- | xargs)
+                  AWS_SECRET_ACCESS_KEY=$(grep -E '^aws_secret_access_key' "$CREDS_FILE" | head -n1 | cut -d'=' -f2- | xargs)
+                  {
+                    echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID"
+                    echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY"
+                    echo "AWS_CA_BUNDLE=$HOME/.aws/emulator/9297/ca.pem"
+                    echo "EMULATOR_TELEMETRY=off"
+                    echo "R2_ACCOUNT_ID=emulator"
+                    echo "R2_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID"
+                    echo "R2_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY"
+                    echo "R2_BUCKET_NAME=jorbites-remakes"
+                    echo "R2_ENDPOINT=http://127.0.0.1:9298"
+                    echo "R2_REGION=us-east-1"
+                    echo "R2_FORCE_PATH_STYLE=true"
+                    echo "R2_PUBLIC_DOMAIN=http://127.0.0.1:9298"
+                    echo "NEXT_PUBLIC_R2_PUBLIC_DOMAIN=http://127.0.0.1:9298"
+                  } >> "$GITHUB_ENV"
+
+            - name: Start E2E S3 HTTP/CORS Proxy
+              if: matrix.containers.use_aws_emulator
+              run: |
+                  npx tsx scripts/e2e-s3-proxy.ts > /tmp/e2e-s3-proxy.log 2>&1 &
+                  for i in $(seq 1 30); do
+                    if curl -sf http://127.0.0.1:9298/__proxy/health > /dev/null; then
+                      break
+                    fi
+                    sleep 1
+                  done
+                  curl -sf http://127.0.0.1:9298/__proxy/health || { cat /tmp/e2e-s3-proxy.log; exit 1; }
 
             - name: Start MongoDB Replica Set
               run: |
@@ -135,6 +182,15 @@ jobs:
                   NEXT_PUBLIC_SKIP_IMAGE_VALIDATION: true
                   NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
                   NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET }}
+                  NEXT_PUBLIC_CLOUDINARY_API_KEY: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_API_KEY || 'cypress-test-cloudinary-api-key' }}
                   REDIS_URL: redis://localhost:6379
                   REDIS_URL_CACHING: redis://localhost:6379
                   SKIP_ENV_VALIDATION: 'true'
+
+            - name: Dump AWS Emulator & S3 Proxy logs on failure
+              if: failure() && matrix.containers.use_aws_emulator
+              run: |
+                  echo "=== AWS Emulator Log ==="
+                  cat /tmp/aws-emulator.log || true
+                  echo "=== E2E S3 Proxy Log ==="
+                  cat /tmp/e2e-s3-proxy.log || true

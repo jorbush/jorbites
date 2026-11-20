@@ -7,8 +7,13 @@ export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
         const search = searchParams.get('search') || undefined;
-        const page = parseInt(searchParams.get('page') || '1');
-        const limit = parseInt(searchParams.get('limit') || '12');
+        const rawPage = parseInt(searchParams.get('page') || '1', 10);
+        const rawLimit = parseInt(searchParams.get('limit') || '12', 10);
+        const page = Number.isFinite(rawPage) && rawPage >= 1 ? rawPage : 1;
+        const limit =
+            Number.isFinite(rawLimit) && rawLimit >= 1
+                ? Math.min(rawLimit, 50)
+                : 12;
         const orderByParam = searchParams.get('orderBy');
 
         const validOrderByValues = Object.values(ChefOrderByType);

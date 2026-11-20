@@ -1,263 +1,44 @@
 'use client';
 
-import useQuestModal from '@/app/hooks/useQuestModal';
 import Modal from '@/app/components/modals/Modal';
-import { useState, useEffect } from 'react';
-import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
-import axios from 'axios';
-import { toast } from 'react-hot-toast';
-import { useRouter } from 'next/navigation';
-import { useTranslation } from 'react-i18next';
-import {
-    QUEST_DESCRIPTION_MAX_LENGTH,
-    QUEST_TITLE_MAX_LENGTH,
-} from '@/app/utils/constants';
-import Heading from '@/app/components/navigation/Heading';
-import Input from '@/app/components/inputs/Input';
+import QuestModalBody from './quest/QuestModalBody';
+import { useQuestForm } from './quest/useQuestForm';
 
 const QuestModal = () => {
-    const { refresh, push } = useRouter() || {};
-    const { t } = useTranslation();
-    const questModal = useQuestModal();
-    const [isLoading, setIsLoading] = useState(false);
-
     const {
+        isOpen,
+        onClose,
+        isEditMode,
+        editQuestData,
+        isLoading,
         register,
-        handleSubmit,
-        formState: { errors },
-        reset,
-        watch,
-    } = useForm<FieldValues>({
-        defaultValues: {
-            title: '',
-            description: '',
-            status: 'open',
-            recipeId: '',
-        },
-    });
-
-    const statusValue = watch('status');
-
-    useEffect(() => {
-        if (!questModal.isOpen) {
-            reset({
-                title: '',
-                description: '',
-                status: 'open',
-                recipeId: '',
-            });
-        } else if (
-            questModal.isOpen &&
-            questModal.isEditMode &&
-            questModal.editQuestData
-        ) {
-            reset({
-                title: questModal.editQuestData.title,
-                description: questModal.editQuestData.description,
-                status: questModal.editQuestData.status,
-                recipeId: '',
-            });
-        }
-    }, [
-        questModal.isOpen,
-        questModal.isEditMode,
-        questModal.editQuestData,
-        reset,
-    ]);
-
-    const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-        setIsLoading(true);
-
-        try {
-            if (questModal.isEditMode && questModal.editQuestData) {
-                // Edit existing quest
-                const url = `/api/quest/${questModal.editQuestData.id}`;
-                await axios.patch(url, data);
-                toast.success(t('quest_updated') || 'Quest updated!');
-            } else {
-                // Create new quest
-                const url = `/api/quests`;
-                await axios.post(url, data);
-                toast.success(t('quest_created') || 'Quest created!');
-            }
-
-            reset({
-                title: '',
-                description: '',
-                status: 'open',
-                recipeId: '',
-            });
-            const wasCreate = !questModal.isEditMode;
-            questModal.onClose();
-            if (wasCreate) {
-                push?.('/quests?status=open');
-            }
-            refresh?.();
-        } catch (error: any) {
-            console.error('Failed to save quest', error);
-            const errorMessage =
-                error.response?.data?.error ||
-                t('something_went_wrong') ||
-                'Something went wrong';
-            toast.error(errorMessage);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const bodyContent = (
-        <div className="flex flex-col gap-4">
-            <Heading
-                title={
-                    questModal.isEditMode
-                        ? t('edit_quest') || 'Edit Quest'
-                        : t('request_recipe') || 'Request a Recipe'
-                }
-                subtitle={
-                    questModal.isEditMode
-                        ? t('edit_quest_subtitle') ||
-                          'Update your recipe request'
-                        : t('request_recipe_subtitle') ||
-                          'Tell the community what recipe you would like to see'
-                }
-            />
-            <Input
-                id="title"
-                label={t('title') || 'Title'}
-                disabled={isLoading}
-                register={register}
-                errors={errors}
-                required
-                validation={{
-                    required: t('title_required') || 'Title is required',
-                    maxLength: {
-                        value: QUEST_TITLE_MAX_LENGTH,
-                        message:
-                            t('title_max_length') ||
-                            `Title must be ${QUEST_TITLE_MAX_LENGTH} characters or less`,
-                    },
-                }}
-                dataCy="quest-title"
-            />
-            <div className="relative">
-                <label
-                    htmlFor="description"
-                    className="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-300"
-                >
-                    {t('description') || 'Description'}
-                </label>
-                <textarea
-                    id="description"
-                    {...register('description', {
-                        required:
-                            t('description_required') ||
-                            'Description is required',
-                        maxLength: {
-                            value: QUEST_DESCRIPTION_MAX_LENGTH,
-                            message:
-                                t('description_max_length') ||
-                                `Description must be ${QUEST_DESCRIPTION_MAX_LENGTH} characters or less`,
-                        },
-                    })}
-                    disabled={isLoading}
-                    rows={5}
-                    className={`w-full rounded-xl border p-3 text-sm text-neutral-900 transition-colors duration-200 focus:outline-hidden dark:bg-neutral-900 dark:text-neutral-100 ${
-                        errors.description
-                            ? 'border-rose-500 focus:border-rose-500'
-                            : 'border-neutral-300 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 dark:border-neutral-700 dark:focus:border-neutral-100 dark:focus:ring-neutral-100'
-                    }`}
-                    placeholder={
-                        t('quest_description_placeholder') ||
-                        'Describe the recipe you would like someone to create...'
-                    }
-                    data-cy="quest-description"
-                />
-                {errors.description && (
-                    <p className="mt-1 text-xs text-rose-500">
-                        {errors.description.message as string}
-                    </p>
-                )}
-            </div>
-
-            {questModal.isEditMode && (
-                <div className="relative">
-                    <label
-                        htmlFor="status"
-                        className="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-300"
-                    >
-                        {t('status') || 'Status'}
-                    </label>
-                    <select
-                        id="status"
-                        {...register('status')}
-                        disabled={isLoading}
-                        className="w-full rounded-xl border border-neutral-300 p-3 text-sm text-neutral-900 transition-colors duration-200 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:outline-hidden dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:focus:border-neutral-100 dark:focus:ring-neutral-100"
-                        data-cy="quest-status"
-                    >
-                        <option value="open">{t('open') || 'Open'}</option>
-                        <option value="in_progress">
-                            {t('in_progress') || 'In Progress'}
-                        </option>
-                        <option value="completed">
-                            {t('completed') || 'Completed'}
-                        </option>
-                    </select>
-                </div>
-            )}
-
-            {questModal.isEditMode &&
-                statusValue === 'completed' &&
-                questModal.editQuestData?.recipes &&
-                questModal.editQuestData.recipes.length > 0 && (
-                    <div className="relative">
-                        <label
-                            htmlFor="recipeId"
-                            className="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-300"
-                        >
-                            {t('accepted_recipe') || 'Select Accepted Recipe'}
-                        </label>
-                        <select
-                            id="recipeId"
-                            {...register('recipeId')}
-                            disabled={isLoading}
-                            className="w-full rounded-lg border border-neutral-300 p-3 text-neutral-900 transition focus:border-rose-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
-                            data-cy="accepted-recipe-select"
-                        >
-                            <option value="">
-                                {t('select_accepted_recipe') ||
-                                    'Select accepted recipe...'}
-                            </option>
-                            {questModal.editQuestData.recipes.map((r) => (
-                                <option
-                                    key={r.id}
-                                    value={r.id}
-                                >
-                                    {r.title}
-                                    {r.user?.name ? ` (by ${r.user.name})` : ''}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                )}
-        </div>
-    );
+        errors,
+        statusValue,
+        modalTitle,
+        modalSubtitle,
+        actionLabel,
+        handleFormSubmit,
+    } = useQuestForm();
 
     return (
         <Modal
-            isOpen={questModal.isOpen}
-            onClose={questModal.onClose}
-            onSubmit={handleSubmit(onSubmit)}
-            actionLabel={
-                questModal.isEditMode
-                    ? t('update') || 'Update'
-                    : t('create') || 'Create'
+            isOpen={isOpen}
+            onClose={onClose}
+            onSubmit={handleFormSubmit}
+            actionLabel={actionLabel}
+            title={modalTitle}
+            body={
+                <QuestModalBody
+                    title={modalTitle}
+                    subtitle={modalSubtitle}
+                    isEditMode={isEditMode}
+                    isLoading={isLoading}
+                    register={register}
+                    errors={errors}
+                    statusValue={statusValue}
+                    recipes={editQuestData?.recipes}
+                />
             }
-            title={
-                questModal.isEditMode
-                    ? t('edit_quest') || 'Edit Quest'
-                    : t('request_recipe') || 'Request a Recipe'
-            }
-            body={bodyContent}
             isLoading={isLoading}
         />
     );

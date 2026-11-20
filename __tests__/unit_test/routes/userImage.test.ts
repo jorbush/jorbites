@@ -59,24 +59,24 @@ describe('PATCH /api/userImage/[userId]', () => {
         expect(data.error).toBe('Valid user image URL is required');
     });
 
-    it('should update image, delete old Cloudinary image, and return updated user', async () => {
+    it('should update image, delete old user-owned Cloudinary image, and return updated user', async () => {
         const mockCurrentUser = {
             id: 'u1',
-            image: 'https://res.cloudinary.com/demo/image/upload/v123/old.jpg',
+            image: 'https://res.cloudinary.com/demo/image/upload/v123/users/u1/old.jpg',
         };
         jest.mocked(getCurrentUser).mockResolvedValue(mockCurrentUser as any);
         jest.mocked(isCloudinaryUrl).mockReturnValue(true);
         jest.mocked(deleteFromCloudinary).mockResolvedValue(true);
         jest.mocked(prisma.user.update).mockResolvedValue({
             id: 'u1',
-            image: 'https://res.cloudinary.com/demo/image/upload/v124/new.jpg',
+            image: 'https://res.cloudinary.com/demo/image/upload/v124/users/u1/new.jpg',
         } as any);
 
         const request = new Request('http://localhost/api/userImage/u1', {
             method: 'PATCH',
             body: JSON.stringify({
                 userImage:
-                    'https://res.cloudinary.com/demo/image/upload/v124/new.jpg',
+                    'https://res.cloudinary.com/demo/image/upload/v124/users/u1/new.jpg',
             }),
         });
 
@@ -86,7 +86,7 @@ describe('PATCH /api/userImage/[userId]', () => {
         expect(response.status).toBe(200);
         expect(data).toEqual({
             id: 'u1',
-            image: 'https://res.cloudinary.com/demo/image/upload/v124/new.jpg',
+            image: 'https://res.cloudinary.com/demo/image/upload/v124/users/u1/new.jpg',
         });
         expect(deleteFromCloudinary).toHaveBeenCalledWith(
             mockCurrentUser.image
@@ -94,10 +94,35 @@ describe('PATCH /api/userImage/[userId]', () => {
         expect(prisma.user.update).toHaveBeenCalledWith({
             where: { id: 'u1' },
             data: {
-                image: 'https://res.cloudinary.com/demo/image/upload/v124/new.jpg',
+                image: 'https://res.cloudinary.com/demo/image/upload/v124/users/u1/new.jpg',
             },
             select: { id: true, image: true },
         });
+    });
+
+    it('should NOT delete Cloudinary images owned by another user or legacy un-namespaced assets', async () => {
+        const mockCurrentUser = {
+            id: 'u1',
+            image: 'https://res.cloudinary.com/demo/image/upload/v123/users/victim/pic.jpg',
+        };
+        jest.mocked(getCurrentUser).mockResolvedValue(mockCurrentUser as any);
+        jest.mocked(isCloudinaryUrl).mockReturnValue(true);
+        jest.mocked(prisma.user.update).mockResolvedValue({
+            id: 'u1',
+            image: 'https://res.cloudinary.com/demo/image/upload/v124/users/u1/new.jpg',
+        } as any);
+
+        const request = new Request('http://localhost/api/userImage/u1', {
+            method: 'PATCH',
+            body: JSON.stringify({
+                userImage:
+                    'https://res.cloudinary.com/demo/image/upload/v124/users/u1/new.jpg',
+            }),
+        });
+
+        const response = await UserImagePATCH(request);
+        expect(response.status).toBe(200);
+        expect(deleteFromCloudinary).not.toHaveBeenCalled();
     });
 
     it('should return 500 when database update fails', async () => {

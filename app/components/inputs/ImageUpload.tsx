@@ -13,6 +13,7 @@ interface ImageUploadProps {
     disabled?: boolean;
     canRemove?: boolean;
     text?: string;
+    userId?: string;
 }
 
 const ImageUpload: React.FC<ImageUploadProps> = ({
@@ -21,6 +22,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     disabled,
     canRemove = true,
     text,
+    userId,
 }) => {
     const handleUpload = useCallback(
         (result: any) => {
@@ -36,9 +38,11 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     return (
         <CldUploadWidget
             onSuccess={handleUpload}
+            signatureEndpoint="/api/upload/cloudinary-sign"
             uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
             options={{
                 maxFiles: 1,
+                folder: userId ? `users/${userId}` : undefined,
             }}
         >
             {({ open }) => {

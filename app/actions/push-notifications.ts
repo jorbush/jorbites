@@ -34,6 +34,43 @@ function ensureWebPushInitialized() {
     globalThis.isPushInitialized = true;
 }
 
+const ALLOWED_PUSH_HOSTS = new Set([
+    'fcm.googleapis.com',
+    'android.googleapis.com',
+    'updates.push.services.mozilla.com',
+]);
+
+const ALLOWED_PUSH_HOST_SUFFIXES = [
+    '.push.apple.com',
+    '.notify.windows.com',
+    '.push.services.mozilla.com',
+    '.push.samsungosp.com',
+];
+
+function isValidPushEndpoint(endpoint: string): boolean {
+    if (!endpoint || typeof endpoint !== 'string') {
+        return false;
+    }
+    try {
+        const parsed = new URL(endpoint);
+        if (parsed.protocol !== 'https:') {
+            return false;
+        }
+        if (parsed.username || parsed.password || parsed.port) {
+            return false;
+        }
+        const host = parsed.hostname.toLowerCase();
+        if (ALLOWED_PUSH_HOSTS.has(host)) {
+            return true;
+        }
+        return ALLOWED_PUSH_HOST_SUFFIXES.some(
+            (suffix) => host.endsWith(suffix) && host.length > suffix.length
+        );
+    } catch {
+        return false;
+    }
+}
+
 export async function subscribeUser(sub: webpush.PushSubscription) {
     const session = await auth();
     if (!session) {
@@ -49,6 +86,10 @@ export async function subscribeUser(sub: webpush.PushSubscription) {
 
     if (!sub || !sub.endpoint || !sub.keys) {
         throw new Error('Invalid subscription object');
+    }
+
+    if (!isValidPushEndpoint(sub.endpoint)) {
+        throw new Error('Invalid push subscription endpoint');
     }
 
     try {

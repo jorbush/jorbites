@@ -1,7 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
+    getR2Config,
     isR2Url,
     extractR2Key,
+    extractR2KeyOwner,
     deleteFromR2,
     deleteMultipleFromR2,
     isValidR2Url,
@@ -45,7 +47,7 @@ describe('r2 utils', () => {
     });
 
     describe('isR2Url', () => {
-        it('should return true for valid R2 URLs', () => {
+        it('should return true for owned R2 URLs and relative remakes keys', () => {
             expect(
                 isR2Url(
                     'https://images.jorbites.com/remakes/1700000000-sample.webp'
@@ -58,10 +60,21 @@ describe('r2 utils', () => {
             ).toBe(true);
             expect(
                 isR2Url(
-                    'https://account-id.r2.cloudflarestorage.com/remakes/sample.webp'
+                    'https://test-account.r2.cloudflarestorage.com/remakes/sample.webp'
                 )
             ).toBe(true);
             expect(isR2Url('remakes/1700000000-sample.webp')).toBe(true);
+        });
+
+        it('should return false for third-party r2.dev or foreign account domains', () => {
+            expect(
+                isR2Url('https://pub-attacker.r2.dev/remakes/sample.webp')
+            ).toBe(false);
+            expect(
+                isR2Url(
+                    'https://foreign-account.r2.cloudflarestorage.com/remakes/sample.webp'
+                )
+            ).toBe(false);
         });
 
         it('should return false for external non-R2 URLs', () => {
@@ -86,16 +99,27 @@ describe('r2 utils', () => {
             expect(isValidR2Url(url)).toBe(url);
         });
 
-        it('should return URL for valid r2.dev domain', () => {
+        it('should return URL for owned Jorbites r2.dev bucket domain', () => {
             const url =
                 'https://pub-4c3d704cf6de499a9ef3964908533212.r2.dev/remakes/photo.webp';
             expect(isValidR2Url(url)).toBe(url);
         });
 
-        it('should return URL for valid r2.cloudflarestorage.com domain', () => {
+        it('should reject arbitrary third-party r2.dev domains', () => {
+            const url = 'https://pub-attacker-bucket.r2.dev/remakes/photo.webp';
+            expect(isValidR2Url(url)).toBeNull();
+        });
+
+        it('should return URL for configured account r2.cloudflarestorage.com domain', () => {
             const url =
-                'https://account-id.r2.cloudflarestorage.com/remakes/photo.webp';
+                'https://test-account.r2.cloudflarestorage.com/remakes/photo.webp';
             expect(isValidR2Url(url)).toBe(url);
+        });
+
+        it('should reject foreign r2.cloudflarestorage.com domains', () => {
+            const url =
+                'https://other-account.r2.cloudflarestorage.com/remakes/photo.webp';
+            expect(isValidR2Url(url)).toBeNull();
         });
 
         it('should return URL for Cloudinary domain', () => {
@@ -177,6 +201,32 @@ describe('r2 utils', () => {
             const result = await deleteFromR2('');
             expect(result).toBe(false);
         });
+
+        it('should refuse to delete non-R2 URLs such as Cloudinary URLs', async () => {
+            const result = await deleteFromR2(
+                'https://res.cloudinary.com/demo/image/upload/remakes/sample.jpg'
+            );
+            expect(result).toBe(false);
+            expect(mockSend).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('extractR2KeyOwner', () => {
+        it('should extract ownerId from user-namespaced keys', () => {
+            expect(
+                extractR2KeyOwner(
+                    'https://images.jorbites.com/remakes/user-42/1700000000-abc.webp'
+                )
+            ).toBe('user-42');
+        });
+
+        it('should return null for legacy flat keys', () => {
+            expect(
+                extractR2KeyOwner(
+                    'https://images.jorbites.com/remakes/1700000000-abc.webp'
+                )
+            ).toBeNull();
+        });
     });
 
     describe('deleteMultipleFromR2', () => {
@@ -194,6 +244,49 @@ describe('r2 utils', () => {
         it('should return true for empty array', async () => {
             const result = await deleteMultipleFromR2([]);
             expect(result).toBe(true);
+        });
+    });
+
+    describe('emulator configuration and port-aware public domain', () => {
+        it('returns default R2 configuration when optional emulator env vars are unset', () => {
+            delete process.env.R2_ENDPOINT;
+            delete process.env.R2_REGION;
+            delete process.env.R2_FORCE_PATH_STYLE;
+
+            const config = getR2Config();
+            expect(config.endpoint).toBe(
+                'https://test-account.r2.cloudflarestorage.com'
+            );
+            expect(config.region).toBe('auto');
+            expect(config.forcePathStyle).toBe(false);
+        });
+
+        it('uses R2_ENDPOINT, R2_REGION, and defaults forcePathStyle to true when R2_ENDPOINT is set', () => {
+            process.env.R2_ENDPOINT = 'http://127.0.0.1:9298';
+            process.env.R2_REGION = 'us-east-1';
+
+            const config = getR2Config();
+            expect(config.endpoint).toBe('http://127.0.0.1:9298');
+            expect(config.region).toBe('us-east-1');
+            expect(config.forcePathStyle).toBe(true);
+        });
+
+        it('matches R2_PUBLIC_DOMAIN with scheme and port and rejects mismatched ports', () => {
+            process.env.R2_PUBLIC_DOMAIN = 'http://127.0.0.1:9298';
+
+            const validEmulatorUrl =
+                'http://127.0.0.1:9298/remakes/1700000000-sample.webp';
+            const wrongPortUrl =
+                'http://127.0.0.1:9999/remakes/1700000000-sample.webp';
+
+            expect(isValidR2Url(validEmulatorUrl)).toBe(validEmulatorUrl);
+            expect(isR2Url(validEmulatorUrl)).toBe(true);
+            expect(extractR2Key(validEmulatorUrl)).toBe(
+                'remakes/1700000000-sample.webp'
+            );
+
+            expect(isValidR2Url(wrongPortUrl)).toBeNull();
+            expect(isR2Url(wrongPortUrl)).toBe(false);
         });
     });
 });

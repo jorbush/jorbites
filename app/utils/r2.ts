@@ -5,32 +5,125 @@ import {
 } from '@aws-sdk/client-s3';
 import { logger } from '@/app/lib/axiom/server';
 
-const accountId = process.env.R2_ACCOUNT_ID || 'mock-account-id';
-const accessKeyId = process.env.R2_ACCESS_KEY_ID || 'mock-access-key';
-const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY || 'mock-secret-key';
-const bucketName = process.env.R2_BUCKET_NAME || 'jorbites-remakes';
-const publicDomain = (
-    process.env.R2_PUBLIC_DOMAIN || 'images.jorbites.com'
-).toLowerCase();
+const DEFAULT_R2_PUBLIC_DOMAIN = 'images.jorbites.com';
+
+export interface R2Config {
+    accountId: string;
+    accessKeyId: string;
+    secretAccessKey: string;
+    bucketName: string;
+    publicDomain: string;
+    endpoint: string;
+    region: string;
+    forcePathStyle: boolean;
+}
+
+export function getR2Config(): R2Config {
+    const accountId = process.env.R2_ACCOUNT_ID || 'mock-account-id';
+    const accessKeyId = process.env.R2_ACCESS_KEY_ID || 'mock-access-key';
+    const secretAccessKey =
+        process.env.R2_SECRET_ACCESS_KEY || 'mock-secret-key';
+    const bucketName = process.env.R2_BUCKET_NAME || 'jorbites-remakes';
+    const publicDomain =
+        process.env.R2_PUBLIC_DOMAIN || DEFAULT_R2_PUBLIC_DOMAIN;
+    const endpoint =
+        process.env.R2_ENDPOINT ||
+        `https://${accountId}.r2.cloudflarestorage.com`;
+    const region = process.env.R2_REGION || 'auto';
+    const forcePathStyle =
+        process.env.R2_FORCE_PATH_STYLE === 'true' ||
+        Boolean(process.env.R2_ENDPOINT);
+
+    return {
+        accountId,
+        accessKeyId,
+        secretAccessKey,
+        bucketName,
+        publicDomain,
+        endpoint,
+        region,
+        forcePathStyle,
+    };
+}
 
 let s3ClientInstance: S3Client | null = null;
+let s3ClientCacheKey: string | null = null;
 
-function getS3Client(): S3Client {
-    if (!s3ClientInstance) {
+export function getS3Client(): S3Client {
+    const config = getR2Config();
+    const cacheKey = `${config.endpoint}|${config.region}|${config.forcePathStyle}|${config.accessKeyId}|${config.secretAccessKey}`;
+    if (!s3ClientInstance || s3ClientCacheKey !== cacheKey) {
         s3ClientInstance = new S3Client({
-            region: 'auto',
-            endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
+            region: config.region,
+            endpoint: config.endpoint,
+            forcePathStyle: config.forcePathStyle,
             credentials: {
-                accessKeyId,
-                secretAccessKey,
+                accessKeyId: config.accessKeyId,
+                secretAccessKey: config.secretAccessKey,
             },
         });
+        s3ClientCacheKey = cacheKey;
     }
     return s3ClientInstance;
 }
 
+function matchesConfiguredPublicDomain(
+    parsedUrl: URL,
+    configuredDomain: string
+): boolean {
+    try {
+        const normalized = configuredDomain.includes('://')
+            ? configuredDomain
+            : `https://${configuredDomain}`;
+        const parsedConfigured = new URL(normalized);
+        if (parsedConfigured.port) {
+            return (
+                parsedUrl.host.toLowerCase() ===
+                parsedConfigured.host.toLowerCase()
+            );
+        }
+        return (
+            parsedUrl.hostname.toLowerCase() ===
+            parsedConfigured.hostname.toLowerCase()
+        );
+    } catch {
+        const stripped = configuredDomain
+            .toLowerCase()
+            .replace(/^https?:\/\//, '')
+            .replace(/\/.*$/, '');
+        return parsedUrl.hostname.toLowerCase() === stripped;
+    }
+}
+
+const OWNED_R2_DOMAINS = new Set([
+    'images.jorbites.com',
+    'pub-4c3d704cf6de499a9ef3964908533212.r2.dev',
+]);
+
 /**
- * Validates whether an image URL is from an allowed trusted host (R2 or Cloudinary).
+ * Checks whether a parsed URL belongs strictly to this application's R2 bucket.
+ */
+function isOwnedR2Url(parsedUrl: URL): boolean {
+    const { publicDomain } = getR2Config();
+    const normalizedHost = parsedUrl.hostname.toLowerCase();
+    if (
+        matchesConfiguredPublicDomain(parsedUrl, publicDomain) ||
+        OWNED_R2_DOMAINS.has(normalizedHost)
+    ) {
+        return true;
+    }
+    const configuredAccountId = process.env.R2_ACCOUNT_ID?.toLowerCase();
+    if (
+        configuredAccountId &&
+        normalizedHost === `${configuredAccountId}.r2.cloudflarestorage.com`
+    ) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Validates whether an image URL is from an allowed trusted host (owned R2 domain or Cloudinary).
  * @param urlStr - The candidate URL
  * @returns string | null - Cleaned URL if valid, null otherwise
  */
@@ -41,14 +134,7 @@ export function isValidR2Url(urlStr: unknown): string | null {
         if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:')
             return null;
         const host = parsed.hostname.toLowerCase();
-        const r2Domain = publicDomain
-            .replace(/^https?:\/\//, '')
-            .replace(/\/.*$/, '');
-        const isAllowed =
-            host === r2Domain ||
-            host.endsWith('.r2.cloudflarestorage.com') ||
-            host.endsWith('.r2.dev') ||
-            host === 'res.cloudinary.com';
+        const isAllowed = isOwnedR2Url(parsed) || host === 'res.cloudinary.com';
         return isAllowed ? urlStr : null;
     } catch {
         return null;
@@ -56,23 +142,35 @@ export function isValidR2Url(urlStr: unknown): string | null {
 }
 
 /**
- * Checks if a URL is an R2 resource
+ * Checks if a URL is an owned R2 resource
  * @param url - The URL to check
- * @returns boolean - true if it's an R2 URL
+ * @returns boolean - true if it's an owned R2 URL
  */
 export function isR2Url(url: string): boolean {
     if (!url || typeof url !== 'string') return false;
     try {
         const parsed = new URL(url);
-        const host = parsed.hostname.toLowerCase();
-        return (
-            host === publicDomain ||
-            host.endsWith('.r2.cloudflarestorage.com') ||
-            host.endsWith('.r2.dev')
-        );
+        if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+            return false;
+        }
+        return isOwnedR2Url(parsed);
     } catch {
         return url.startsWith('remakes/');
     }
+}
+
+/**
+ * Extracts the owner userId from a user-namespaced R2 key (`remakes/<userId>/<filename>`).
+ * Returns null for legacy keys (`remakes/<filename>`) or non-matching keys.
+ */
+export function extractR2KeyOwner(imageUrlOrKey: string): string | null {
+    const key = extractR2Key(imageUrlOrKey);
+    if (!key) return null;
+    const parts = key.split('/');
+    if (parts.length === 3 && parts[0] === 'remakes' && parts[1]) {
+        return parts[1];
+    }
+    return null;
 }
 
 /**
@@ -101,7 +199,7 @@ export function extractR2Key(r2Url: string): string | null {
  * @returns Promise<boolean> - true if deletion was successful
  */
 export async function deleteFromR2(imageUrlOrKey: string): Promise<boolean> {
-    if (!imageUrlOrKey) return false;
+    if (!imageUrlOrKey || !isR2Url(imageUrlOrKey)) return false;
 
     const key = extractR2Key(imageUrlOrKey);
     if (!key) return false;
@@ -122,6 +220,7 @@ export async function deleteFromR2(imageUrlOrKey: string): Promise<boolean> {
     }
 
     try {
+        const { bucketName } = getR2Config();
         const client = getS3Client();
         const command = new DeleteObjectCommand({
             Bucket: bucketName,
@@ -153,6 +252,7 @@ export async function deleteMultipleFromR2(
     }
 
     const keys = imageUrlsOrKeys
+        .filter((item) => isR2Url(item))
         .map(extractR2Key)
         .filter((k): k is string => Boolean(k));
 
@@ -171,6 +271,7 @@ export async function deleteMultipleFromR2(
     }
 
     try {
+        const { bucketName } = getR2Config();
         const client = getS3Client();
         const command = new DeleteObjectsCommand({
             Bucket: bucketName,

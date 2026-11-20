@@ -10,6 +10,7 @@ interface ImagesStepProps {
     imageSrc2: string;
     imageSrc3: string;
     onImageChange: (field: string, value: string) => void;
+    userId?: string;
 }
 
 const ImagesStep: React.FC<ImagesStepProps> = ({
@@ -18,6 +19,7 @@ const ImagesStep: React.FC<ImagesStepProps> = ({
     imageSrc2,
     imageSrc3,
     onImageChange,
+    userId,
 }) => {
     const { t } = useTranslation();
 
@@ -34,6 +36,7 @@ const ImagesStep: React.FC<ImagesStepProps> = ({
                     onChange={(value) => onImageChange('imageSrc', value)}
                     canRemove={imageSrc1 === ''}
                     text={t('finished_recipe') ?? 'Finished recipe'}
+                    userId={userId}
                 />
                 <ImageUpload
                     data-testid="image-upload-2"
@@ -42,6 +45,7 @@ const ImagesStep: React.FC<ImagesStepProps> = ({
                     disabled={imageSrc === ''}
                     canRemove={imageSrc2 === ''}
                     text={t('first_steps') ?? 'First steps'}
+                    userId={userId}
                 />
                 <ImageUpload
                     data-testid="image-upload-3"
@@ -50,6 +54,7 @@ const ImagesStep: React.FC<ImagesStepProps> = ({
                     disabled={imageSrc1 === ''}
                     canRemove={imageSrc3 === ''}
                     text={t('next_steps') ?? 'Next steps'}
+                    userId={userId}
                 />
                 <ImageUpload
                     data-testid="image-upload-4"
@@ -57,6 +62,7 @@ const ImagesStep: React.FC<ImagesStepProps> = ({
                     onChange={(value) => onImageChange('imageSrc3', value)}
                     disabled={imageSrc2 === ''}
                     text={t('final_steps') ?? 'Final steps'}
+                    userId={userId}
                 />
             </div>
         </div>

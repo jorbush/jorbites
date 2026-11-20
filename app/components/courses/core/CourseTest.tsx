@@ -1,8 +1,11 @@
 'use client';
 
-import React, { useReducer, useMemo } from 'react';
+import React, { useReducer, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 import { Question } from '@/app/courses/contest-manager/contestManagerQuestions';
+import { getCompletionTokenStorageKey } from '@/app/utils/courseCatalog';
 import { FiCheckCircle, FiXCircle, FiAward } from 'react-icons/fi';
 import Button from '@/app/components/buttons/Button';
 import confetti from 'canvas-confetti';
@@ -11,6 +14,7 @@ interface CourseTestProps {
     questions: Question[];
     onPass: () => void;
     description?: string;
+    courseId?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -91,6 +95,7 @@ interface QuizQuestionProps {
     total: number;
     selectedOption: number | null;
     currentLang: 'en' | 'es' | 'ca';
+    isSubmitting?: boolean;
     onSelect: (idx: number) => void;
     onNext: () => void;
 }
@@ -101,6 +106,7 @@ const QuizQuestion: React.FC<QuizQuestionProps> = ({
     total,
     selectedOption,
     currentLang,
+    isSubmitting = false,
     onSelect,
     onNext,
 }) => {
@@ -169,7 +175,7 @@ const QuizQuestion: React.FC<QuizQuestionProps> = ({
                     <Button
                         label={currentIndex === total - 1 ? 'Finish' : 'Next'}
                         onClick={onNext}
-                        disabled={selectedOption === null}
+                        disabled={selectedOption === null || isSubmitting}
                         small
                         dataCy="next-question-button"
                     />
@@ -331,6 +337,7 @@ const CourseTest: React.FC<CourseTestProps> = ({
     questions,
     onPass,
     description,
+    courseId,
 }) => {
     const { t, i18n } = useTranslation();
     const currentLang = (
@@ -338,6 +345,7 @@ const CourseTest: React.FC<CourseTestProps> = ({
     ) as 'en' | 'es' | 'ca';
 
     const [state, dispatch] = useReducer(quizReducer, initialState);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const startQuiz = () => {
         const shuffled = questions.toSorted(() => Math.random() - 0.5);
@@ -358,15 +366,17 @@ const CourseTest: React.FC<CourseTestProps> = ({
 
     const isPassed = score >= Math.ceil(state.shuffledQuestions.length * 0.8);
 
-    const handleNext = () => {
-        if (state.selectedOption === null) return;
+    const handleNext = async () => {
+        if (state.selectedOption === null || isSubmitting) return;
 
         const nextAnswers = [...state.userAnswers, state.selectedOption];
         const isLast = state.currentIndex >= state.shuffledQuestions.length - 1;
 
         if (isLast) {
             let correctCount = 0;
+            const answerMap: Record<string, number> = {};
             state.shuffledQuestions.forEach((q, idx) => {
+                answerMap[q.id] = nextAnswers[idx];
                 if (nextAnswers[idx] === q.correctIndex) {
                     correctCount++;
                 }
@@ -378,6 +388,48 @@ const CourseTest: React.FC<CourseTestProps> = ({
             const isPass = correctCount >= passingScore;
 
             if (isPass) {
+                if (courseId) {
+                    setIsSubmitting(true);
+                    try {
+                        const res = await axios.post(
+                            '/api/courses/verify-test',
+                            {
+                                courseId,
+                                answers: answerMap,
+                            }
+                        );
+
+                        if (res.data?.passed && res.data?.completionToken) {
+                            try {
+                                sessionStorage.setItem(
+                                    getCompletionTokenStorageKey(courseId),
+                                    res.data.completionToken
+                                );
+                            } catch {
+                                // Ignore storage errors in restricted environments
+                            }
+                        } else if (!res.data?.passed) {
+                            toast.error(
+                                t('something_went_wrong') ||
+                                    'Could not verify test completion. Please try again.'
+                            );
+                            dispatch({ type: 'NEXT' });
+                            return;
+                        }
+                    } catch (err: any) {
+                        // Allow unauthenticated guests to still finish the quiz UI
+                        if (err?.response?.status !== 401) {
+                            toast.error(
+                                t('something_went_wrong') ||
+                                    'Could not verify test completion. Please try again.'
+                            );
+                            return;
+                        }
+                    } finally {
+                        setIsSubmitting(false);
+                    }
+                }
+
                 confetti({
                     particleCount: 150,
                     spread: 80,
@@ -428,6 +480,7 @@ const CourseTest: React.FC<CourseTestProps> = ({
                 total={state.shuffledQuestions.length}
                 selectedOption={state.selectedOption}
                 currentLang={currentLang}
+                isSubmitting={isSubmitting}
                 onSelect={(idx) => dispatch({ type: 'SELECT', index: idx })}
                 onNext={handleNext}
             />

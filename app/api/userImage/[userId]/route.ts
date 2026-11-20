@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import prisma from '@/app/lib/prismadb';
 import { deleteFromCloudinary, isCloudinaryUrl } from '@/app/utils/cloudinary';
+import { canDeleteCloudinaryAsset } from '@/app/utils/mediaSecurity';
 import {
     unauthorizedResponse,
     badRequest,
@@ -55,10 +56,27 @@ export async function PATCH(request: Request) {
             return badRequest('Valid user image URL is required');
         }
 
+        try {
+            const parsedImage = new URL(userImage);
+            if (
+                parsedImage.protocol !== 'http:' &&
+                parsedImage.protocol !== 'https:'
+            ) {
+                return badRequest('Valid user image URL is required');
+            }
+        } catch {
+            return badRequest('Valid user image URL is required');
+        }
+
         const oldImage = currentUser.image;
 
-        // Delete old image from Cloudinary if it's a Cloudinary URL and different from new image
-        if (oldImage && oldImage !== userImage && isCloudinaryUrl(oldImage)) {
+        // Delete old image from Cloudinary only if it's a user-scoped Cloudinary URL owned by currentUser
+        if (
+            oldImage &&
+            oldImage !== userImage &&
+            isCloudinaryUrl(oldImage) &&
+            canDeleteCloudinaryAsset(oldImage, currentUser.id)
+        ) {
             try {
                 const deleted = await deleteFromCloudinary(oldImage);
                 if (deleted) {
