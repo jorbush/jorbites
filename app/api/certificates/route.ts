@@ -4,6 +4,7 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import { logger } from '@/app/lib/axiom/server';
 import {
     unauthorizedResponse,
+    forbiddenResponse,
     internalServerError,
     badRequest,
     rateLimitExceeded,
@@ -13,6 +14,8 @@ import {
     isValidCourseId,
     getCourseCatalogEntry,
 } from '@/app/utils/courseCatalog';
+import { gradeCourseAnswers } from '@/app/utils/courseQuestions';
+import { verifyCompletionToken } from '@/app/utils/certificateProof';
 import {
     PUBLIC_CERTIFICATE_USER_SELECT_FIELDS,
     generateSecureCertId,
@@ -92,7 +95,7 @@ export async function POST(request: Request) {
         });
 
         const body = await request.json();
-        const { courseId, userName } = body;
+        const { courseId, userName, completionToken, answers } = body;
 
         if (typeof courseId !== 'string' || !isValidCourseId(courseId)) {
             return badRequest('Invalid course ID');
@@ -113,6 +116,47 @@ export async function POST(request: Request) {
         }
 
         const trimmedUserName = userName.trim();
+
+        // Allow updating display name on an already-issued certificate;
+        // require verified server-side course completion for new issuance.
+        const existingCertificate = await prisma.certificate.findUnique({
+            where: {
+                userId_courseId: {
+                    userId: currentUser.id,
+                    courseId: trimmedCourseId,
+                },
+            },
+            select: {
+                id: true,
+            },
+        });
+
+        if (!existingCertificate) {
+            const hasValidToken = verifyCompletionToken(
+                completionToken,
+                currentUser.id,
+                trimmedCourseId
+            );
+            const hasPassingAnswers =
+                !hasValidToken &&
+                Boolean(
+                    answers &&
+                    gradeCourseAnswers(trimmedCourseId, answers)?.passed
+                );
+
+            if (!hasValidToken && !hasPassingAnswers) {
+                logger.warn?.(
+                    'POST /api/certificates - missing or invalid completion verification',
+                    {
+                        userId: currentUser.id,
+                        courseId: trimmedCourseId,
+                    }
+                );
+                return forbiddenResponse(
+                    'Course completion verification required before issuing a certificate'
+                );
+            }
+        }
 
         // Server-side authoritative metadata
         const courseTitle = catalogEntry.title;

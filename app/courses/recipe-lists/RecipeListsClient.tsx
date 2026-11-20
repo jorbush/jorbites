@@ -137,6 +137,7 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
                     {!isTestPassed ? (
                         <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
                             <CourseTest
+                                courseId="recipe-lists"
                                 questions={recipeListsQuestions}
                                 description={
                                     t(

@@ -11,6 +11,7 @@ import toast from 'react-hot-toast';
 import Button from '@/app/components/buttons/Button';
 import Input from '@/app/components/inputs/Input';
 import { formatDate } from '@/app/utils/date-utils';
+import { getCompletionTokenStorageKey } from '@/app/utils/courseCatalog';
 import { SafeCertificate } from '@/app/types';
 
 // Load CertificateDownloadSection dynamically. Since it statically imports
@@ -320,6 +321,28 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
         Boolean(customName || certificate?.userName || currentUserNames) &&
         !isEditing;
 
+    const getStoredCompletionToken = useCallback((): string | undefined => {
+        if (!courseId || typeof window === 'undefined') return undefined;
+        try {
+            return (
+                sessionStorage.getItem(
+                    getCompletionTokenStorageKey(courseId)
+                ) || undefined
+            );
+        } catch {
+            return undefined;
+        }
+    }, [courseId]);
+
+    const clearStoredCompletionToken = useCallback(() => {
+        if (!courseId || typeof window === 'undefined') return;
+        try {
+            sessionStorage.removeItem(getCompletionTokenStorageKey(courseId));
+        } catch {
+            // Ignore storage errors
+        }
+    }, [courseId]);
+
     const syncCertificate = useCallback(async () => {
         if (!courseId) return;
 
@@ -335,16 +358,26 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
             if (res.data && res.data.length > 0) {
                 setCertificate(res.data[0]);
             } else if (currentUserNames && submitted) {
+                const completionToken = getStoredCompletionToken();
                 const createRes = await axios.post('/api/certificates', {
                     courseId,
                     userName: currentUserNames,
+                    ...(completionToken ? { completionToken } : {}),
                 });
                 setCertificate(createRes.data);
+                clearStoredCompletionToken();
             }
         } catch (err) {
             console.error('Error fetching or auto-issuing certificate:', err);
         }
-    }, [courseId, initialCertificate, currentUserNames, submitted]);
+    }, [
+        courseId,
+        initialCertificate,
+        currentUserNames,
+        submitted,
+        getStoredCompletionToken,
+        clearStoredCompletionToken,
+    ]);
 
     useEffect(() => {
         syncCertificate();
@@ -357,11 +390,14 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
 
         if (courseId) {
             try {
+                const completionToken = getStoredCompletionToken();
                 const res = await axios.post('/api/certificates', {
                     courseId,
                     userName: finalName,
+                    ...(completionToken ? { completionToken } : {}),
                 });
                 setCertificate(res.data);
+                clearStoredCompletionToken();
                 toast.success(
                     t('certificate_saved') || 'Certificate issued successfully!'
                 );
