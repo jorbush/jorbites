@@ -64,6 +64,6 @@ All **Critical** and **High** findings plus core **Medium** and **Low** hardenin
 
 ## Remaining Follow-Up Hardening (Planned)
 
-- **Session invalidation on password reset/change:** Add a `tokenVersion` or `passwordChangedAt` claim verified in NextAuth JWT/session callbacks.
-- **TOTP replay prevention & step-up auth:** Store last-accepted TOTP step in Redis/DB to prevent reuse within the 90-second window, and require a valid TOTP/backup code to disable 2FA, regenerate backup codes, or delete an account.
-- **Course certificate completion verification:** Verify course completion server-side before issuing certificates in `POST /api/certificates`.
+- **Session invalidation on password reset/change:** Add a `tokenVersion` or `passwordChangedAt` claim verified in NextAuth JWT/session callbacks (#1858).
+- **TOTP replay prevention & step-up auth:** Store last-accepted TOTP step in Redis/DB to prevent reuse within the 90-second window, and require a valid TOTP/backup code to disable 2FA, regenerate backup codes, or delete an account (#1859).
+- **Course certificate completion verification:** Completed — `POST /api/courses/verify-test` grades quiz answers server-side and issues a short-lived HMAC-SHA256 completion token bound to `(userId, courseId)`, verified by `POST /api/certificates` before minting new certificates.

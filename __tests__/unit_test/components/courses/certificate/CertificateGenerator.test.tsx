@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import CertificateGenerator from '@/app/components/courses/certificate/CertificateGenerator';
+import { getCompletionTokenStorageKey } from '@/app/utils/courseCatalog';
 import React from 'react';
 import axios from 'axios';
 
@@ -45,6 +46,7 @@ vi.mock('next/dynamic', () => ({
 
 beforeEach(() => {
     vi.clearAllMocks();
+    sessionStorage.clear();
     vi.mocked(axios.get).mockReturnValue(new Promise(() => {}) as any);
     vi.mocked(axios.post).mockReturnValue(new Promise(() => {}) as any);
 });
@@ -198,5 +200,35 @@ describe('<CertificateGenerator />', () => {
         );
         expect((input as HTMLInputElement).value).toBe('Jordi Bonet');
         expect(screen.queryByTestId('mock-download-section')).toBeNull();
+    });
+
+    it('includes stored completionToken in POST /api/certificates and clears it on success', async () => {
+        const storageKey = getCompletionTokenStorageKey('jorbites-basics');
+        sessionStorage.setItem(storageKey, 'signed-proof-token');
+
+        vi.mocked(axios.post).mockResolvedValueOnce({
+            data: mockInitialCert,
+        });
+
+        render(<CertificateGenerator {...defaultProps} />);
+
+        const input = screen.getByLabelText(
+            'contest_manager_course_details.your_full_name'
+        );
+        fireEvent.change(input, { target: { value: 'Jordi Bonet' } });
+        fireEvent.click(
+            screen.getByRole('button', {
+                name: 'contest_manager_course_details.confirm',
+            })
+        );
+
+        await screen.findByTestId('mock-download-section');
+
+        expect(axios.post).toHaveBeenCalledWith('/api/certificates', {
+            courseId: 'jorbites-basics',
+            userName: 'Jordi Bonet',
+            completionToken: 'signed-proof-token',
+        });
+        expect(sessionStorage.getItem(storageKey)).toBeNull();
     });
 });

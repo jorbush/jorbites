@@ -1,7 +1,33 @@
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import {
+    render,
+    screen,
+    fireEvent,
+    cleanup,
+    waitFor,
+} from '@testing-library/react';
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
+import axios from 'axios';
 import CourseTest from '@/app/components/courses/core/CourseTest';
 import { Question } from '@/app/courses/contest-manager/contestManagerQuestions';
+import { getCompletionTokenStorageKey } from '@/app/utils/courseCatalog';
+
+vi.mock('axios', () => ({
+    default: {
+        post: vi.fn(),
+    },
+}));
+
+vi.mock('react-hot-toast', () => ({
+    default: {
+        success: vi.fn(),
+        error: vi.fn(),
+    },
+}));
+
+beforeEach(() => {
+    vi.clearAllMocks();
+    sessionStorage.clear();
+});
 
 afterEach(() => {
     cleanup();
@@ -213,5 +239,55 @@ describe('<CourseTest />', () => {
         expect(screen.getByText('pass_message')).toBeDefined();
         expect(screen.getByText('10 / 10')).toBeDefined();
         expect(mockOnPass).toHaveBeenCalledTimes(1);
+    });
+
+    it('verifies answers with the server and stores completionToken when courseId is provided', async () => {
+        vi.mocked(axios.post).mockResolvedValueOnce({
+            data: {
+                passed: true,
+                score: 10,
+                total: 10,
+                passingScore: 8,
+                completionToken: 'signed-proof-token',
+            },
+        });
+
+        render(
+            <CourseTest
+                courseId="contest-manager"
+                questions={mockQuestions}
+                onPass={mockOnPass}
+            />
+        );
+        fireEvent.click(screen.getByText('start_course'));
+
+        for (let i = 0; i < 10; i++) {
+            const questionText = screen.getByRole('heading', {
+                level: 3,
+            }).textContent;
+            const qObj = mockQuestions.find(
+                (q) => q.question.en === questionText
+            );
+            const correctOpt = qObj?.options.en[qObj.correctIndex] || '';
+
+            fireEvent.click(screen.getByText(correctOpt));
+            fireEvent.click(screen.getByText(i === 9 ? 'Finish' : 'Next'));
+        }
+
+        await waitFor(() => {
+            expect(axios.post).toHaveBeenCalledWith(
+                '/api/courses/verify-test',
+                expect.objectContaining({
+                    courseId: 'contest-manager',
+                    answers: expect.objectContaining({ q1: 0, q10: 1 }),
+                })
+            );
+            expect(
+                sessionStorage.getItem(
+                    getCompletionTokenStorageKey('contest-manager')
+                )
+            ).toBe('signed-proof-token');
+            expect(mockOnPass).toHaveBeenCalledTimes(1);
+        });
     });
 });

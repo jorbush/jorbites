@@ -7,12 +7,15 @@ import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { logger } from '@/app/lib/axiom/server';
 import { authenticatedRatelimit } from '@/app/lib/ratelimit';
+import { createCompletionToken } from '@/app/utils/certificateProof';
+import { jorbitesBasicsQuestions } from '@/app/courses/jorbites-basics/jorbitesBasicsQuestions';
 
 jest.mock('@/app/lib/prismadb', () => ({
     __esModule: true,
     default: {
         certificate: {
             findMany: jest.fn(),
+            findUnique: jest.fn(),
             upsert: jest.fn(),
         },
     },
@@ -23,6 +26,7 @@ jest.mock('@/app/actions/getCurrentUser');
 jest.mock('@/app/lib/axiom/server', () => ({
     logger: {
         info: jest.fn(),
+        warn: jest.fn(),
         error: jest.fn(),
     },
 }));
@@ -222,8 +226,135 @@ describe('Certificates API Routes (/api/certificates)', () => {
             expect(prisma.certificate.upsert).not.toHaveBeenCalled();
         });
 
-        it('upserts certificate using authoritative catalog title and badge, ignoring client spoofing', async () => {
+        it('returns 403 when issuing a new certificate without completion proof', async () => {
             jest.mocked(getCurrentUser).mockResolvedValueOnce(mockUser as any);
+            jest.mocked(prisma.certificate.findUnique).mockResolvedValueOnce(
+                null
+            );
+
+            const req = new Request('http://localhost:3000/api/certificates', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    courseId: 'jorbites-basics',
+                    userName: 'Chef Tester',
+                }),
+            });
+
+            const res = await CertificatesPOST(req);
+            const data = await res.json();
+
+            expect(res.status).toBe(403);
+            expect(data.error).toContain('Course completion verification');
+            expect(prisma.certificate.upsert).not.toHaveBeenCalled();
+        });
+
+        it('returns 403 when completionToken belongs to another user or course', async () => {
+            const foreignUserToken = createCompletionToken(
+                'other-user',
+                'jorbites-basics'
+            );
+            const wrongCourseToken = createCompletionToken(
+                'user-123',
+                'drafts'
+            );
+
+            for (const badToken of [
+                foreignUserToken,
+                wrongCourseToken,
+                'tampered.token',
+            ]) {
+                jest.mocked(getCurrentUser).mockResolvedValueOnce(
+                    mockUser as any
+                );
+                jest.mocked(
+                    prisma.certificate.findUnique
+                ).mockResolvedValueOnce(null);
+
+                const req = new Request(
+                    'http://localhost:3000/api/certificates',
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            courseId: 'jorbites-basics',
+                            userName: 'Chef Tester',
+                            completionToken: badToken,
+                        }),
+                    }
+                );
+
+                const res = await CertificatesPOST(req);
+                expect(res.status).toBe(403);
+            }
+
+            expect(prisma.certificate.upsert).not.toHaveBeenCalled();
+        });
+
+        it('allows updating userName on an already-issued certificate without a new token', async () => {
+            jest.mocked(getCurrentUser).mockResolvedValueOnce(mockUser as any);
+            jest.mocked(prisma.certificate.findUnique).mockResolvedValueOnce({
+                id: 'cert-1',
+            } as any);
+            jest.mocked(prisma.certificate.upsert).mockResolvedValueOnce({
+                ...mockCert,
+                userName: 'Chef Updated',
+            } as any);
+
+            const req = new Request('http://localhost:3000/api/certificates', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    courseId: 'jorbites-basics',
+                    userName: 'Chef Updated',
+                }),
+            });
+
+            const res = await CertificatesPOST(req);
+            const data = await res.json();
+
+            expect(res.status).toBe(200);
+            expect(data.userName).toBe('Chef Updated');
+            expect(prisma.certificate.upsert).toHaveBeenCalledTimes(1);
+        });
+
+        it('issues a new certificate when passing answers are submitted directly', async () => {
+            const passingAnswers = Object.fromEntries(
+                jorbitesBasicsQuestions.map((q) => [q.id, q.correctIndex])
+            );
+
+            jest.mocked(getCurrentUser).mockResolvedValueOnce(mockUser as any);
+            jest.mocked(prisma.certificate.findUnique).mockResolvedValueOnce(
+                null
+            );
+            jest.mocked(prisma.certificate.upsert).mockResolvedValueOnce(
+                mockCert as any
+            );
+
+            const req = new Request('http://localhost:3000/api/certificates', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    courseId: 'jorbites-basics',
+                    userName: 'Chef Tester',
+                    answers: passingAnswers,
+                }),
+            });
+
+            const res = await CertificatesPOST(req);
+            expect(res.status).toBe(200);
+            expect(prisma.certificate.upsert).toHaveBeenCalledTimes(1);
+        });
+
+        it('upserts certificate using authoritative catalog title and badge, ignoring client spoofing', async () => {
+            const validToken = createCompletionToken(
+                'user-123',
+                'jorbites-basics'
+            );
+            jest.mocked(getCurrentUser).mockResolvedValueOnce(mockUser as any);
+            jest.mocked(prisma.certificate.findUnique).mockResolvedValueOnce(
+                null
+            );
             jest.mocked(prisma.certificate.upsert).mockResolvedValueOnce(
                 mockCert as any
             );
@@ -236,6 +367,7 @@ describe('Certificates API Routes (/api/certificates)', () => {
                     courseTitle: 'Spoofed Masterclass Degree',
                     userName: 'Chef Tester',
                     badgeUrl: 'https://evil.com/fake-badge.png',
+                    completionToken: validToken,
                 }),
             });
 
@@ -271,7 +403,14 @@ describe('Certificates API Routes (/api/certificates)', () => {
         });
 
         it('retries upsert on unique certId collision (P2002)', async () => {
+            const validToken = createCompletionToken(
+                'user-123',
+                'jorbites-basics'
+            );
             jest.mocked(getCurrentUser).mockResolvedValueOnce(mockUser as any);
+            jest.mocked(prisma.certificate.findUnique).mockResolvedValueOnce(
+                null
+            );
 
             const p2002Error: any = new Error('Unique constraint failed');
             p2002Error.code = 'P2002';
@@ -287,6 +426,7 @@ describe('Certificates API Routes (/api/certificates)', () => {
                 body: JSON.stringify({
                     courseId: 'jorbites-basics',
                     userName: 'Chef Tester',
+                    completionToken: validToken,
                 }),
             });
 
@@ -299,7 +439,14 @@ describe('Certificates API Routes (/api/certificates)', () => {
         });
 
         it('returns 500 when database upsert fails unexpectedly', async () => {
+            const validToken = createCompletionToken(
+                'user-123',
+                'jorbites-basics'
+            );
             jest.mocked(getCurrentUser).mockResolvedValueOnce(mockUser as any);
+            jest.mocked(prisma.certificate.findUnique).mockResolvedValueOnce(
+                null
+            );
             jest.mocked(prisma.certificate.upsert).mockRejectedValueOnce(
                 new Error('Upsert Failed')
             );
@@ -310,6 +457,7 @@ describe('Certificates API Routes (/api/certificates)', () => {
                 body: JSON.stringify({
                     courseId: 'jorbites-basics',
                     userName: 'Chef Tester',
+                    completionToken: validToken,
                 }),
             });
 
