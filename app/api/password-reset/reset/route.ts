@@ -88,6 +88,9 @@ export async function POST(request: Request) {
                 hashedPassword,
                 resetToken: null,
                 resetTokenExpiry: null,
+                tokenVersion: {
+                    increment: 1,
+                },
             },
         });
 

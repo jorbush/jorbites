@@ -181,13 +181,41 @@ export const authOptions: AuthOptions = {
     callbacks: {
         async jwt({ token, user }) {
             if (user) {
+                const userTokenVersion = (user as { tokenVersion?: unknown })
+                    .tokenVersion;
                 return {
                     id: user.id,
                     name: user.name,
                     email: user.email,
                     picture: user.image,
+                    tokenVersion:
+                        typeof userTokenVersion === 'number'
+                            ? userTokenVersion
+                            : 0,
                 };
             }
+
+            if (!token?.id || typeof token.id !== 'string') {
+                throw new Error('SESSION_INVALID');
+            }
+
+            const dbUser = await prisma.user.findUnique({
+                where: {
+                    id: token.id,
+                },
+                select: {
+                    tokenVersion: true,
+                },
+            });
+
+            const tokenVersion =
+                typeof token.tokenVersion === 'number' ? token.tokenVersion : 0;
+            const dbTokenVersion = dbUser?.tokenVersion ?? 0;
+
+            if (!dbUser || tokenVersion !== dbTokenVersion) {
+                throw new Error('SESSION_REVOKED');
+            }
+
             return token;
         },
         async session({ session, token }) {

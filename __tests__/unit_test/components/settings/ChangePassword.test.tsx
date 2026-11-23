@@ -30,6 +30,25 @@ vi.mock('react-hot-toast', () => ({
     },
 }));
 
+const mockSignOut = vi.fn().mockResolvedValue(undefined);
+vi.mock('next-auth/react', () => ({
+    signOut: (...args: any[]) => mockSignOut(...args),
+}));
+
+const mockSettingsModal = {
+    onClose: vi.fn(),
+};
+vi.mock('@/app/hooks/useSettingsModal', () => ({
+    default: () => mockSettingsModal,
+}));
+
+const mockLoginModal = {
+    onOpen: vi.fn(),
+};
+vi.mock('@/app/hooks/useLoginModal', () => ({
+    default: () => mockLoginModal,
+}));
+
 const mockRouter = {
     refresh: vi.fn(),
 };
@@ -232,7 +251,12 @@ describe('ChangePassword', () => {
             });
         });
         await waitFor(() => {
-            expect(toast.success).toHaveBeenCalledWith('password_updated');
+            expect(toast.success).toHaveBeenCalledWith(
+                'password_updated_sign_in_again'
+            );
+            expect(mockSignOut).toHaveBeenCalledWith({ redirect: false });
+            expect(mockSettingsModal.onClose).toHaveBeenCalled();
+            expect(mockLoginModal.onOpen).toHaveBeenCalled();
         });
         expect(mockRouter.refresh).toHaveBeenCalled();
     });
