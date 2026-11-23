@@ -188,7 +188,7 @@ const CooksnapModal: React.FC = () => {
                     }
                     rows={3}
                     maxLength={500}
-                    className="w-full resize-none rounded-lg border border-neutral-300 bg-transparent p-3 text-sm text-neutral-800 transition focus:border-green-500 focus:outline-none dark:border-neutral-700 dark:text-neutral-100 dark:focus:border-green-400"
+                    className="focus:border-green-450 focus:ring-green-450/30 dark:focus:border-green-450 w-full resize-none rounded-lg border border-neutral-300 bg-transparent p-3 text-base text-neutral-800 transition focus:ring-2 focus:outline-none md:text-sm dark:border-neutral-700 dark:text-neutral-100"
                     data-testid="cooksnap-note-input"
                 />
             </div>
