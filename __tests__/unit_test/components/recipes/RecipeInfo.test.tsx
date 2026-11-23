@@ -255,4 +255,30 @@ describe('RecipeInfo', () => {
         expect(screen.getByText('Flour')).toBeDefined();
         expect(screen.getByText('mix')).toBeDefined();
     });
+
+    it('renders difficulty, nutrition breakdown, and dietary tags when provided', () => {
+        render(
+            <RecipeInfo
+                {...mockProps}
+                calories={450}
+                difficulty="Hard"
+                protein={30}
+                carbohydrates={40}
+                fat={15}
+                saturatedFat={4}
+                fiber={6}
+                sugar={2}
+                sodium={500}
+                dietaryTags={['gluten-free', 'high-protein']}
+            />
+        );
+
+        expect(screen.getByTestId('recipe-difficulty')).toBeDefined();
+        expect(screen.getByText('Hard')).toBeDefined();
+        expect(screen.getByTestId('recipe-nutrition-section')).toBeDefined();
+        expect(screen.getByTestId('nutrient-protein').textContent).toContain(
+            '30g'
+        );
+        expect(screen.getByTestId('dietary-tag-gluten-free')).toBeDefined();
+    });
 });

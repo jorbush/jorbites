@@ -28,7 +28,24 @@ export interface RecipeSchemaProps {
     calories?: number | null;
     recipeCuisine?: string | null;
     recipeYield?: number | null;
+    difficulty?: string | null;
+    protein?: number | null;
+    carbohydrates?: number | null;
+    fat?: number | null;
+    saturatedFat?: number | null;
+    fiber?: number | null;
+    sugar?: number | null;
+    sodium?: number | null;
+    dietaryTags?: string[];
 }
+
+const DIETARY_TAG_TO_SCHEMA_DIET: Record<string, string> = {
+    vegan: 'https://schema.org/VeganDiet',
+    vegetarian: 'https://schema.org/VegetarianDiet',
+    'gluten-free': 'https://schema.org/GlutenFreeDiet',
+    'dairy-free': 'https://schema.org/LowLactoseDiet',
+    'low-fat': 'https://schema.org/LowFatDiet',
+};
 
 const EMPTY_IMAGES: string[] = [];
 const DEFAULT_AUTHOR_NAME = 'Usuario de Jorbites';
@@ -169,12 +186,56 @@ export const buildRecipeSchemaData = ({
     calories,
     recipeCuisine,
     recipeYield,
+    protein,
+    carbohydrates,
+    fat,
+    saturatedFat,
+    fiber,
+    sugar,
+    sodium,
+    dietaryTags,
 }: RecipeSchemaProps): Record<string, unknown> => {
     const recipeCategories = categories || [];
+    const recipeDietaryTags = dietaryTags || [];
     const prepTimeIso = formatIsoDuration(prepTime);
     const cookTimeIso = formatIsoDuration(cookTime);
     const aggregateRating = buildAggregateRating(averageRating, ratingCount);
     const reviews = buildRecipeReviews(comments, cooksnaps);
+
+    const nutritionFields: Record<string, string> = {};
+    if (typeof calories === 'number') {
+        nutritionFields.calories = `${calories} calories`;
+    }
+    if (typeof protein === 'number') {
+        nutritionFields.proteinContent = `${protein} g`;
+    }
+    if (typeof carbohydrates === 'number') {
+        nutritionFields.carbohydrateContent = `${carbohydrates} g`;
+    }
+    if (typeof fat === 'number') {
+        nutritionFields.fatContent = `${fat} g`;
+    }
+    if (typeof saturatedFat === 'number') {
+        nutritionFields.saturatedFatContent = `${saturatedFat} g`;
+    }
+    if (typeof fiber === 'number') {
+        nutritionFields.fiberContent = `${fiber} g`;
+    }
+    if (typeof sugar === 'number') {
+        nutritionFields.sugarContent = `${sugar} g`;
+    }
+    if (typeof sodium === 'number') {
+        nutritionFields.sodiumContent = `${sodium} mg`;
+    }
+    const hasNutrition = Object.keys(nutritionFields).length > 0;
+
+    const suitableForDiet = recipeDietaryTags
+        .map((tag) => DIETARY_TAG_TO_SCHEMA_DIET[tag])
+        .filter((uri): uri is string => Boolean(uri));
+
+    const combinedKeywords = Array.from(
+        new Set([...recipeCategories, ...recipeDietaryTags])
+    );
 
     return {
         '@context': 'https://schema.org',
@@ -199,17 +260,18 @@ export const buildRecipeSchemaData = ({
         ),
         recipeCategory: buildRecipeCategory(recipeCategories),
         video: buildVideoSchema(youtubeUrl, title, description, createdAt),
-        keywords: recipeCategories.join(', '),
+        keywords: combinedKeywords.join(', '),
         ...(recipeCuisine ? { recipeCuisine } : {}),
         ...(recipeYield ? { recipeYield: `${recipeYield} servings` } : {}),
-        ...(calories
+        ...(hasNutrition
             ? {
                   nutrition: {
                       '@type': 'NutritionInformation',
-                      calories: `${calories} calories`,
+                      ...nutritionFields,
                   },
               }
             : {}),
+        ...(suitableForDiet.length > 0 ? { suitableForDiet } : {}),
         ...(aggregateRating ? { aggregateRating } : {}),
         ...(reviews ? { review: reviews } : {}),
     };

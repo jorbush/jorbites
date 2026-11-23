@@ -117,6 +117,15 @@ model Recipe {
   prepTime Int?
   cookTime Int?
   ganttTable Json?
+  difficulty String?
+  protein Int?
+  carbohydrates Int?
+  fat Int?
+  saturatedFat Int?
+  fiber Int?
+  sugar Int?
+  sodium Int?
+  dietaryTags String[] @default([])
   forkedFromRecipeId String? @db.ObjectId
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

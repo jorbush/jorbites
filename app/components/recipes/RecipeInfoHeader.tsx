@@ -9,6 +9,7 @@ import VerificationBadge from '@/app/components/VerificationBadge';
 import StarRating from '@/app/components/utils/StarRating';
 import getUserDisplayName from '@/app/utils/responsive';
 import { CuisineIcon } from './CuisineIcon';
+import { FiBarChart2 } from 'react-icons/fi';
 
 interface RecipeInfoHeaderProps {
     user: SafeUser;
@@ -27,6 +28,7 @@ interface RecipeInfoHeaderProps {
     calories?: number | null;
     recipeCuisine?: string | null;
     recipeYield?: number | null;
+    difficulty?: string | null;
 }
 
 export const RecipeInfoHeader: React.FC<RecipeInfoHeaderProps> = ({
@@ -46,6 +48,7 @@ export const RecipeInfoHeader: React.FC<RecipeInfoHeaderProps> = ({
     calories,
     recipeCuisine,
     recipeYield,
+    difficulty,
 }) => {
     return (
         <div className="flex flex-col gap-3 sm:gap-4">
@@ -148,6 +151,24 @@ export const RecipeInfoHeader: React.FC<RecipeInfoHeaderProps> = ({
                                       { defaultValue: recipeCuisine }
                                   )
                                 : recipeCuisine}
+                        </span>
+                    </div>
+                )}
+                {difficulty && (
+                    <div
+                        className="flex items-center gap-1.5"
+                        data-testid="recipe-difficulty"
+                    >
+                        <FiBarChart2
+                            size={15}
+                            className="shrink-0 text-neutral-500 dark:text-neutral-400"
+                        />
+                        <span>
+                            {mounted
+                                ? t(`difficulty_${difficulty.toLowerCase()}`, {
+                                      defaultValue: difficulty,
+                                  })
+                                : difficulty}
                         </span>
                     </div>
                 )}

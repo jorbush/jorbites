@@ -113,6 +113,28 @@ export const RECIPE_CUISINES = [
 
 export type RecipeCuisineType = (typeof RECIPE_CUISINES)[number];
 
+export const RECIPE_DIFFICULTIES = ['Easy', 'Medium', 'Hard'] as const;
+
+export type RecipeDifficultyType = (typeof RECIPE_DIFFICULTIES)[number];
+
+export const DIETARY_TAGS = [
+    'vegan',
+    'vegetarian',
+    'gluten-free',
+    'dairy-free',
+    'nut-free',
+    'egg-free',
+    'soy-free',
+    'sugar-free',
+    'low-carb',
+    'high-protein',
+    'low-fat',
+    'keto',
+    'paleo',
+] as const;
+
+export type DietaryTagType = (typeof DIETARY_TAGS)[number];
+
 // Collaborative Cooking & Locking Constants
 export const MAX_CO_COOKS = 4;
 export const MAX_LINKED_RECIPES = 2;

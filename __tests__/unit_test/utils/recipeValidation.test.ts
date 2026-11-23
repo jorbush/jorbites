@@ -423,5 +423,51 @@ describe('Recipe Validation Utilities', () => {
             });
             expect(result?.status).toBe(400);
         });
+
+        it('should accept valid difficulty, nutritional values (including 0), and dietaryTags', () => {
+            const result = validateRecipeCreateData({
+                ...validCreateRecipe,
+                difficulty: 'Medium',
+                protein: 24,
+                carbohydrates: 0,
+                fat: 12,
+                saturatedFat: 0,
+                fiber: 0,
+                sugar: 0,
+                sodium: 450,
+                dietaryTags: ['gluten-free', 'high-protein'],
+            });
+            expect(result).toBeNull();
+        });
+
+        it('should return 400 for invalid difficulty', () => {
+            const result = validateRecipeCreateData({
+                ...validCreateRecipe,
+                difficulty: 'Expert',
+            });
+            expect(result?.status).toBe(400);
+        });
+
+        it('should return 400 for negative nutritional values', () => {
+            const result = validateRecipeCreateData({
+                ...validCreateRecipe,
+                protein: -1,
+            });
+            expect(result?.status).toBe(400);
+        });
+
+        it('should return 400 for invalid dietaryTags', () => {
+            const invalidTagResult = validateRecipeCreateData({
+                ...validCreateRecipe,
+                dietaryTags: ['vegan', 'unknown-diet'],
+            });
+            expect(invalidTagResult?.status).toBe(400);
+
+            const nonArrayResult = validateRecipeCreateData({
+                ...validCreateRecipe,
+                dietaryTags: 'vegan' as unknown as string[],
+            });
+            expect(nonArrayResult?.status).toBe(400);
+        });
     });
 });

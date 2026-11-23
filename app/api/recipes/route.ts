@@ -81,6 +81,15 @@ export async function POST(request: Request) {
             recipeYield,
             prepTime,
             cookTime,
+            difficulty,
+            protein,
+            carbohydrates,
+            fat,
+            saturatedFat,
+            fiber,
+            sugar,
+            sodium,
+            dietaryTags,
             forkedFromRecipeId,
         } = body;
 
@@ -230,6 +239,42 @@ export async function POST(request: Request) {
                     cookTime !== ''
                         ? parseInt(cookTime.toString(), 10)
                         : null,
+                difficulty: difficulty || null,
+                protein:
+                    protein !== undefined && protein !== null && protein !== ''
+                        ? parseInt(protein.toString(), 10)
+                        : null,
+                carbohydrates:
+                    carbohydrates !== undefined &&
+                    carbohydrates !== null &&
+                    carbohydrates !== ''
+                        ? parseInt(carbohydrates.toString(), 10)
+                        : null,
+                fat:
+                    fat !== undefined && fat !== null && fat !== ''
+                        ? parseInt(fat.toString(), 10)
+                        : null,
+                saturatedFat:
+                    saturatedFat !== undefined &&
+                    saturatedFat !== null &&
+                    saturatedFat !== ''
+                        ? parseInt(saturatedFat.toString(), 10)
+                        : null,
+                fiber:
+                    fiber !== undefined && fiber !== null && fiber !== ''
+                        ? parseInt(fiber.toString(), 10)
+                        : null,
+                sugar:
+                    sugar !== undefined && sugar !== null && sugar !== ''
+                        ? parseInt(sugar.toString(), 10)
+                        : null,
+                sodium:
+                    sodium !== undefined && sodium !== null && sodium !== ''
+                        ? parseInt(sodium.toString(), 10)
+                        : null,
+                ...(Array.isArray(dietaryTags)
+                    ? { dietaryTags: Array.from(new Set(dietaryTags)) }
+                    : {}),
                 forkedFromRecipeId: finalForkedFromRecipeId,
             },
         });

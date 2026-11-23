@@ -207,5 +207,29 @@ describe('RecipeInfoHeader', () => {
         expect(screen.queryByTestId('recipe-calories')).toBeNull();
         expect(screen.queryByTestId('recipe-yield')).toBeNull();
         expect(screen.queryByTestId('recipe-cuisine')).toBeNull();
+        expect(screen.queryByTestId('recipe-difficulty')).toBeNull();
+    });
+
+    it('renders difficulty when provided', () => {
+        render(
+            <RecipeInfoHeader
+                user={mockUser}
+                id="recipe-1"
+                likes={10}
+                stepsCount={3}
+                ingredientsCount={5}
+                averageRating={4.5}
+                ratingCount={2}
+                mounted={true}
+                t={t}
+                push={push}
+                isMdOrSmaller={false}
+                isSmOrSmaller={false}
+                difficulty="Medium"
+            />
+        );
+
+        expect(screen.getByTestId('recipe-difficulty')).toBeDefined();
+        expect(screen.getByText('Medium')).toBeDefined();
     });
 });
