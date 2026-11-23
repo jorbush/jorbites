@@ -742,5 +742,38 @@ describe('ProfileClient', () => {
             expect(queryByTestId('profile-lists-content')).toBeNull();
             expect(getByText('Recipe 1')).toBeDefined();
         });
+
+        it('renders ProfileCollectionSkeleton when switching to a deferred collection tab that has not loaded yet', () => {
+            const { getByTestId, queryByTestId } = render(
+                <ProfileClient
+                    recipes={mockRecipes}
+                    lists={[]}
+                    quests={[]}
+                    plannings={[]}
+                    loadedCollections={{
+                        lists: false,
+                        quests: false,
+                        plannings: false,
+                    }}
+                    currentUser={mockCurrentUser}
+                    totalPages={1}
+                    currentPage={1}
+                    searchParams={{}}
+                    profileUserId="user1"
+                />
+            );
+
+            fireEvent.click(getByTestId('tab-lists'));
+            expect(getByTestId('profile-collection-skeleton')).toBeDefined();
+            expect(queryByTestId('profile-lists-empty')).toBeNull();
+
+            fireEvent.click(getByTestId('tab-quests'));
+            expect(getByTestId('profile-collection-skeleton')).toBeDefined();
+            expect(queryByTestId('profile-quests-empty')).toBeNull();
+
+            fireEvent.click(getByTestId('tab-plannings'));
+            expect(getByTestId('profile-collection-skeleton')).toBeDefined();
+            expect(queryByTestId('profile-plannings-empty')).toBeNull();
+        });
     });
 });

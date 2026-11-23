@@ -14,6 +14,7 @@ import ProfileContentSection from '@/app/components/profile/ProfileContentSectio
 import getProfileCollections from '@/app/actions/getProfileCollections';
 import { getBlogsByAuthor } from '@/app/utils/blog-utils';
 import { getProfilePreferences } from '@/app/utils/profile-utils';
+import { ProfileLoadedCollections, ProfilePreferences } from '@/app/types';
 
 interface IParams {
     userId?: string;
@@ -24,6 +25,112 @@ interface ISearchParams {
     page?: string;
     tab?: string;
     search?: string;
+}
+
+const normalizeRequestedTab = (tab?: string): string => {
+    if (tab === 'articles') return 'blogs';
+    return tab || '';
+};
+
+const EMPTY_COLLECTIONS = {
+    lists: [],
+    quests: [],
+    plannings: [],
+};
+
+const ALL_UNLOADED: ProfileLoadedCollections = {
+    lists: false,
+    quests: false,
+    plannings: false,
+};
+
+async function resolveProfileCollections({
+    userId,
+    requestedTab,
+    isOwnProfile,
+    preferences,
+    recipesCount,
+    blogsCount,
+    hasSearch,
+}: {
+    userId: string;
+    requestedTab: string;
+    isOwnProfile: boolean;
+    preferences: Required<ProfilePreferences>;
+    recipesCount: number;
+    blogsCount: number;
+    hasSearch: boolean;
+}) {
+    if (requestedTab === 'lists' && preferences.showLists) {
+        const collections = await getProfileCollections({
+            userId,
+            includePrivate: isOwnProfile,
+            includeLists: true,
+            includeQuests: false,
+            includePlannings: false,
+        });
+        return {
+            collections,
+            loadedCollections: { ...ALL_UNLOADED, lists: true },
+        };
+    }
+
+    if (requestedTab === 'quests' && preferences.showQuests) {
+        const collections = await getProfileCollections({
+            userId,
+            includePrivate: isOwnProfile,
+            includeLists: false,
+            includeQuests: true,
+            includePlannings: false,
+        });
+        return {
+            collections,
+            loadedCollections: { ...ALL_UNLOADED, quests: true },
+        };
+    }
+
+    if (requestedTab === 'plannings' && preferences.showPlannings) {
+        const collections = await getProfileCollections({
+            userId,
+            includePrivate: isOwnProfile,
+            includeLists: false,
+            includeQuests: false,
+            includePlannings: true,
+        });
+        return {
+            collections,
+            loadedCollections: { ...ALL_UNLOADED, plannings: true },
+        };
+    }
+
+    const shouldFallbackLoad =
+        recipesCount === 0 &&
+        blogsCount === 0 &&
+        !hasSearch &&
+        requestedTab !== 'blogs';
+
+    if (shouldFallbackLoad) {
+        const collections = await getProfileCollections({
+            userId,
+            includePrivate: isOwnProfile,
+            includeLists: preferences.showLists,
+            includeQuests: preferences.showQuests,
+            includePlannings: preferences.showPlannings,
+        });
+        return {
+            collections,
+            loadedCollections: {
+                lists: preferences.showLists,
+                quests: preferences.showQuests,
+                plannings: preferences.showPlannings,
+            },
+        };
+    }
+
+    return {
+        collections: EMPTY_COLLECTIONS,
+        loadedCollections: ALL_UNLOADED,
+    };
 }
 
 export async function generateMetadata(props: {
@@ -104,8 +211,9 @@ async function loadProfilePageData(
     const preferences = getProfilePreferences(user);
     const isOwnProfile = Boolean(currentUser && currentUser.id === userId);
     const language = currentUser?.language || user?.language || 'en';
+    const requestedTab = normalizeRequestedTab(searchParams.tab);
 
-    const [userActivity, blogs, collections] = await Promise.all([
+    const [userActivity, blogs] = await Promise.all([
         preferences.showActivityGraph
             ? getUserActivityForGraph({ userId })
             : Promise.resolve({
@@ -116,14 +224,17 @@ async function loadProfilePageData(
         preferences.showArticles
             ? getBlogsByAuthor(userId, user?.name || null, language)
             : Promise.resolve([]),
-        getProfileCollections({
-            userId,
-            includePrivate: isOwnProfile,
-            includeLists: preferences.showLists,
-            includeQuests: preferences.showQuests,
-            includePlannings: preferences.showPlannings,
-        }),
     ]);
+
+    const { collections, loadedCollections } = await resolveProfileCollections({
+        userId,
+        requestedTab,
+        isOwnProfile,
+        preferences,
+        recipesCount: recipesResponse.recipes.length + pinnedRecipes.length,
+        blogsCount: blogs.length,
+        hasSearch: Boolean(search?.trim()),
+    });
 
     return {
         userId,
@@ -136,6 +247,7 @@ async function loadProfilePageData(
         lists: collections.lists,
         quests: collections.quests,
         plannings: collections.plannings,
+        loadedCollections,
         userActivity,
     };
 }
@@ -156,6 +268,7 @@ const ProfilePage = async (props: {
         lists,
         quests,
         plannings,
+        loadedCollections,
         userActivity,
     } = data;
 
@@ -203,6 +316,7 @@ const ProfilePage = async (props: {
                 lists={lists}
                 quests={quests}
                 plannings={plannings}
+                loadedCollections={loadedCollections}
                 user={user}
                 graphRecipes={userActivity.recipes}
                 comments={userActivity.comments}

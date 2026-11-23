@@ -2,12 +2,16 @@
 
 import React from 'react';
 import {
+    ProfileLoadedCollections,
+    ProfilePreferences,
     SafeList,
+    SafeListPreview,
     SafePlanning,
+    SafePlanningPreview,
     SafeQuest,
+    SafeQuestPreview,
     SafeRecipe,
     SafeUser,
-    ProfilePreferences,
 } from '@/app/types';
 import { Blog } from '@/app/utils/markdownUtils';
 import Container from '@/app/components/utils/Container';
@@ -18,6 +22,7 @@ import ProfileBlogsContent from '@/app/components/profile/ProfileBlogsContent';
 import ProfileListsContent from '@/app/components/profile/ProfileListsContent';
 import ProfileQuestsContent from '@/app/components/profile/ProfileQuestsContent';
 import ProfilePlanningsContent from '@/app/components/profile/ProfilePlanningsContent';
+import ProfileCollectionSkeleton from '@/app/components/profile/ProfileCollectionSkeleton';
 import UserStats from '@/app/components/stats/UserStats';
 import ActivityHeatmap, {
     ActivityItem,
@@ -43,9 +48,10 @@ interface ProfileClientProps {
     searchParams: SearchParams;
     profileUserId: string;
     blogs?: Blog[];
-    lists?: SafeList[];
-    quests?: SafeQuest[];
-    plannings?: SafePlanning[];
+    lists?: Array<SafeList | SafeListPreview>;
+    quests?: Array<SafeQuest | SafeQuestPreview>;
+    plannings?: Array<SafePlanning | SafePlanningPreview>;
+    loadedCollections?: ProfileLoadedCollections;
     user?: SafeUser | null;
     profileUser?: SafeUser | null;
     profilePreferences?: ProfilePreferences | null;
@@ -73,10 +79,32 @@ type GraphRecipe = {
 
 const EMPTY_RECIPES: SafeRecipe[] = [];
 const EMPTY_BLOGS: Blog[] = [];
-const EMPTY_LISTS: SafeList[] = [];
-const EMPTY_QUESTS: SafeQuest[] = [];
-const EMPTY_PLANNINGS: SafePlanning[] = [];
+const EMPTY_LISTS: Array<SafeList | SafeListPreview> = [];
+const EMPTY_QUESTS: Array<SafeQuest | SafeQuestPreview> = [];
+const EMPTY_PLANNINGS: Array<SafePlanning | SafePlanningPreview> = [];
 const EMPTY_GRAPH_RECIPES: GraphRecipe[] = [];
+const DEFAULT_LOADED_COLLECTIONS: ProfileLoadedCollections = {
+    lists: true,
+    quests: true,
+    plannings: true,
+};
+
+const isCollectionTabWaiting = (
+    activeTab: string,
+    preferences: Required<ProfilePreferences>,
+    loadedCollections: ProfileLoadedCollections
+): boolean => {
+    if (activeTab === 'lists' && preferences.showLists) {
+        return !loadedCollections.lists;
+    }
+    if (activeTab === 'quests' && preferences.showQuests) {
+        return !loadedCollections.quests;
+    }
+    if (activeTab === 'plannings' && preferences.showPlannings) {
+        return !loadedCollections.plannings;
+    }
+    return false;
+};
 
 const resolveTargetUser = (
     user?: SafeUser | null,
@@ -148,6 +176,7 @@ const ProfileActivitySection: React.FC<ProfileActivitySectionProps> = ({
 interface ProfileTabContentProps {
     activeTab: string;
     preferences: Required<ProfilePreferences>;
+    loadedCollections: ProfileLoadedCollections;
     recipes: SafeRecipe[];
     pinnedRecipes: SafeRecipe[];
     currentUser?: SafeUser | null;
@@ -156,9 +185,9 @@ interface ProfileTabContentProps {
     currentPage: number;
     searchParams: SearchParams;
     blogs: Blog[];
-    lists: SafeList[];
-    quests: SafeQuest[];
-    plannings: SafePlanning[];
+    lists: Array<SafeList | SafeListPreview>;
+    quests: Array<SafeQuest | SafeQuestPreview>;
+    plannings: Array<SafePlanning | SafePlanningPreview>;
     searchQuery: string;
     isSearching: boolean;
     onSearchChange: (query: string) => void;
@@ -169,6 +198,7 @@ interface ProfileTabContentProps {
 const ProfileTabContent: React.FC<ProfileTabContentProps> = ({
     activeTab,
     preferences,
+    loadedCollections,
     recipes,
     pinnedRecipes,
     currentUser,
@@ -216,6 +246,10 @@ const ProfileTabContent: React.FC<ProfileTabContentProps> = ({
                 onClearSearch={onClearSearch}
             />
         );
+    }
+
+    if (isCollectionTabWaiting(activeTab, preferences, loadedCollections)) {
+        return <ProfileCollectionSkeleton />;
     }
 
     if (activeTab === 'lists' && preferences.showLists) {
@@ -275,6 +309,7 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
     lists = EMPTY_LISTS,
     quests = EMPTY_QUESTS,
     plannings = EMPTY_PLANNINGS,
+    loadedCollections = DEFAULT_LOADED_COLLECTIONS,
     user,
     profileUser,
     profilePreferences,
@@ -351,6 +386,7 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
                 <ProfileTabContent
                     activeTab={activeTab}
                     preferences={resolvedPreferences}
+                    loadedCollections={loadedCollections}
                     recipes={recipes}
                     pinnedRecipes={pinnedRecipes}
                     currentUser={currentUser}

@@ -166,6 +166,7 @@ describe('useProfileTabs & getInitialTab', () => {
                 result.current.handleTabChange('plannings');
             });
 
+            expect(result.current.isTabPending).toBe(false);
             expect(result.current.activeTab).toBe('recipes');
             expect(mockPush).not.toHaveBeenCalled();
         });

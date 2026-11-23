@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
-import { SafePlanning, SafeUser } from '@/app/types';
+import { SafePlanning, SafePlanningPreview, SafeUser } from '@/app/types';
 import { PlanningCard } from '@/app/components/plannings/PlanningCard';
 import Pagination from '@/app/components/navigation/Pagination';
 import EmptyState from '@/app/components/utils/EmptyState';
@@ -13,10 +13,12 @@ import SearchBar from '@/app/components/inputs/SearchBar';
 const PLANNINGS_PER_PAGE = 12;
 const NOOP = () => {};
 
+type ProfilePlanningItem = SafePlanning | SafePlanningPreview;
+
 function filterProfilePlannings(
-    plannings: SafePlanning[],
+    plannings: ProfilePlanningItem[],
     normalizedSearch: string
-): SafePlanning[] {
+): ProfilePlanningItem[] {
     if (!normalizedSearch) {
         return plannings;
     }
@@ -51,7 +53,7 @@ function paginateItems<T>(items: T[], pageParam?: string) {
 }
 
 interface ProfilePlanningsContentProps {
-    plannings: SafePlanning[];
+    plannings: ProfilePlanningItem[];
     currentUser?: SafeUser | null;
     isOwnProfile: boolean;
     searchParams: any;

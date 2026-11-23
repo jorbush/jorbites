@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { NavigationTab } from '@/app/components/utils/TabNavigation';
@@ -113,6 +113,7 @@ export function useProfileTabs({
 }: UseProfileTabsProps) {
     const router = useRouter();
     const { t } = useTranslation();
+    const [isTabPending, startTabTransition] = useTransition();
 
     const visibility: TabVisibilityOptions = {
         showArticles,
@@ -146,7 +147,9 @@ export function useProfileTabs({
         params.set('tab', tabId);
         params.delete('page');
         const query = params.toString();
-        router.push(query ? `?${query}` : '?', { scroll: false });
+        startTabTransition(() => {
+            router.push(query ? `?${query}` : '?', { scroll: false });
+        });
     };
 
     const tabs: NavigationTab[] = [
@@ -192,5 +195,6 @@ export function useProfileTabs({
         activeTab,
         handleTabChange,
         tabs,
+        isTabPending,
     };
 }

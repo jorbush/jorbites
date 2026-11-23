@@ -13,11 +13,22 @@ import {
     Certificate,
 } from '@prisma/client';
 
+export type SafeUserPreview = Pick<SafeUser, 'id' | 'name' | 'image'>;
+
+export type SafeRecipePreview = Pick<SafeRecipe, 'id' | 'title' | 'imageSrc'>;
+
 export type SafeQuest = Omit<Quest, 'createdAt' | 'updatedAt'> & {
     createdAt: string;
     updatedAt: string;
     user?: SafeUser;
     recipes?: Array<SafeRecipe & { user?: SafeUser }>;
+};
+
+export type SafeQuestPreview = Omit<Quest, 'createdAt' | 'updatedAt'> & {
+    createdAt: string;
+    updatedAt: string;
+    user?: SafeUserPreview;
+    recipes?: SafeRecipePreview[];
 };
 
 export type SafeWeeklyChallenge = Omit<
@@ -198,10 +209,7 @@ export type SafeWorkshopParticipant = Omit<WorkshopParticipant, 'joinedAt'> & {
     joinedAt: string;
 };
 
-export type SafeListRecipePreview = Pick<
-    SafeRecipe,
-    'id' | 'title' | 'imageSrc'
->;
+export type SafeListRecipePreview = SafeRecipePreview;
 
 export type SafeList = Omit<List, 'createdAt' | 'updatedAt'> & {
     createdAt: string;
@@ -210,10 +218,26 @@ export type SafeList = Omit<List, 'createdAt' | 'updatedAt'> & {
     recipes?: SafeListRecipePreview[];
 };
 
+export type SafeListPreview = Omit<List, 'createdAt' | 'updatedAt'> & {
+    createdAt: string;
+    updatedAt: string;
+    user?: SafeUserPreview;
+    recipes?: SafeRecipePreview[];
+};
+
 export type SafePlanningMeal = Omit<PlanningMeal, 'id' | 'planningId'> & {
     id: string;
     planningId: string;
     recipe?: SafeRecipe & { user?: SafeUser };
+};
+
+export type SafePlanningMealPreview = Omit<
+    PlanningMeal,
+    'id' | 'planningId'
+> & {
+    id: string;
+    planningId: string;
+    recipe?: SafeRecipePreview;
 };
 
 export type SafePlanning = Omit<Planning, 'createdAt' | 'updatedAt'> & {
@@ -221,6 +245,19 @@ export type SafePlanning = Omit<Planning, 'createdAt' | 'updatedAt'> & {
     updatedAt: string;
     user?: SafeUser;
     meals?: SafePlanningMeal[];
+};
+
+export type SafePlanningPreview = Omit<Planning, 'createdAt' | 'updatedAt'> & {
+    createdAt: string;
+    updatedAt: string;
+    user?: SafeUserPreview;
+    meals?: SafePlanningMealPreview[];
+};
+
+export type ProfileLoadedCollections = {
+    lists: boolean;
+    quests: boolean;
+    plannings: boolean;
 };
 
 export type PublicCertificateUser = {
