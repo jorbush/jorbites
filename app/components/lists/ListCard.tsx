@@ -4,13 +4,13 @@ import React from 'react';
 import Link from 'next/link';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { GiPadlock, GiPadlockOpen } from 'react-icons/gi';
-import { SafeList } from '@/app/types';
+import { SafeList, SafeListPreview } from '@/app/types';
 import Avatar from '@/app/components/utils/Avatar';
 import { formatDate } from '@/app/utils/date-utils';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 
 export interface ListCardProps {
-    list: SafeList;
+    list: SafeList | SafeListPreview;
     showDelete?: boolean;
     showPublicBadge?: boolean;
     onDeleteClick?: (listId: string) => void;
@@ -19,7 +19,7 @@ export interface ListCardProps {
     language: string;
 }
 
-const getPreviewRecipes = (list: SafeList) => {
+const getPreviewRecipes = (list: SafeList | SafeListPreview) => {
     if (!list.recipes) return [];
     const unique: any[] = [];
     const seen = new Set();
@@ -142,7 +142,7 @@ const ListCardPreviews: React.FC<ListCardPreviewsProps> = ({ previews, t }) => {
 };
 
 interface ListCardFooterProps {
-    list: SafeList;
+    list: SafeList | SafeListPreview;
     language: string;
     push: (url: string) => void;
     t: any;

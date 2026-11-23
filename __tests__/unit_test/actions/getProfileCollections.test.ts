@@ -107,16 +107,43 @@ describe('getProfileCollections', () => {
         expect(prisma.list.findMany).toHaveBeenCalledWith(
             expect.objectContaining({
                 where: { userId: 'user-1', isPrivate: false },
+                select: expect.objectContaining({
+                    user: { select: { id: true, name: true, image: true } },
+                    recipes: {
+                        select: { id: true, title: true, imageSrc: true },
+                        take: 4,
+                    },
+                }),
             })
         );
         expect(prisma.planning.findMany).toHaveBeenCalledWith(
             expect.objectContaining({
                 where: { userId: 'user-1', isPrivate: false },
+                select: expect.objectContaining({
+                    user: { select: { id: true, name: true, image: true } },
+                    meals: {
+                        select: expect.objectContaining({
+                            recipe: {
+                                select: {
+                                    id: true,
+                                    title: true,
+                                    imageSrc: true,
+                                },
+                            },
+                        }),
+                    },
+                }),
             })
         );
         expect(prisma.quest.findMany).toHaveBeenCalledWith(
             expect.objectContaining({
                 where: { userId: 'user-1' },
+                select: expect.objectContaining({
+                    user: { select: { id: true, name: true, image: true } },
+                    recipes: expect.objectContaining({
+                        select: { id: true, title: true, imageSrc: true },
+                    }),
+                }),
             })
         );
 

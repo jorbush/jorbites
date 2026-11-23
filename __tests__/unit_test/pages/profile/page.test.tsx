@@ -6,6 +6,7 @@ import getRecipesForGraph from '@/app/actions/getRecipesForGraph';
 import getUserById from '@/app/actions/getUserById';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import getPinnedRecipesByUserId from '@/app/actions/getPinnedRecipesByUserId';
+import getProfileCollections from '@/app/actions/getProfileCollections';
 
 // Mock implementations
 vi.mock('@/app/hooks/useMediaQuery', () => ({
@@ -16,6 +17,7 @@ vi.mock('@/app/actions/getRecipesForGraph');
 vi.mock('@/app/actions/getUserById');
 vi.mock('@/app/actions/getCurrentUser');
 vi.mock('@/app/actions/getPinnedRecipesByUserId');
+vi.mock('@/app/actions/getProfileCollections');
 vi.mock('next/navigation', () => ({
     useRouter: vi.fn(() => ({
         push: vi.fn(),
@@ -84,6 +86,11 @@ describe('ProfilePage', () => {
     beforeEach(() => {
         vi.resetAllMocks();
         vi.mocked(getPinnedRecipesByUserId).mockResolvedValue([]);
+        vi.mocked(getProfileCollections).mockResolvedValue({
+            lists: [],
+            quests: [],
+            plannings: [],
+        });
     });
 
     afterEach(() => {
@@ -329,6 +336,122 @@ describe('ProfilePage', () => {
             page: 2,
             limit: 12,
             search: 'pasta',
+        });
+    });
+
+    it('skips getProfileCollections on default profile load when user has recipes', async () => {
+        vi.mocked(getRecipesByUserId).mockResolvedValue({
+            recipes: mockRecipes as any,
+            totalRecipes: 2,
+            totalPages: 1,
+            currentPage: 1,
+        });
+        vi.mocked(getRecipesForGraph).mockResolvedValue([]);
+        vi.mocked(getUserById).mockResolvedValue({
+            createdAt: '',
+            updatedAt: '',
+            emailVerified: null,
+            id: mockUser.id,
+            name: mockUser.name,
+            email: null,
+            image: null,
+            favoriteIds: [],
+            emailNotifications: false,
+            level: 0,
+            verified: false,
+            badges: [],
+            resetToken: null,
+            resetTokenExpiry: null,
+        });
+        vi.mocked(getCurrentUser).mockResolvedValue(null);
+
+        await ProfilePage({
+            params: Promise.resolve({ userId: 'user1' }),
+            searchParams: Promise.resolve({}),
+        });
+
+        expect(getProfileCollections).not.toHaveBeenCalled();
+    });
+
+    it('fetches only the requested collection when ?tab=lists, quests, or plannings', async () => {
+        vi.mocked(getRecipesByUserId).mockResolvedValue({
+            recipes: mockRecipes as any,
+            totalRecipes: 2,
+            totalPages: 1,
+            currentPage: 1,
+        });
+        vi.mocked(getRecipesForGraph).mockResolvedValue([]);
+        vi.mocked(getUserById).mockResolvedValue({
+            createdAt: '',
+            updatedAt: '',
+            emailVerified: null,
+            id: mockUser.id,
+            name: mockUser.name,
+            email: null,
+            image: null,
+            favoriteIds: [],
+            emailNotifications: false,
+            level: 0,
+            verified: false,
+            badges: [],
+            resetToken: null,
+            resetTokenExpiry: null,
+        });
+        vi.mocked(getCurrentUser).mockResolvedValue(null);
+
+        await ProfilePage({
+            params: Promise.resolve({ userId: 'user1' }),
+            searchParams: Promise.resolve({ tab: 'quests' }),
+        });
+
+        expect(getProfileCollections).toHaveBeenCalledTimes(1);
+        expect(getProfileCollections).toHaveBeenCalledWith({
+            userId: 'user1',
+            includePrivate: false,
+            includeLists: false,
+            includeQuests: true,
+            includePlannings: false,
+        });
+    });
+
+    it('falls back to loading enabled collections when user has 0 recipes and 0 blogs', async () => {
+        vi.mocked(getRecipesByUserId).mockResolvedValue({
+            recipes: [],
+            totalRecipes: 0,
+            totalPages: 0,
+            currentPage: 1,
+        });
+        vi.mocked(getRecipesForGraph).mockResolvedValue([]);
+        vi.mocked(getUserById).mockResolvedValue({
+            createdAt: '',
+            updatedAt: '',
+            emailVerified: null,
+            id: mockUser.id,
+            name: mockUser.name,
+            email: null,
+            image: null,
+            favoriteIds: [],
+            emailNotifications: false,
+            level: 0,
+            verified: false,
+            badges: [],
+            resetToken: null,
+            resetTokenExpiry: null,
+        });
+        vi.mocked(getCurrentUser).mockResolvedValue(null);
+
+        await ProfilePage({
+            params: Promise.resolve({ userId: 'user1' }),
+            searchParams: Promise.resolve({}),
+        });
+
+        expect(getProfileCollections).toHaveBeenCalledTimes(1);
+        expect(getProfileCollections).toHaveBeenCalledWith({
+            userId: 'user1',
+            includePrivate: false,
+            includeLists: true,
+            includeQuests: true,
+            includePlannings: true,
         });
     });
 });

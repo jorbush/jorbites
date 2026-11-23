@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
-import { SafeQuest } from '@/app/types';
+import { SafeQuest, SafeQuestPreview } from '@/app/types';
 import QuestCard from '@/app/components/quests/QuestCard';
 import Pagination from '@/app/components/navigation/Pagination';
 import EmptyState from '@/app/components/utils/EmptyState';
@@ -13,10 +13,12 @@ import SearchBar from '@/app/components/inputs/SearchBar';
 const QUESTS_PER_PAGE = 12;
 const NOOP = () => {};
 
+type ProfileQuestItem = SafeQuest | SafeQuestPreview;
+
 function filterProfileQuests(
-    quests: SafeQuest[],
+    quests: ProfileQuestItem[],
     normalizedSearch: string
-): SafeQuest[] {
+): ProfileQuestItem[] {
     if (!normalizedSearch) {
         return quests;
     }
@@ -48,7 +50,7 @@ function paginateItems<T>(items: T[], pageParam?: string) {
 }
 
 interface ProfileQuestsContentProps {
-    quests: SafeQuest[];
+    quests: ProfileQuestItem[];
     searchParams: any;
     searchQuery?: string;
     onSearchChange?: (query: string) => void;

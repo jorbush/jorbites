@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
-import { SafeQuest, SafeUser } from '@/app/types';
+import { SafeQuest, SafeQuestPreview, SafeUser } from '@/app/types';
 import Avatar from '@/app/components/utils/Avatar';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import { formatDistanceToNowLocale } from '@/app/utils/date-utils';
@@ -142,7 +142,7 @@ const QuestCardFooter: React.FC<QuestCardFooterProps> = ({
 };
 
 export interface QuestCardProps {
-    quest: SafeQuest;
+    quest: SafeQuest | SafeQuestPreview;
     push?: (url: string) => void;
     t?: any;
     language?: string;

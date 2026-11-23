@@ -1,8 +1,11 @@
 import prisma from '@/app/lib/prismadb';
 import { logger } from '@/app/lib/axiom/server';
-import { USER_SELECT_FIELDS } from '@/app/utils/constants';
-import { toSafeRecipe } from '@/app/utils/toSafeRecipe';
-import { SafeList, SafePlanning, SafeQuest, SafeUser } from '@/app/types';
+import {
+    SafeListPreview,
+    SafePlanningPreview,
+    SafeQuestPreview,
+    SafeUserPreview,
+} from '@/app/types';
 
 export interface GetProfileCollectionsParams {
     userId: string;
@@ -13,10 +16,22 @@ export interface GetProfileCollectionsParams {
 }
 
 export interface ProfileCollectionsResult {
-    lists: SafeList[];
-    quests: SafeQuest[];
-    plannings: SafePlanning[];
+    lists: SafeListPreview[];
+    quests: SafeQuestPreview[];
+    plannings: SafePlanningPreview[];
 }
+
+const USER_PREVIEW_SELECT = {
+    id: true,
+    name: true,
+    image: true,
+} as const;
+
+const RECIPE_PREVIEW_SELECT = {
+    id: true,
+    title: true,
+    imageSrc: true,
+} as const;
 
 const toIsoString = (value: unknown): string => {
     if (value && typeof (value as Date).toISOString === 'function') {
@@ -25,23 +40,25 @@ const toIsoString = (value: unknown): string => {
     return String(value ?? '');
 };
 
-const mapToSafeUser = (user: any): SafeUser | undefined => {
+const mapToUserPreview = (user: any): SafeUserPreview | undefined => {
     if (!user) return undefined;
     return {
-        ...user,
-        createdAt: toIsoString(user.createdAt),
-        updatedAt: toIsoString(user.updatedAt),
-        emailVerified: user.emailVerified
-            ? toIsoString(user.emailVerified)
-            : null,
+        id: user.id,
+        name: user.name ?? null,
+        image: user.image ?? null,
     };
 };
 
-const mapToSafeList = (list: any): SafeList => ({
-    ...list,
+const mapToSafeList = (list: any): SafeListPreview => ({
+    id: list.id,
+    name: list.name,
+    isPrivate: list.isPrivate,
+    isDefault: list.isDefault,
+    userId: list.userId,
+    recipeIds: Array.isArray(list.recipeIds) ? list.recipeIds : [],
     createdAt: toIsoString(list.createdAt),
     updatedAt: toIsoString(list.updatedAt),
-    user: mapToSafeUser(list.user),
+    user: mapToUserPreview(list.user),
     recipes: Array.isArray(list.recipes)
         ? list.recipes.map((recipe: any) => ({
               id: recipe.id,
@@ -51,31 +68,48 @@ const mapToSafeList = (list: any): SafeList => ({
         : [],
 });
 
-const mapToSafeQuest = (quest: any): SafeQuest => ({
-    ...quest,
+const mapToSafeQuest = (quest: any): SafeQuestPreview => ({
+    id: quest.id,
+    title: quest.title,
+    description: quest.description,
+    status: quest.status,
+    userId: quest.userId,
+    acceptedRecipeId: quest.acceptedRecipeId ?? null,
+    acceptedSolverId: quest.acceptedSolverId ?? null,
+    badgeEvaluated: Boolean(quest.badgeEvaluated),
     createdAt: toIsoString(quest.createdAt),
     updatedAt: toIsoString(quest.updatedAt),
-    user: mapToSafeUser(quest.user),
+    user: mapToUserPreview(quest.user),
     recipes: Array.isArray(quest.recipes)
         ? quest.recipes.map((recipe: any) => ({
-              ...toSafeRecipe(recipe),
-              user: mapToSafeUser(recipe.user),
+              id: recipe.id,
+              title: recipe.title,
+              imageSrc: recipe.imageSrc,
           }))
         : [],
 });
 
-const mapToSafePlanning = (plan: any): SafePlanning => ({
-    ...plan,
+const mapToSafePlanning = (plan: any): SafePlanningPreview => ({
+    id: plan.id,
+    name: plan.name,
+    description: plan.description ?? null,
+    isPrivate: plan.isPrivate,
+    userId: plan.userId,
     createdAt: toIsoString(plan.createdAt),
     updatedAt: toIsoString(plan.updatedAt),
-    user: mapToSafeUser(plan.user),
+    user: mapToUserPreview(plan.user),
     meals: Array.isArray(plan.meals)
         ? plan.meals.map((meal: any) => ({
-              ...meal,
+              id: meal.id,
+              planningId: meal.planningId,
+              day: meal.day,
+              mealType: meal.mealType,
+              recipeId: meal.recipeId,
               recipe: meal.recipe
                   ? {
-                        ...toSafeRecipe(meal.recipe),
-                        user: mapToSafeUser(meal.recipe.user),
+                        id: meal.recipe.id,
+                        title: meal.recipe.title,
+                        imageSrc: meal.recipe.imageSrc,
                     }
                   : undefined,
           }))
@@ -103,16 +137,20 @@ export default async function getProfileCollections({
                           userId,
                           ...privacyFilter,
                       },
-                      include: {
+                      select: {
+                          id: true,
+                          name: true,
+                          isPrivate: true,
+                          isDefault: true,
+                          userId: true,
+                          recipeIds: true,
+                          createdAt: true,
+                          updatedAt: true,
                           user: {
-                              select: USER_SELECT_FIELDS,
+                              select: USER_PREVIEW_SELECT,
                           },
                           recipes: {
-                              select: {
-                                  id: true,
-                                  title: true,
-                                  imageSrc: true,
-                              },
+                              select: RECIPE_PREVIEW_SELECT,
                               take: 4,
                           },
                       },
@@ -126,11 +164,22 @@ export default async function getProfileCollections({
                       where: {
                           userId,
                       },
-                      include: {
+                      select: {
+                          id: true,
+                          title: true,
+                          description: true,
+                          status: true,
+                          userId: true,
+                          acceptedRecipeId: true,
+                          acceptedSolverId: true,
+                          badgeEvaluated: true,
+                          createdAt: true,
+                          updatedAt: true,
                           user: {
-                              select: USER_SELECT_FIELDS,
+                              select: USER_PREVIEW_SELECT,
                           },
                           recipes: {
+                              select: RECIPE_PREVIEW_SELECT,
                               orderBy: {
                                   createdAt: 'desc',
                               },
@@ -147,18 +196,26 @@ export default async function getProfileCollections({
                           userId,
                           ...privacyFilter,
                       },
-                      include: {
+                      select: {
+                          id: true,
+                          name: true,
+                          description: true,
+                          isPrivate: true,
+                          userId: true,
+                          createdAt: true,
+                          updatedAt: true,
                           user: {
-                              select: USER_SELECT_FIELDS,
+                              select: USER_PREVIEW_SELECT,
                           },
                           meals: {
-                              include: {
+                              select: {
+                                  id: true,
+                                  planningId: true,
+                                  day: true,
+                                  mealType: true,
+                                  recipeId: true,
                                   recipe: {
-                                      include: {
-                                          user: {
-                                              select: USER_SELECT_FIELDS,
-                                          },
-                                      },
+                                      select: RECIPE_PREVIEW_SELECT,
                                   },
                               },
                           },

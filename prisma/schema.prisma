@@ -225,6 +225,8 @@ model Quest {
 
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   recipes     Recipe[]
+
+  @@index([userId, createdAt])
 }
 
 model PushSubscription {
@@ -255,6 +257,9 @@ model List {
 
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   recipes     Recipe[] @relation(fields: [recipeIds], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([userId, isPrivate, createdAt])
 }
 
 model Planning {
@@ -268,6 +273,9 @@ model Planning {
 
   user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   meals       PlanningMeal[]
+
+  @@index([userId, createdAt])
+  @@index([userId, isPrivate, createdAt])
 }
 
 model PlanningMeal {
