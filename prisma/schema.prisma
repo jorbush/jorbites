@@ -34,6 +34,7 @@ model User {
   twoFactorEnabled    Boolean   @default(false)
   twoFactorSecret     String?
   twoFactorBackupCodes String[] @default([])
+  tokenVersion        Int       @default(0)
   bio                 String?
   websiteUrl          String?
   instagram           String?

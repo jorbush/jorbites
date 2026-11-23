@@ -106,13 +106,16 @@ export async function PATCH(
         // Hash the new password
         const hashedNewPassword = await bcrypt.hash(newPassword, 12);
 
-        // Update the user's password
+        // Update the user's password and increment tokenVersion to revoke all active sessions
         await prisma.user.update({
             where: {
                 id: currentUser.id,
             },
             data: {
                 hashedPassword: hashedNewPassword,
+                tokenVersion: {
+                    increment: 1,
+                },
             },
         });
 

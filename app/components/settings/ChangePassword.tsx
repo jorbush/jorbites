@@ -13,7 +13,10 @@ import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { SafeUser } from '@/app/types';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import { signOut } from 'next-auth/react';
 import { FaRegSave } from 'react-icons/fa';
+import useSettingsModal from '@/app/hooks/useSettingsModal';
+import useLoginModal from '@/app/hooks/useLoginModal';
 import { ChangePasswordHeader } from './ChangePasswordHeader';
 import { PasswordFieldInput } from './PasswordFieldInput';
 
@@ -29,6 +32,8 @@ export interface ChangePasswordRef {
 const ChangePassword = ({ currentUser, ref }: ChangePasswordProps) => {
     const { refresh } = useRouter() || {};
     const { t } = useTranslation();
+    const settingsModal = useSettingsModal();
+    const loginModal = useLoginModal();
     const [isEditing, setIsEditing] = useState(false);
     const [isPending, startTransition] = useTransition();
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -69,21 +74,33 @@ const ChangePassword = ({ currentUser, ref }: ChangePasswordProps) => {
                         newPassword: data.newPassword,
                     });
                     toast.success(
-                        t('password_updated') || 'Password updated successfully'
+                        t('password_updated_sign_in_again') ||
+                            'Password updated. Please sign in again.'
                     );
                     setIsEditing(false);
                     reset();
+                    await signOut({ redirect: false });
+                    settingsModal.onClose();
+                    loginModal.onOpen();
                 } catch (error: any) {
                     const errorMessage =
                         error.response?.data?.error ||
                         t('something_went_wrong');
                     toast.error(errorMessage);
                 } finally {
-                    refresh();
+                    refresh?.();
                 }
             });
         },
-        [currentUser?.id, refresh, t, isPending, reset]
+        [
+            currentUser?.id,
+            refresh,
+            t,
+            isPending,
+            reset,
+            settingsModal,
+            loginModal,
+        ]
     );
 
     // Check if form is valid and has actual changes
