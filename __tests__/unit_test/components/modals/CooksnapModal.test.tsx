@@ -78,6 +78,21 @@ describe('CooksnapModal', () => {
         expect(screen.getByText('Post Cooksnap')).toBeDefined();
     });
 
+    it('uses mobile-safe font size and brand green focus border on note input', () => {
+        render(<CooksnapModal />);
+
+        const noteInput = screen.getByTestId('cooksnap-note-input');
+        expect(noteInput).toHaveClass('text-base', 'md:text-sm');
+        expect(noteInput).toHaveClass(
+            'focus:border-green-450',
+            'dark:focus:border-green-450'
+        );
+        expect(noteInput).not.toHaveClass(
+            'focus:border-green-500',
+            'dark:focus:border-green-400'
+        );
+    });
+
     it('disables submit button when no file is selected', () => {
         render(<CooksnapModal />);
 
