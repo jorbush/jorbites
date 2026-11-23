@@ -4,18 +4,22 @@ import EmptyState from '@/app/components/utils/EmptyState';
 import ProfileClientSkeleton from '@/app/components/profile/ProfileClientSkeleton';
 import ProfileClient from '@/app/profile/[userId]/ProfileClient';
 import {
+    ProfileLoadedCollections,
     SafeList,
+    SafeListPreview,
     SafePlanning,
+    SafePlanningPreview,
     SafeQuest,
+    SafeQuestPreview,
     SafeRecipe,
     SafeUser,
 } from '@/app/types';
 import { Blog } from '@/app/utils/markdownUtils';
 import { OrderByType } from '@/app/utils/filter';
 
-const EMPTY_LISTS: SafeList[] = [];
-const EMPTY_QUESTS: SafeQuest[] = [];
-const EMPTY_PLANNINGS: SafePlanning[] = [];
+const EMPTY_LISTS: Array<SafeList | SafeListPreview> = [];
+const EMPTY_QUESTS: Array<SafeQuest | SafeQuestPreview> = [];
+const EMPTY_PLANNINGS: Array<SafePlanning | SafePlanningPreview> = [];
 
 interface ProfileContentSectionProps {
     userId: string;
@@ -33,9 +37,10 @@ interface ProfileContentSectionProps {
         search?: string;
     };
     blogs: Blog[];
-    lists?: SafeList[];
-    quests?: SafeQuest[];
-    plannings?: SafePlanning[];
+    lists?: Array<SafeList | SafeListPreview>;
+    quests?: Array<SafeQuest | SafeQuestPreview>;
+    plannings?: Array<SafePlanning | SafePlanningPreview>;
+    loadedCollections?: ProfileLoadedCollections;
     user?: SafeUser | null;
     graphRecipes?: Array<{
         id: string;
@@ -68,9 +73,9 @@ const hasProfileClientContent = ({
     recipes: SafeRecipe[];
     pinnedRecipes: SafeRecipe[];
     blogs: Blog[];
-    lists: SafeList[];
-    quests: SafeQuest[];
-    plannings: SafePlanning[];
+    lists: Array<SafeList | SafeListPreview>;
+    quests: Array<SafeQuest | SafeQuestPreview>;
+    plannings: Array<SafePlanning | SafePlanningPreview>;
     searchParams: ProfileContentSectionProps['searchParams'];
     user?: SafeUser | null;
     graphRecipes?: ProfileContentSectionProps['graphRecipes'];
@@ -114,6 +119,7 @@ const ProfileContentSection: React.FC<ProfileContentSectionProps> = ({
     lists = EMPTY_LISTS,
     quests = EMPTY_QUESTS,
     plannings = EMPTY_PLANNINGS,
+    loadedCollections,
     user,
     graphRecipes,
     comments,
@@ -161,6 +167,7 @@ const ProfileContentSection: React.FC<ProfileContentSectionProps> = ({
                     lists={lists}
                     quests={quests}
                     plannings={plannings}
+                    loadedCollections={loadedCollections}
                     user={user}
                     graphRecipes={graphRecipes}
                     comments={comments}

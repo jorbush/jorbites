@@ -524,6 +524,7 @@
     "save_password": "Guardar Contrasenya",
     "saving": "Guardant...",
     "password_updated": "Contrasenya actualitzada correctament",
+    "password_updated_sign_in_again": "Contrasenya actualitzada. Si us plau, torna a iniciar sessió.",
     "edit_recipe": "Editar Recepta",
     "remix": "Remescla",
     "remix_recipe": "Remesclar Recepta",

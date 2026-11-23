@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
-import { SafeList } from '@/app/types';
+import { SafeList, SafeListPreview } from '@/app/types';
 import ListCard from '@/app/components/lists/ListCard';
 import Pagination from '@/app/components/navigation/Pagination';
 import EmptyState from '@/app/components/utils/EmptyState';
@@ -13,11 +13,13 @@ import SearchBar from '@/app/components/inputs/SearchBar';
 const LISTS_PER_PAGE = 12;
 const NOOP = () => {};
 
+type ProfileListItem = SafeList | SafeListPreview;
+
 function filterProfileLists(
-    lists: SafeList[],
+    lists: ProfileListItem[],
     normalizedSearch: string,
     defaultListTitle: string
-): SafeList[] {
+): ProfileListItem[] {
     if (!normalizedSearch) {
         return lists;
     }
@@ -51,7 +53,7 @@ function paginateItems<T>(items: T[], pageParam?: string) {
 }
 
 interface ProfileListsContentProps {
-    lists: SafeList[];
+    lists: ProfileListItem[];
     isOwnProfile: boolean;
     searchParams: any;
     searchQuery?: string;

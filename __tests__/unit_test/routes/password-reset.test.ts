@@ -303,6 +303,7 @@ describe('Password Reset API Error Handling', () => {
                     hashedPassword: 'hashedNewPassword',
                     resetToken: null,
                     resetTokenExpiry: null,
+                    tokenVersion: { increment: 1 },
                 },
             });
         });

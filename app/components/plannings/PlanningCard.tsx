@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { SafePlanning, SafeUser } from '@/app/types';
+import { SafePlanning, SafePlanningPreview, SafeUser } from '@/app/types';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { GiPadlock, GiPadlockOpen } from 'react-icons/gi';
 import Avatar from '@/app/components/utils/Avatar';
@@ -9,7 +9,7 @@ import { formatDate } from '@/app/utils/date-utils';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 
 export interface PlanningCardProps {
-    plan: SafePlanning;
+    plan: SafePlanning | SafePlanningPreview;
     currentUser?: SafeUser | null;
     showDelete?: boolean;
     isSavedTab?: boolean;
@@ -21,7 +21,7 @@ export interface PlanningCardProps {
     language: string;
 }
 
-const getPreviewRecipes = (plan: SafePlanning) => {
+const getPreviewRecipes = (plan: SafePlanning | SafePlanningPreview) => {
     if (!plan.meals) return [];
     const unique: any[] = [];
     const seen = new Set();

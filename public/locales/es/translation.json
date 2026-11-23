@@ -525,6 +525,7 @@
     "save_password": "Guardar Contraseña",
     "saving": "Guardando...",
     "password_updated": "Contraseña actualizada exitosamente",
+    "password_updated_sign_in_again": "Contraseña actualizada. Por favor, inicia sesión de nuevo.",
     "edit_recipe": "Editar Receta",
     "remix": "Remix",
     "remix_recipe": "Remezclar Receta",

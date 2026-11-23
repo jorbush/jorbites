@@ -5,6 +5,49 @@ import { useTranslation } from 'react-i18next';
 import { FiCheck } from 'react-icons/fi';
 import Button from '@/app/components/buttons/Button';
 
+type OverviewKey = 'privacy' | 'slots' | 'shopping' | 'calendar';
+
+interface OverviewItem {
+    key: OverviewKey;
+    labelKey: string;
+    descKey: string;
+    checklistKey: string;
+}
+
+const OVERVIEW_ITEMS: OverviewItem[] = [
+    {
+        key: 'privacy',
+        labelKey: 'meal_planner_course_details.req_privacy_label',
+        descKey: 'meal_planner_course_details.req_privacy_desc',
+        checklistKey: 'meal_planner_course_details.checklist_privacy',
+    },
+    {
+        key: 'slots',
+        labelKey: 'meal_planner_course_details.req_slots_label',
+        descKey: 'meal_planner_course_details.req_slots_desc',
+        checklistKey: 'meal_planner_course_details.checklist_slots',
+    },
+    {
+        key: 'shopping',
+        labelKey: 'meal_planner_course_details.req_shopping_label',
+        descKey: 'meal_planner_course_details.req_shopping_desc',
+        checklistKey: 'meal_planner_course_details.checklist_shopping',
+    },
+    {
+        key: 'calendar',
+        labelKey: 'meal_planner_course_details.req_calendar_label',
+        descKey: 'meal_planner_course_details.req_calendar_desc',
+        checklistKey: 'meal_planner_course_details.checklist_calendar',
+    },
+];
+
+const INITIAL_CHECKED_STATE: Record<OverviewKey, boolean> = {
+    privacy: false,
+    slots: false,
+    shopping: false,
+    calendar: false,
+};
+
 interface MealPlannerOverviewProps {
     completedModules: Record<string, boolean>;
     markModuleCompleted: (id: string) => void;
@@ -20,14 +63,11 @@ const MealPlannerOverview: React.FC<MealPlannerOverviewProps> = ({
     const isCompleted = !!completedModules['requirements'];
 
     // Checklist State
-    const [overviewChecked, setOverviewChecked] = useState({
-        privacy: false,
-        slots: false,
-        shopping: false,
-        calendar: false,
-    });
+    const [overviewChecked, setOverviewChecked] = useState<
+        Record<OverviewKey, boolean>
+    >(INITIAL_CHECKED_STATE);
 
-    const handleOverviewCheck = (key: keyof typeof overviewChecked) => {
+    const handleOverviewCheck = (key: OverviewKey) => {
         if (isCompleted) return;
         const next = { ...overviewChecked, [key]: !overviewChecked[key] };
         setOverviewChecked(next);
@@ -52,42 +92,19 @@ const MealPlannerOverview: React.FC<MealPlannerOverviewProps> = ({
                 </p>
 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <div className="rounded-xl border border-neutral-100 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
-                        <h4 className="font-semibold text-neutral-900 dark:text-white">
-                            {t('meal_planner_course_details.req_privacy_label')}
-                        </h4>
-                        <p className="mt-1 text-xs text-neutral-600 dark:text-neutral-400">
-                            {t('meal_planner_course_details.req_privacy_desc')}
-                        </p>
-                    </div>
-                    <div className="rounded-xl border border-neutral-100 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
-                        <h4 className="font-semibold text-neutral-900 dark:text-white">
-                            {t('meal_planner_course_details.req_slots_label')}
-                        </h4>
-                        <p className="mt-1 text-xs text-neutral-600 dark:text-neutral-400">
-                            {t('meal_planner_course_details.req_slots_desc')}
-                        </p>
-                    </div>
-                    <div className="rounded-xl border border-neutral-100 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
-                        <h4 className="font-semibold text-neutral-900 dark:text-white">
-                            {t(
-                                'meal_planner_course_details.req_shopping_label'
-                            )}
-                        </h4>
-                        <p className="mt-1 text-xs text-neutral-600 dark:text-neutral-400">
-                            {t('meal_planner_course_details.req_shopping_desc')}
-                        </p>
-                    </div>
-                    <div className="rounded-xl border border-neutral-100 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
-                        <h4 className="font-semibold text-neutral-900 dark:text-white">
-                            {t(
-                                'meal_planner_course_details.req_calendar_label'
-                            )}
-                        </h4>
-                        <p className="mt-1 text-xs text-neutral-600 dark:text-neutral-400">
-                            {t('meal_planner_course_details.req_calendar_desc')}
-                        </p>
-                    </div>
+                    {OVERVIEW_ITEMS.map((item) => (
+                        <div
+                            key={item.key}
+                            className="rounded-xl border border-neutral-100 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900"
+                        >
+                            <h4 className="font-semibold text-neutral-900 dark:text-white">
+                                {t(item.labelKey)}
+                            </h4>
+                            <p className="mt-1 text-xs text-neutral-600 dark:text-neutral-400">
+                                {t(item.descKey)}
+                            </p>
+                        </div>
+                    ))}
                 </div>
 
                 <div className="rounded-xl bg-neutral-50 p-6 dark:bg-neutral-800/30">
@@ -95,82 +112,29 @@ const MealPlannerOverview: React.FC<MealPlannerOverviewProps> = ({
                         {t('meal_planner_course_details.action_required')}
                     </h4>
                     <div className="space-y-3">
-                        <label className="flex cursor-pointer items-start gap-3">
-                            <input
-                                type="checkbox"
-                                checked={isCompleted || overviewChecked.privacy}
-                                onChange={() => handleOverviewCheck('privacy')}
-                                className="mt-1 accent-green-600"
-                                aria-label={
-                                    t(
-                                        'meal_planner_course_details.checklist_privacy'
-                                    ) || ''
-                                }
-                            />
-                            <span className="text-sm text-neutral-600 dark:text-neutral-400">
-                                {t(
-                                    'meal_planner_course_details.checklist_privacy'
-                                )}
-                            </span>
-                        </label>
-                        <label className="flex cursor-pointer items-start gap-3">
-                            <input
-                                type="checkbox"
-                                checked={isCompleted || overviewChecked.slots}
-                                onChange={() => handleOverviewCheck('slots')}
-                                className="mt-1 accent-green-600"
-                                aria-label={
-                                    t(
-                                        'meal_planner_course_details.checklist_slots'
-                                    ) || ''
-                                }
-                            />
-                            <span className="text-sm text-neutral-600 dark:text-neutral-400">
-                                {t(
-                                    'meal_planner_course_details.checklist_slots'
-                                )}
-                            </span>
-                        </label>
-                        <label className="flex cursor-pointer items-start gap-3">
-                            <input
-                                type="checkbox"
-                                checked={
-                                    isCompleted || overviewChecked.shopping
-                                }
-                                onChange={() => handleOverviewCheck('shopping')}
-                                className="mt-1 accent-green-600"
-                                aria-label={
-                                    t(
-                                        'meal_planner_course_details.checklist_shopping'
-                                    ) || ''
-                                }
-                            />
-                            <span className="text-sm text-neutral-600 dark:text-neutral-400">
-                                {t(
-                                    'meal_planner_course_details.checklist_shopping'
-                                )}
-                            </span>
-                        </label>
-                        <label className="flex cursor-pointer items-start gap-3">
-                            <input
-                                type="checkbox"
-                                checked={
-                                    isCompleted || overviewChecked.calendar
-                                }
-                                onChange={() => handleOverviewCheck('calendar')}
-                                className="mt-1 accent-green-600"
-                                aria-label={
-                                    t(
-                                        'meal_planner_course_details.checklist_calendar'
-                                    ) || ''
-                                }
-                            />
-                            <span className="text-sm text-neutral-600 dark:text-neutral-400">
-                                {t(
-                                    'meal_planner_course_details.checklist_calendar'
-                                )}
-                            </span>
-                        </label>
+                        {OVERVIEW_ITEMS.map((item) => (
+                            <label
+                                key={item.key}
+                                className="flex cursor-pointer items-start gap-3"
+                            >
+                                <input
+                                    type="checkbox"
+                                    checked={
+                                        isCompleted || overviewChecked[item.key]
+                                    }
+                                    onChange={() =>
+                                        handleOverviewCheck(item.key)
+                                    }
+                                    className="mt-1 accent-green-600"
+                                    aria-label={String(
+                                        t(item.checklistKey) || ''
+                                    )}
+                                />
+                                <span className="text-sm text-neutral-600 dark:text-neutral-400">
+                                    {t(item.checklistKey)}
+                                </span>
+                            </label>
+                        ))}
                     </div>
                 </div>
 

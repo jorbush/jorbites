@@ -134,7 +134,10 @@ describe('PATCH /api/password/[userId]', () => {
         expect(data.success).toBe(true);
         expect(prisma.user.update).toHaveBeenCalledWith({
             where: { id: 'user-1' },
-            data: { hashedPassword: 'hashed-new-pass' },
+            data: {
+                hashedPassword: 'hashed-new-pass',
+                tokenVersion: { increment: 1 },
+            },
         });
     });
 });

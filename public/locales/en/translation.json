@@ -524,6 +524,7 @@
     "save_password": "Save Password",
     "saving": "Saving...",
     "password_updated": "Password updated successfully",
+    "password_updated_sign_in_again": "Password updated. Please sign in again.",
     "edit_recipe": "Edit Recipe",
     "remix": "Remix",
     "remix_recipe": "Remix Recipe",
