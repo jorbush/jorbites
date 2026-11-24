@@ -74,6 +74,16 @@ export type SafeRecipe = Omit<
     | 'prepTime'
     | 'cookTime'
     | 'ganttTable'
+    | 'difficulty'
+    | 'protein'
+    | 'carbohydrates'
+    | 'fat'
+    | 'saturatedFat'
+    | 'fiber'
+    | 'sugar'
+    | 'sodium'
+    | 'dietaryTags'
+    | 'allergens'
     | 'forkedFromRecipeId'
 > & {
     createdAt: string;
@@ -90,6 +100,16 @@ export type SafeRecipe = Omit<
     prepTime?: number | null;
     cookTime?: number | null;
     ganttTable?: GanttTable | null;
+    difficulty?: string | null;
+    protein?: number | null;
+    carbohydrates?: number | null;
+    fat?: number | null;
+    saturatedFat?: number | null;
+    fiber?: number | null;
+    sugar?: number | null;
+    sodium?: number | null;
+    dietaryTags?: string[];
+    allergens?: string[];
     forkedFromRecipeId?: string | null;
     forkedFromRecipe?: {
         id: string;

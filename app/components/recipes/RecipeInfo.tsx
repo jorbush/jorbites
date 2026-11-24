@@ -16,6 +16,7 @@ import { RecipeInfoHeader } from './RecipeInfoHeader';
 import { RecipeCoCooks } from './RecipeCoCooks';
 import { RecipeLinkedRecipes } from './RecipeLinkedRecipes';
 import { RecipeGanttTable } from './RecipeGanttTable';
+import { RecipeNutritionSection } from './RecipeNutritionSection';
 import RecipeIngredients from './RecipeIngredients';
 import RecipeSteps from './RecipeSteps';
 import useIsMounted from '@/app/hooks/useIsMounted';
@@ -51,6 +52,16 @@ interface RecipeInfoProps {
     calories?: number | null;
     recipeCuisine?: string | null;
     recipeYield?: number | null;
+    difficulty?: string | null;
+    protein?: number | null;
+    carbohydrates?: number | null;
+    fat?: number | null;
+    saturatedFat?: number | null;
+    fiber?: number | null;
+    sugar?: number | null;
+    sodium?: number | null;
+    dietaryTags?: string[];
+    allergens?: string[];
     ganttTable?: GanttTable | null;
     recipeTitle?: string;
     forkedFromRecipe?: {
@@ -104,6 +115,16 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     calories,
     recipeCuisine,
     recipeYield,
+    difficulty,
+    protein,
+    carbohydrates,
+    fat,
+    saturatedFat,
+    fiber,
+    sugar,
+    sodium,
+    dietaryTags,
+    allergens,
     ganttTable,
     recipeTitle,
     forkedFromRecipe,
@@ -158,6 +179,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                 calories={calories}
                 recipeCuisine={recipeCuisine}
                 recipeYield={recipeYield}
+                difficulty={difficulty}
             />
 
             {(forkedFromRecipe || forkedFromRecipeId) && (
@@ -181,6 +203,17 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                 categories={categories}
                 method={method}
             />
+            <RecipeNutritionSection
+                calories={calories}
+                protein={protein}
+                carbohydrates={carbohydrates}
+                fat={fat}
+                saturatedFat={saturatedFat}
+                fiber={fiber}
+                sugar={sugar}
+                sodium={sodium}
+                dietaryTags={dietaryTags}
+            />
             <TranslateableRecipeContent
                 description={description}
                 descriptionText={descriptionText}
@@ -191,6 +224,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                 recipeId={id}
                 recipeYield={recipeYield}
                 categories={categoryLabels}
+                allergens={allergens}
                 RenderDescription={RecipeDescription}
                 RenderIngredients={RecipeIngredients}
                 RenderSteps={RecipeSteps}

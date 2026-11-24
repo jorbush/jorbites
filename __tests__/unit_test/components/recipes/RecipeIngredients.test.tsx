@@ -186,4 +186,19 @@ describe('RecipeIngredients', () => {
         expect(screen.queryByTestId('allergen-badge-gluten')).toBeNull();
         expect(screen.getByTestId('allergen-badge-eggs')).toBeDefined();
     });
+
+    it('merges AI-audited stored allergens with client-side detected allergens', () => {
+        render(
+            <RecipeIngredients
+                items={['200g pasta', '2 tbsp pesto']}
+                allergens={['nuts', 'milk']}
+                recipeId="rec-1"
+            />
+        );
+
+        expect(screen.getByTestId('recipe-allergens')).toBeDefined();
+        expect(screen.getByTestId('allergen-badge-gluten')).toBeDefined();
+        expect(screen.getByTestId('allergen-badge-nuts')).toBeDefined();
+        expect(screen.getByTestId('allergen-badge-milk')).toBeDefined();
+    });
 });

@@ -7,6 +7,9 @@ import {
     RECIPE_MAX_STEPS,
     RECIPE_MAX_CATEGORIES,
     RECIPE_CUISINES,
+    RECIPE_DIFFICULTIES,
+    DIETARY_TAGS,
+    RECIPE_ALLERGENS,
 } from '@/app/utils/constants';
 import { YOUTUBE_URL_REGEX } from '@/app/utils/validation';
 import {
@@ -29,6 +32,16 @@ interface RecipeDataBody {
     minutes?: number | string;
     prepTime?: number | string;
     cookTime?: number | string;
+    difficulty?: string;
+    protein?: number | string;
+    carbohydrates?: number | string;
+    fat?: number | string;
+    saturatedFat?: number | string;
+    fiber?: number | string;
+    sugar?: number | string;
+    sodium?: number | string;
+    dietaryTags?: string[];
+    allergens?: string[];
 }
 
 /**
@@ -51,6 +64,16 @@ function validateCommonFields(body: RecipeDataBody) {
         minutes,
         prepTime,
         cookTime,
+        difficulty,
+        protein,
+        carbohydrates,
+        fat,
+        saturatedFat,
+        fiber,
+        sugar,
+        sodium,
+        dietaryTags,
+        allergens,
     } = body;
 
     let parsedPrep = 0;
@@ -143,6 +166,82 @@ function validateCommonFields(body: RecipeDataBody) {
         const parsed = parseInt(recipeYield.toString(), 10);
         if (isNaN(parsed) || parsed <= 0) {
             return validationError('Yield must be a positive integer');
+        }
+    }
+
+    // Validate difficulty if provided
+    if (difficulty !== undefined && difficulty !== null && difficulty !== '') {
+        if (typeof difficulty !== 'string') {
+            return badRequest('difficulty must be a string');
+        }
+        const isValid = (RECIPE_DIFFICULTIES as readonly string[]).includes(
+            difficulty
+        );
+        if (!isValid) {
+            return validationError(
+                `Invalid difficulty. Must be one of: ${RECIPE_DIFFICULTIES.join(', ')}`
+            );
+        }
+    }
+
+    // Validate non-negative nutritional integers if provided
+    const nutritionFields: Array<[string, number | string | undefined]> = [
+        ['protein', protein],
+        ['carbohydrates', carbohydrates],
+        ['fat', fat],
+        ['saturatedFat', saturatedFat],
+        ['fiber', fiber],
+        ['sugar', sugar],
+        ['sodium', sodium],
+    ];
+
+    for (const [fieldName, value] of nutritionFields) {
+        if (value !== undefined && value !== null && value !== '') {
+            if (typeof value !== 'number' && typeof value !== 'string') {
+                return badRequest(
+                    `${fieldName} must be a number or string representation of a number`
+                );
+            }
+            const parsed = parseInt(value.toString(), 10);
+            if (isNaN(parsed) || parsed < 0) {
+                return validationError(
+                    `${fieldName} must be a non-negative integer`
+                );
+            }
+        }
+    }
+
+    // Validate dietaryTags if provided
+    if (dietaryTags !== undefined) {
+        if (!Array.isArray(dietaryTags)) {
+            return badRequest('dietaryTags must be an array');
+        }
+        for (const tag of dietaryTags) {
+            if (
+                typeof tag !== 'string' ||
+                !(DIETARY_TAGS as readonly string[]).includes(tag)
+            ) {
+                return validationError(
+                    `Invalid dietaryTag "${String(tag)}". Must be one of: ${DIETARY_TAGS.join(', ')}`
+                );
+            }
+        }
+    }
+
+    // Validate allergens if provided
+    if (allergens !== undefined) {
+        if (!Array.isArray(allergens)) {
+            return badRequest('allergens must be an array');
+        }
+        for (const allergen of allergens) {
+            if (
+                typeof allergen !== 'string' ||
+                !(RECIPE_ALLERGENS as readonly string[]).includes(allergen)
+            ) {
+                return validationError(
+                    `Invalid allergen "${String(allergen)}". Must be one of: ${RECIPE_ALLERGENS.join(', ')}`
+                );
+            }
         }
     }
 

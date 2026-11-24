@@ -6,7 +6,7 @@ import { FiAlertCircle, FiCheck } from 'react-icons/fi';
 import Counter from '@/app/components/inputs/Counter';
 import useIsMounted from '@/app/hooks/useIsMounted';
 import useRecipeChecklist from '@/app/hooks/useRecipeChecklist';
-import { detectAllergens } from '@/app/utils/allergenDetector';
+import { resolveRecipeAllergens } from '@/app/utils/allergenDetector';
 import { scaleIngredient } from '@/app/utils/ingredientScaler';
 import { formatText } from '@/app/utils/textFormatting';
 import RecipeChecklistHeader from './RecipeChecklistHeader';
@@ -15,6 +15,7 @@ export interface RecipeIngredientsProps {
     items: string[];
     rawIngredients?: string[];
     categories?: string[];
+    allergens?: string[];
     recipeId?: string;
     recipeYield?: number | null;
 }
@@ -23,6 +24,7 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
     items,
     rawIngredients,
     categories,
+    allergens,
     recipeId,
     recipeYield,
 }) => {
@@ -61,8 +63,8 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
             rawIngredients && rawIngredients.length > 0
                 ? rawIngredients
                 : items;
-        return detectAllergens(sourceItems, categories);
-    }, [rawIngredients, items, categories]);
+        return resolveRecipeAllergens(sourceItems, categories, allergens);
+    }, [rawIngredients, items, categories, allergens]);
 
     if (items.length === 0) return null;
 
@@ -165,9 +167,12 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
                             const label = String(
                                 mounted ? t(labelKey) : labelKey
                             );
-                            const tooltip = String(
-                                `${label}: ${allergen.matchedIngredients.join(', ')}`
-                            );
+                            const tooltip =
+                                allergen.matchedIngredients.length > 0
+                                    ? String(
+                                          `${label}: ${allergen.matchedIngredients.join(', ')}`
+                                      )
+                                    : label;
                             return (
                                 <span
                                     key={allergen.id}

@@ -815,3 +815,43 @@ export function detectAllergens(
 
     return detected;
 }
+
+/**
+ * Resolves recipe allergens by combining client-side keyword detection
+ * (which provides matched-ingredient tooltips) with AI-audited allergens
+ * stored on the recipe document (which also catch implicit/composite ingredients).
+ */
+export function resolveRecipeAllergens(
+    ingredients: string[],
+    categories?: string[],
+    storedAllergens?: string[]
+): DetectedAllergen[] {
+    const detected = detectAllergens(ingredients, categories);
+    if (!Array.isArray(storedAllergens) || storedAllergens.length === 0) {
+        return detected;
+    }
+
+    const byId = new Map<AllergenId, DetectedAllergen>(
+        detected.map((item) => [item.id, item])
+    );
+
+    const storedSet = new Set(
+        storedAllergens.map((a) => a.trim().toLowerCase())
+    );
+    const merged: DetectedAllergen[] = [];
+
+    for (const def of EU_ALLERGEN_DEFINITIONS) {
+        const existing = byId.get(def.id);
+        if (existing) {
+            merged.push(existing);
+        } else if (storedSet.has(def.id)) {
+            merged.push({
+                id: def.id,
+                icon: def.icon,
+                matchedIngredients: [],
+            });
+        }
+    }
+
+    return merged;
+}

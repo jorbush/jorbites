@@ -401,6 +401,16 @@ export async function PATCH(
             recipeYield,
             prepTime,
             cookTime,
+            difficulty,
+            protein,
+            carbohydrates,
+            fat,
+            saturatedFat,
+            fiber,
+            sugar,
+            sodium,
+            dietaryTags,
+            allergens,
         } = body;
 
         // Handle questId - ensure empty strings become null
@@ -473,6 +483,61 @@ export async function PATCH(
                 cookTime !== null && cookTime !== ''
                     ? parseInt(cookTime.toString(), 10)
                     : null;
+        }
+        if (difficulty !== undefined) {
+            updateData.difficulty = difficulty || null;
+        }
+        if (protein !== undefined) {
+            updateData.protein =
+                protein !== null && protein !== ''
+                    ? parseInt(protein.toString(), 10)
+                    : null;
+        }
+        if (carbohydrates !== undefined) {
+            updateData.carbohydrates =
+                carbohydrates !== null && carbohydrates !== ''
+                    ? parseInt(carbohydrates.toString(), 10)
+                    : null;
+        }
+        if (fat !== undefined) {
+            updateData.fat =
+                fat !== null && fat !== ''
+                    ? parseInt(fat.toString(), 10)
+                    : null;
+        }
+        if (saturatedFat !== undefined) {
+            updateData.saturatedFat =
+                saturatedFat !== null && saturatedFat !== ''
+                    ? parseInt(saturatedFat.toString(), 10)
+                    : null;
+        }
+        if (fiber !== undefined) {
+            updateData.fiber =
+                fiber !== null && fiber !== ''
+                    ? parseInt(fiber.toString(), 10)
+                    : null;
+        }
+        if (sugar !== undefined) {
+            updateData.sugar =
+                sugar !== null && sugar !== ''
+                    ? parseInt(sugar.toString(), 10)
+                    : null;
+        }
+        if (sodium !== undefined) {
+            updateData.sodium =
+                sodium !== null && sodium !== ''
+                    ? parseInt(sodium.toString(), 10)
+                    : null;
+        }
+        if (dietaryTags !== undefined) {
+            updateData.dietaryTags = Array.isArray(dietaryTags)
+                ? Array.from(new Set(dietaryTags))
+                : [];
+        }
+        if (allergens !== undefined) {
+            updateData.allergens = Array.isArray(allergens)
+                ? Array.from(new Set(allergens))
+                : [];
         }
 
         const updatedRecipe = await prisma.recipe.update({

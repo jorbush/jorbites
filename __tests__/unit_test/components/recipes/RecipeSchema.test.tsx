@@ -344,6 +344,44 @@ describe('RecipeSchema', () => {
         });
     });
 
+    it('includes extended nutrition fields (including zeros), suitableForDiet, and dietary keywords', () => {
+        const props = {
+            ...mockProps,
+            calories: 380,
+            protein: 28,
+            carbohydrates: 12,
+            fat: 18,
+            saturatedFat: 4,
+            fiber: 5,
+            sugar: 0,
+            sodium: 520,
+            dietaryTags: ['vegan', 'halal', 'one-pot'],
+        };
+        const { container } = render(<RecipeSchema {...props} />);
+
+        const scriptTag = container.querySelector(
+            'script[type="application/ld+json"]'
+        );
+        const data = JSON.parse(scriptTag?.innerHTML || '{}');
+
+        expect(data.nutrition).toEqual({
+            '@type': 'NutritionInformation',
+            calories: '380 calories',
+            proteinContent: '28 g',
+            carbohydrateContent: '12 g',
+            fatContent: '18 g',
+            saturatedFatContent: '4 g',
+            fiberContent: '5 g',
+            sugarContent: '0 g',
+            sodiumContent: '520 mg',
+        });
+        expect(data.suitableForDiet).toEqual([
+            'https://schema.org/VeganDiet',
+            'https://schema.org/HalalDiet',
+        ]);
+        expect(data.keywords).toBe('Main Course, vegan, halal, one-pot');
+    });
+
     it('includes cooksnap reviews and combines them with comment reviews', () => {
         const props = {
             ...mockProps,
