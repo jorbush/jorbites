@@ -127,7 +127,7 @@ export const RecipeNutritionSection: React.FC<RecipeNutritionSectionProps> = ({
                         <div className="flex items-center gap-2 text-sm font-semibold tracking-wide text-neutral-700 uppercase dark:text-neutral-300">
                             <FiActivity
                                 size={15}
-                                className="shrink-0 text-green-500"
+                                className="text-green-450 shrink-0"
                             />
                             <span>
                                 {mounted
@@ -144,12 +144,12 @@ export const RecipeNutritionSection: React.FC<RecipeNutritionSectionProps> = ({
                         )}
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 md:grid-cols-7">
+                    <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4 lg:grid-cols-7">
                         {nutrients.map((item) => (
                             <div
                                 key={item.key}
                                 data-testid={`nutrient-${item.key}`}
-                                className="flex flex-col items-center justify-center rounded-xl border border-neutral-100 bg-neutral-50/70 px-3 py-2.5 text-center dark:border-neutral-800/80 dark:bg-neutral-800/50"
+                                className="flex flex-col items-center justify-center rounded-xl border border-neutral-100 bg-neutral-50/70 px-2 py-2.5 text-center dark:border-neutral-800/80 dark:bg-neutral-800/50"
                             >
                                 <span className="text-base font-bold text-neutral-900 dark:text-white">
                                     {item.value}
@@ -182,7 +182,7 @@ export const RecipeNutritionSection: React.FC<RecipeNutritionSectionProps> = ({
                     <div className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-neutral-600 uppercase dark:text-neutral-400">
                         <FiTag
                             size={13}
-                            className="shrink-0 text-green-500"
+                            className="text-green-450 shrink-0"
                         />
                         <span>
                             {mounted
