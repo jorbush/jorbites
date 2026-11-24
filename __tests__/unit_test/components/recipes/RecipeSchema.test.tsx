@@ -355,7 +355,7 @@ describe('RecipeSchema', () => {
             fiber: 5,
             sugar: 0,
             sodium: 520,
-            dietaryTags: ['gluten-free', 'low-carb', 'high-protein'],
+            dietaryTags: ['vegan', 'halal', 'one-pot'],
         };
         const { container } = render(<RecipeSchema {...props} />);
 
@@ -376,11 +376,10 @@ describe('RecipeSchema', () => {
             sodiumContent: '520 mg',
         });
         expect(data.suitableForDiet).toEqual([
-            'https://schema.org/GlutenFreeDiet',
+            'https://schema.org/VeganDiet',
+            'https://schema.org/HalalDiet',
         ]);
-        expect(data.keywords).toBe(
-            'Main Course, gluten-free, low-carb, high-protein'
-        );
+        expect(data.keywords).toBe('Main Course, vegan, halal, one-pot');
     });
 
     it('includes cooksnap reviews and combines them with comment reviews', () => {

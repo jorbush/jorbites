@@ -42,9 +42,8 @@ export interface RecipeSchemaProps {
 const DIETARY_TAG_TO_SCHEMA_DIET: Record<string, string> = {
     vegan: 'https://schema.org/VeganDiet',
     vegetarian: 'https://schema.org/VegetarianDiet',
-    'gluten-free': 'https://schema.org/GlutenFreeDiet',
-    'dairy-free': 'https://schema.org/LowLactoseDiet',
-    'low-fat': 'https://schema.org/LowFatDiet',
+    halal: 'https://schema.org/HalalDiet',
+    kosher: 'https://schema.org/KosherDiet',
 };
 
 const EMPTY_IMAGES: string[] = [];

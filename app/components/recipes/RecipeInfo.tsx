@@ -61,6 +61,7 @@ interface RecipeInfoProps {
     sugar?: number | null;
     sodium?: number | null;
     dietaryTags?: string[];
+    allergens?: string[];
     ganttTable?: GanttTable | null;
     recipeTitle?: string;
     forkedFromRecipe?: {
@@ -123,6 +124,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     sugar,
     sodium,
     dietaryTags,
+    allergens,
     ganttTable,
     recipeTitle,
     forkedFromRecipe,
@@ -222,6 +224,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                 recipeId={id}
                 recipeYield={recipeYield}
                 categories={categoryLabels}
+                allergens={allergens}
                 RenderDescription={RecipeDescription}
                 RenderIngredients={RecipeIngredients}
                 RenderSteps={RecipeSteps}

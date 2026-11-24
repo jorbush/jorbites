@@ -120,20 +120,38 @@ export type RecipeDifficultyType = (typeof RECIPE_DIFFICULTIES)[number];
 export const DIETARY_TAGS = [
     'vegan',
     'vegetarian',
-    'gluten-free',
-    'dairy-free',
-    'nut-free',
-    'egg-free',
-    'soy-free',
-    'sugar-free',
-    'low-carb',
-    'high-protein',
-    'low-fat',
-    'keto',
-    'paleo',
+    'pescatarian',
+    'mediterranean',
+    'halal',
+    'kosher',
+    'meal-prep',
+    'budget-friendly',
+    'one-pot',
+    'comfort-food',
+    'kid-friendly',
+    'spicy',
 ] as const;
 
 export type DietaryTagType = (typeof DIETARY_TAGS)[number];
+
+export const RECIPE_ALLERGENS = [
+    'gluten',
+    'crustaceans',
+    'eggs',
+    'fish',
+    'peanuts',
+    'soy',
+    'milk',
+    'nuts',
+    'celery',
+    'mustard',
+    'sesame',
+    'sulphites',
+    'lupin',
+    'molluscs',
+] as const;
+
+export type RecipeAllergenType = (typeof RECIPE_ALLERGENS)[number];
 
 // Collaborative Cooking & Locking Constants
 export const MAX_CO_COOKS = 4;

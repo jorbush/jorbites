@@ -424,7 +424,7 @@ describe('Recipe Validation Utilities', () => {
             expect(result?.status).toBe(400);
         });
 
-        it('should accept valid difficulty, nutritional values (including 0), and dietaryTags', () => {
+        it('should accept valid difficulty, nutritional values (including 0), dietaryTags, and allergens', () => {
             const result = validateRecipeCreateData({
                 ...validCreateRecipe,
                 difficulty: 'Medium',
@@ -435,7 +435,8 @@ describe('Recipe Validation Utilities', () => {
                 fiber: 0,
                 sugar: 0,
                 sodium: 450,
-                dietaryTags: ['gluten-free', 'high-protein'],
+                dietaryTags: ['mediterranean', 'one-pot'],
+                allergens: ['gluten', 'milk'],
             });
             expect(result).toBeNull();
         });
@@ -466,6 +467,20 @@ describe('Recipe Validation Utilities', () => {
             const nonArrayResult = validateRecipeCreateData({
                 ...validCreateRecipe,
                 dietaryTags: 'vegan' as unknown as string[],
+            });
+            expect(nonArrayResult?.status).toBe(400);
+        });
+
+        it('should return 400 for invalid allergens', () => {
+            const invalidAllergenResult = validateRecipeCreateData({
+                ...validCreateRecipe,
+                allergens: ['gluten', 'chocolate'],
+            });
+            expect(invalidAllergenResult?.status).toBe(400);
+
+            const nonArrayResult = validateRecipeCreateData({
+                ...validCreateRecipe,
+                allergens: 'gluten' as unknown as string[],
             });
             expect(nonArrayResult?.status).toBe(400);
         });

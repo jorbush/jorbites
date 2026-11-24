@@ -6,8 +6,8 @@ import { RecipeNutritionSection } from '@/app/components/recipes/RecipeNutrition
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
         t: (key: string, options?: { defaultValue?: string }) => {
-            if (key === 'dietary_gluten_free') return 'Gluten-Free';
-            if (key === 'dietary_high_protein') return 'High-Protein';
+            if (key === 'dietary_mediterranean') return 'Mediterranean';
+            if (key === 'dietary_one_pot') return 'One-Pot';
             if (options?.defaultValue) return options.defaultValue;
             return key;
         },
@@ -64,13 +64,13 @@ describe('RecipeNutritionSection', () => {
     it('renders dietary tags even without extended macros', () => {
         render(
             <RecipeNutritionSection
-                dietaryTags={['gluten-free', 'high-protein']}
+                dietaryTags={['mediterranean', 'one-pot']}
             />
         );
 
         expect(screen.getByTestId('recipe-dietary-tags')).toBeDefined();
-        expect(screen.getByTestId('dietary-tag-gluten-free')).toBeDefined();
-        expect(screen.getByText('Gluten-Free')).toBeDefined();
-        expect(screen.getByText('High-Protein')).toBeDefined();
+        expect(screen.getByTestId('dietary-tag-mediterranean')).toBeDefined();
+        expect(screen.getByText('Mediterranean')).toBeDefined();
+        expect(screen.getByText('One-Pot')).toBeDefined();
     });
 });

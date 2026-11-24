@@ -90,6 +90,7 @@ export async function POST(request: Request) {
             sugar,
             sodium,
             dietaryTags,
+            allergens,
             forkedFromRecipeId,
         } = body;
 
@@ -274,6 +275,9 @@ export async function POST(request: Request) {
                         : null,
                 ...(Array.isArray(dietaryTags)
                     ? { dietaryTags: Array.from(new Set(dietaryTags)) }
+                    : {}),
+                ...(Array.isArray(allergens)
+                    ? { allergens: Array.from(new Set(allergens)) }
                     : {}),
                 forkedFromRecipeId: finalForkedFromRecipeId,
             },

@@ -127,6 +127,7 @@ model Recipe {
   sugar Int?
   sodium Int?
   dietaryTags String[] @default([])
+  allergens String[] @default([])
   forkedFromRecipeId String? @db.ObjectId
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

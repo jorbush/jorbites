@@ -83,6 +83,7 @@ export type SafeRecipe = Omit<
     | 'sugar'
     | 'sodium'
     | 'dietaryTags'
+    | 'allergens'
     | 'forkedFromRecipeId'
 > & {
     createdAt: string;
@@ -108,6 +109,7 @@ export type SafeRecipe = Omit<
     sugar?: number | null;
     sodium?: number | null;
     dietaryTags?: string[];
+    allergens?: string[];
     forkedFromRecipeId?: string | null;
     forkedFromRecipe?: {
         id: string;

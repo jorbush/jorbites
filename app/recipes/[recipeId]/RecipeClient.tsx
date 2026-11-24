@@ -186,6 +186,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             sugar={recipe.sugar}
                             sodium={recipe.sodium}
                             dietaryTags={recipe.dietaryTags}
+                            allergens={recipe.allergens}
                             ganttTable={recipe.ganttTable}
                             forkedFromRecipe={recipe.forkedFromRecipe}
                             forkedFromRecipeId={recipe.forkedFromRecipeId}

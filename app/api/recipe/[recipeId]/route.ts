@@ -410,6 +410,7 @@ export async function PATCH(
             sugar,
             sodium,
             dietaryTags,
+            allergens,
         } = body;
 
         // Handle questId - ensure empty strings become null
@@ -531,6 +532,11 @@ export async function PATCH(
         if (dietaryTags !== undefined) {
             updateData.dietaryTags = Array.isArray(dietaryTags)
                 ? Array.from(new Set(dietaryTags))
+                : [];
+        }
+        if (allergens !== undefined) {
+            updateData.allergens = Array.isArray(allergens)
+                ? Array.from(new Set(allergens))
                 : [];
         }
 

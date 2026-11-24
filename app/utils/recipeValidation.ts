@@ -9,6 +9,7 @@ import {
     RECIPE_CUISINES,
     RECIPE_DIFFICULTIES,
     DIETARY_TAGS,
+    RECIPE_ALLERGENS,
 } from '@/app/utils/constants';
 import { YOUTUBE_URL_REGEX } from '@/app/utils/validation';
 import {
@@ -40,6 +41,7 @@ interface RecipeDataBody {
     sugar?: number | string;
     sodium?: number | string;
     dietaryTags?: string[];
+    allergens?: string[];
 }
 
 /**
@@ -71,6 +73,7 @@ function validateCommonFields(body: RecipeDataBody) {
         sugar,
         sodium,
         dietaryTags,
+        allergens,
     } = body;
 
     let parsedPrep = 0;
@@ -220,6 +223,23 @@ function validateCommonFields(body: RecipeDataBody) {
             ) {
                 return validationError(
                     `Invalid dietaryTag "${String(tag)}". Must be one of: ${DIETARY_TAGS.join(', ')}`
+                );
+            }
+        }
+    }
+
+    // Validate allergens if provided
+    if (allergens !== undefined) {
+        if (!Array.isArray(allergens)) {
+            return badRequest('allergens must be an array');
+        }
+        for (const allergen of allergens) {
+            if (
+                typeof allergen !== 'string' ||
+                !(RECIPE_ALLERGENS as readonly string[]).includes(allergen)
+            ) {
+                return validationError(
+                    `Invalid allergen "${String(allergen)}". Must be one of: ${RECIPE_ALLERGENS.join(', ')}`
                 );
             }
         }

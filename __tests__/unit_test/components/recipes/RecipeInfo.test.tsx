@@ -269,7 +269,8 @@ describe('RecipeInfo', () => {
                 fiber={6}
                 sugar={2}
                 sodium={500}
-                dietaryTags={['gluten-free', 'high-protein']}
+                dietaryTags={['mediterranean', 'one-pot']}
+                allergens={['nuts']}
             />
         );
 
@@ -279,6 +280,7 @@ describe('RecipeInfo', () => {
         expect(screen.getByTestId('nutrient-protein').textContent).toContain(
             '30g'
         );
-        expect(screen.getByTestId('dietary-tag-gluten-free')).toBeDefined();
+        expect(screen.getByTestId('dietary-tag-mediterranean')).toBeDefined();
+        expect(screen.getByTestId('allergen-badge-nuts')).toBeDefined();
     });
 });

@@ -15,6 +15,7 @@ interface TranslateableRecipeContentProps {
     recipeId?: string;
     recipeYield?: number | null;
     categories?: string[];
+    allergens?: string[];
     RenderDescription: React.ComponentType<{
         content: string | React.ReactNode;
     }>;
@@ -22,6 +23,7 @@ interface TranslateableRecipeContentProps {
         items: string[];
         rawIngredients?: string[];
         categories?: string[];
+        allergens?: string[];
         recipeId?: string;
         recipeYield?: number | null;
     }>;
@@ -47,6 +49,7 @@ export function TranslateableRecipeContent({
     recipeId,
     recipeYield,
     categories,
+    allergens,
     RenderDescription,
     RenderIngredients,
     RenderSteps,
@@ -92,6 +95,7 @@ export function TranslateableRecipeContent({
                 items={displayIngredients}
                 rawIngredients={ingredientsText}
                 categories={categories}
+                allergens={allergens}
                 recipeId={recipeId}
                 recipeYield={recipeYield}
             />
