@@ -8,6 +8,25 @@ afterEach(() => {
     cleanup();
 });
 
+// Mock next/server 'after' callback so tests outside request scope do not throw
+vi.mock('next/server', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('next/server')>();
+    return {
+        ...actual,
+        after: vi.fn((fn: () => unknown) => {
+            try {
+                const res = fn();
+                if (
+                    res &&
+                    typeof (res as Promise<unknown>).catch === 'function'
+                ) {
+                    (res as Promise<unknown>).catch(() => {});
+                }
+            } catch {}
+        }),
+    };
+});
+
 vi.mock('@axiomhq/nextjs', () => ({
     withAxiom: (handler: any) => handler,
     nextJsFormatters: [],
