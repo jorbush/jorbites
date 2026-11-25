@@ -16,6 +16,7 @@ const mockTx = {
     workshopParticipant: { deleteMany: jest.fn() },
     recipeVote: { deleteMany: jest.fn() },
     quest: { updateMany: jest.fn() },
+    pendingMediaCleanup: { upsert: jest.fn() },
     user: { delete: jest.fn() },
 };
 
@@ -212,6 +213,15 @@ describe('User API Routes and Server Actions', () => {
         expect(mockTx.quest.updateMany).toHaveBeenCalledWith({
             where: { acceptedSolverId: 'user-123' },
             data: { acceptedSolverId: null },
+        });
+        expect(mockTx.pendingMediaCleanup.upsert).toHaveBeenCalledWith({
+            where: { userId: 'user-123' },
+            create: { userId: 'user-123' },
+            update: {
+                cloudinaryDone: false,
+                r2Done: false,
+                lastError: null,
+            },
         });
     });
 

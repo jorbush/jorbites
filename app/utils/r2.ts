@@ -2,6 +2,9 @@ import {
     S3Client,
     DeleteObjectCommand,
     DeleteObjectsCommand,
+    ListObjectsV2Command,
+    type DeleteObjectsCommandOutput,
+    type ListObjectsV2CommandOutput,
 } from '@aws-sdk/client-s3';
 import { logger } from '@/app/lib/axiom/server';
 
@@ -291,5 +294,150 @@ export async function deleteMultipleFromR2(
             error: error?.message || String(error),
         });
         return false;
+    }
+}
+
+const SAFE_R2_USER_ID_REGEX = /^[a-zA-Z0-9_-]+$/;
+const R2_CLEANUP_MAX_PAGES = 5;
+
+export interface R2PrefixCleanupResult {
+    completed: boolean;
+    deletedCount: number;
+    error?: string;
+}
+
+/**
+ * Deletes all user-scoped Cloudflare R2 objects under `remakes/<userId>/` in bounded batches.
+ * Processes up to 5 pages (5,000 objects) per run so large accounts safely complete across runs.
+ */
+export async function deleteUserPrefixFromR2(
+    userId: string
+): Promise<R2PrefixCleanupResult> {
+    if (!userId || !SAFE_R2_USER_ID_REGEX.test(userId)) {
+        return {
+            completed: false,
+            deletedCount: 0,
+            error: 'Invalid userId for R2 prefix cleanup',
+        };
+    }
+
+    const hasCredentials = Boolean(
+        process.env.R2_ACCOUNT_ID &&
+        process.env.R2_ACCESS_KEY_ID &&
+        process.env.R2_SECRET_ACCESS_KEY
+    );
+
+    if (!hasCredentials) {
+        if (
+            process.env.NODE_ENV === 'production' ||
+            process.env.ENV === 'production'
+        ) {
+            return {
+                completed: false,
+                deletedCount: 0,
+                error: 'Missing R2 credentials in production',
+            };
+        }
+        logger.info(
+            'deleteUserPrefixFromR2 - skipped cleanup (no R2 credentials in environment)',
+            { userId }
+        );
+        return { completed: true, deletedCount: 0 };
+    }
+
+    const prefix = `remakes/${userId}/`;
+    const { bucketName } = getR2Config();
+    const client = getS3Client();
+    let deletedCount = 0;
+    let continuationToken: string | undefined = undefined;
+    let isTruncated = false;
+
+    try {
+        for (let page = 0; page < R2_CLEANUP_MAX_PAGES; page++) {
+            const listCommand: ListObjectsV2Command = new ListObjectsV2Command({
+                Bucket: bucketName,
+                Prefix: prefix,
+                MaxKeys: 1000,
+                ...(continuationToken
+                    ? { ContinuationToken: continuationToken }
+                    : {}),
+            });
+
+            const listResponse: ListObjectsV2CommandOutput =
+                await client.send(listCommand);
+            const keys: string[] = (listResponse?.Contents || [])
+                .map((item) => item.Key)
+                .filter((k): k is string => Boolean(k));
+
+            if (keys.length > 0) {
+                const deleteCommand = new DeleteObjectsCommand({
+                    Bucket: bucketName,
+                    Delete: {
+                        Objects: keys.map((Key) => ({ Key })),
+                        Quiet: true,
+                    },
+                });
+                const deleteResponse: DeleteObjectsCommandOutput =
+                    await client.send(deleteCommand);
+
+                if (
+                    deleteResponse?.Errors &&
+                    deleteResponse.Errors.length > 0
+                ) {
+                    const firstError =
+                        deleteResponse.Errors[0]?.Message ||
+                        deleteResponse.Errors[0]?.Code ||
+                        'R2 batch deletion error';
+                    logger.error(
+                        'deleteUserPrefixFromR2 - partial batch errors',
+                        {
+                            userId,
+                            errorCount: deleteResponse.Errors.length,
+                            firstError,
+                        }
+                    );
+                    return {
+                        completed: false,
+                        deletedCount:
+                            deletedCount +
+                            (keys.length - deleteResponse.Errors.length),
+                        error: firstError,
+                    };
+                }
+
+                deletedCount += keys.length;
+            }
+
+            isTruncated = Boolean(
+                listResponse?.IsTruncated && listResponse?.NextContinuationToken
+            );
+            if (!isTruncated) {
+                break;
+            }
+            continuationToken = listResponse.NextContinuationToken;
+        }
+
+        logger.info('deleteUserPrefixFromR2 - batch complete', {
+            userId,
+            deletedCount,
+            completed: !isTruncated,
+            bucket: bucketName,
+        });
+
+        return {
+            completed: !isTruncated,
+            deletedCount,
+        };
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        logger.error('deleteUserPrefixFromR2 - error', {
+            userId,
+            error: message,
+        });
+        return {
+            completed: false,
+            deletedCount,
+            error: message,
+        };
     }
 }

@@ -141,6 +141,9 @@ jest.mock('@/app/utils/cloudinary', () => ({
     deleteMultipleFromCloudinary: jest
         .fn()
         .mockResolvedValue({ successful: [], failed: [] }),
+    deleteUserPrefixFromCloudinary: jest
+        .fn()
+        .mockResolvedValue({ completed: true, deletedCount: 0 }),
     extractPublicId: jest.fn((url: string) => url),
 }));
 
@@ -171,6 +174,7 @@ jest.mock(
         PutObjectCommand: jest.fn().mockImplementation((params) => params),
         DeleteObjectCommand: jest.fn().mockImplementation((params) => params),
         DeleteObjectsCommand: jest.fn().mockImplementation((params) => params),
+        ListObjectsV2Command: jest.fn().mockImplementation((params) => params),
     }),
     { virtual: true }
 );
@@ -197,6 +201,9 @@ jest.mock('@/app/utils/r2', () => ({
     deleteMultipleFromR2: jest
         .fn()
         .mockResolvedValue({ successful: [], failed: [] }),
+    deleteUserPrefixFromR2: jest
+        .fn()
+        .mockResolvedValue({ completed: true, deletedCount: 0 }),
     isR2Url: jest.fn().mockReturnValue(false),
     extractR2Key: jest.fn().mockReturnValue(null),
     extractR2KeyOwner: jest.fn().mockReturnValue(null),
