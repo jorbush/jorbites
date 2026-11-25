@@ -3,7 +3,8 @@
 import axios from 'axios';
 import { AiFillGithub } from 'react-icons/ai';
 import { FcGoogle } from 'react-icons/fc';
-import { useCallback, useTransition } from 'react';
+import { useCallback, useState, useTransition } from 'react';
+import Link from 'next/link';
 import { toast } from 'react-hot-toast';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
@@ -24,6 +25,7 @@ const RegisterModal = () => {
     const { t } = useTranslation();
 
     const [isPending, startTransition] = useTransition();
+    const [acceptedTerms, setAcceptedTerms] = useState(false);
 
     const {
         register,
@@ -40,6 +42,13 @@ const RegisterModal = () => {
     const onSubmit: SubmitHandler<FieldValues> = (data) => {
         if (!validateEmail(data.email)) {
             toast.error(t('error_validate_email'));
+            return;
+        }
+        if (!acceptedTerms) {
+            toast.error(
+                t('error_accept_terms') ||
+                    'Please accept the Terms of Service and Privacy Policy to create an account'
+            );
             return;
         }
         startTransition(async () => {
@@ -110,12 +119,48 @@ const RegisterModal = () => {
                 errors={errors}
                 required
             />
+            <label
+                htmlFor="accept-terms"
+                className="flex cursor-pointer items-start gap-2.5 text-xs leading-relaxed text-neutral-600 dark:text-neutral-400"
+            >
+                <input
+                    id="accept-terms"
+                    type="checkbox"
+                    checked={acceptedTerms}
+                    onChange={(e) => setAcceptedTerms(e.target.checked)}
+                    disabled={isPending}
+                    data-testid="accept-terms-checkbox"
+                    data-cy="accept-terms-checkbox"
+                    className="accent-green-450 focus:ring-green-450/30 mt-0.5 size-4 shrink-0 cursor-pointer rounded border-neutral-300 dark:border-neutral-700"
+                />
+                <span>
+                    {t('register_accept_terms_prefix')}{' '}
+                    <Link
+                        href="/policies/terms"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-neutral-900 underline underline-offset-2 hover:opacity-80 dark:text-white"
+                    >
+                        {t('terms_of_service')}
+                    </Link>{' '}
+                    {t('register_accept_terms_and')}{' '}
+                    <Link
+                        href="/policies/privacy"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-neutral-900 underline underline-offset-2 hover:opacity-80 dark:text-white"
+                    >
+                        {t('privacy_policy')}
+                    </Link>
+                    .
+                </span>
+            </label>
         </div>
     );
 
     const footerContent = (
         <div className="mt-3 flex flex-col gap-4">
-            <hr />
+            <hr className="border-neutral-200/80 dark:border-neutral-800/80" />
             <Button
                 outline
                 label={t('login_google')}
@@ -128,13 +173,34 @@ const RegisterModal = () => {
                 icon={AiFillGithub}
                 onClick={() => signIn('github')}
             />
-            <div className="mt-4 text-center font-light text-neutral-500">
+            <p className="text-center text-xs leading-relaxed text-neutral-500 dark:text-neutral-400">
+                {t('register_oauth_terms_notice')}{' '}
+                <Link
+                    href="/policies/terms"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-neutral-900 underline underline-offset-2 hover:opacity-80 dark:text-white"
+                >
+                    {t('terms_of_service')}
+                </Link>{' '}
+                {t('register_accept_terms_and')}{' '}
+                <Link
+                    href="/policies/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-neutral-900 underline underline-offset-2 hover:opacity-80 dark:text-white"
+                >
+                    {t('privacy_policy')}
+                </Link>
+                .
+            </p>
+            <div className="mt-2 text-center font-light text-neutral-500 dark:text-neutral-400">
                 <p>
                     {t('already_account')}{' '}
                     <button
                         type="button"
                         onClick={onToggle}
-                        className="cursor-pointer border-0 bg-transparent p-0 text-neutral-800 hover:underline focus:outline-hidden"
+                        className="cursor-pointer border-0 bg-transparent p-0 text-neutral-800 hover:underline focus:outline-hidden dark:text-white"
                     >
                         {t('login')}
                     </button>

@@ -80,6 +80,27 @@ describe('RegisterModal', () => {
         ).toBeDefined();
     });
 
+    it('blocks submission if terms and age checkbox is not checked', async () => {
+        render(<RegisterModal />);
+
+        fireEvent.change(screen.getByLabelText('email'), {
+            target: { value: 'test@example.com' },
+        });
+        fireEvent.change(screen.getByLabelText('name'), {
+            target: { value: 'testuser' },
+        });
+        fireEvent.change(screen.getByLabelText('password'), {
+            target: { value: 'password123' },
+        });
+
+        fireEvent.click(screen.getByText('continue'));
+
+        await waitFor(() => {
+            expect(toast.error).toHaveBeenCalledWith('error_accept_terms');
+            expect(axios.post).not.toHaveBeenCalled();
+        });
+    });
+
     it('submits the form with valid credentials', async () => {
         (axios.post as any).mockResolvedValue({});
 
@@ -94,6 +115,7 @@ describe('RegisterModal', () => {
         fireEvent.change(screen.getByLabelText('password'), {
             target: { value: 'password123' },
         });
+        fireEvent.click(screen.getByTestId('accept-terms-checkbox'));
 
         fireEvent.click(screen.getByText('continue'));
 
@@ -122,6 +144,7 @@ describe('RegisterModal', () => {
         fireEvent.change(screen.getByLabelText('password'), {
             target: { value: 'password123' },
         });
+        fireEvent.click(screen.getByTestId('accept-terms-checkbox'));
 
         fireEvent.click(screen.getByText('continue'));
 
@@ -177,6 +200,7 @@ describe('RegisterModal', () => {
         fireEvent.change(screen.getByLabelText('password'), {
             target: { value: 'password123' },
         });
+        fireEvent.click(screen.getByTestId('accept-terms-checkbox'));
 
         fireEvent.click(screen.getByText('continue'));
 

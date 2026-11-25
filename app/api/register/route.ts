@@ -31,7 +31,7 @@ export async function POST(request: Request) {
                     1,
                     Math.ceil(retryAfterSeconds / 60)
                 );
-                logger.warn('POST /api/register - rate limit exceeded', { ip });
+                logger.warn('POST /api/register - rate limit exceeded');
                 return rateLimitExceeded(
                     `Too many registration attempts. Please try again in ${retryAfterMinutes} minutes.`,
                     retryAfterSeconds
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
         const body = await request.json();
         const { email, name, password } = body;
 
-        logger.info('POST /api/register - start', { email });
+        logger.info('POST /api/register - start');
 
         // Normalize email to lowercase for consistency
         const normalizedEmail = email?.toLowerCase();
@@ -89,7 +89,6 @@ export async function POST(request: Request) {
 
         logger.info('POST /api/register - success', {
             userId: user.id,
-            email: normalizedEmail,
         });
         return NextResponse.json(user);
     } catch (error: any) {

@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, after } from 'next/server';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import prisma from '@/app/lib/prismadb';
 import {
@@ -16,6 +16,7 @@ import {
     normalizeSocialHandle,
     normalizeWebsiteUrl,
 } from '@/app/utils/profile-utils';
+import { DraftService } from '@/app/services/draftService';
 
 interface IParams {
     userId?: string;
@@ -239,6 +240,9 @@ export async function DELETE(
             where: {
                 id: userId,
             },
+            select: {
+                id: true,
+            },
         });
 
         if (!userToDelete) {
@@ -246,11 +250,31 @@ export async function DELETE(
         }
 
         await prisma.$transaction(async (tx) => {
+            if (tx.workshopParticipant?.deleteMany) {
+                await tx.workshopParticipant.deleteMany({
+                    where: { userId },
+                });
+            }
+            if (tx.recipeVote?.deleteMany) {
+                await tx.recipeVote.deleteMany({
+                    where: { userId },
+                });
+            }
+            if (tx.quest?.updateMany) {
+                await tx.quest.updateMany({
+                    where: { acceptedSolverId: userId },
+                    data: { acceptedSolverId: null },
+                });
+            }
             await tx.user.delete({
                 where: {
                     id: userId,
                 },
             });
+        });
+
+        after(async () => {
+            await DraftService.cleanupUserDrafts(userId);
         });
 
         logger.info('DELETE /api/user/[userId] - success', { userId });

@@ -7,7 +7,6 @@ import {
     internalServerError,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
-import { trackRecipeLike, trackRecipeUnlike } from '@/app/actions/tracking';
 import sendNotification from '@/app/actions/sendNotification';
 import updateUserLevel from '@/app/actions/updateUserLevel';
 import { redisCache } from '@/app/lib/redis';
@@ -116,7 +115,6 @@ export async function POST(
                 }
             }
 
-            void trackRecipeLike(recipeId, currentUser.id);
             logger.info('POST /api/favorites/[recipeId] - success', {
                 recipeId,
                 userId: user.id,
@@ -233,7 +231,6 @@ export async function DELETE(
                 }
             }
 
-            void trackRecipeUnlike(recipeId, currentUser.id);
             logger.info('DELETE /api/favorites/[recipeId] - success', {
                 recipeId,
                 userId: user.id,

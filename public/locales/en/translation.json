@@ -1751,5 +1751,10 @@
     "dietary_one_pot": "One-Pot",
     "dietary_comfort_food": "Comfort Food",
     "dietary_kid_friendly": "Kid-Friendly",
-    "dietary_spicy": "Spicy"
+    "dietary_spicy": "Spicy",
+    "register_accept_terms_prefix": "I confirm I am at least 14 years old (or the minimum digital consent age in my country) and agree to the",
+    "register_accept_terms_and": "and",
+    "register_oauth_terms_notice": "By continuing with Google or GitHub, you confirm you meet the minimum age requirement and agree to our",
+    "error_accept_terms": "Please accept the Terms of Service and Privacy Policy to create an account",
+    "allergen_disclaimer": "Automatically estimated from recipe ingredients and tags — may be incomplete. Always verify ingredients for food allergies."
 }

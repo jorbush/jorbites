@@ -576,11 +576,7 @@ export class DraftService {
                       ? existing.currentStep
                       : 0,
             ownerId: existing?.ownerId || currentUser.id,
-            ownerName:
-                existing?.ownerName ||
-                currentUser.name ||
-                currentUser.email ||
-                'Chef',
+            ownerName: existing?.ownerName || currentUser.name || 'Chef',
             ingredients:
                 sanitizedPayload.ingredients !== undefined &&
                 Array.isArray(sanitizedPayload.ingredients)
@@ -655,7 +651,7 @@ export class DraftService {
                     : existing?.coCookRoles || {},
             lastModifiedBy: {
                 id: currentUser.id,
-                name: currentUser.name || currentUser.email || 'Chef',
+                name: currentUser.name || 'Chef',
             },
             linkedRecipeIds: limitedLinked,
             inviteToken:
@@ -1455,5 +1451,84 @@ export class DraftService {
         });
 
         return results;
+    }
+
+    /**
+     * Removes all Redis drafts and collaborator references for a deleted user (GDPR Art. 17).
+     */
+    static async cleanupUserDrafts(userId: string): Promise<void> {
+        try {
+            const [userDraftIds, soloDraftIds] = await Promise.all([
+                this.getUserDraftIds(userId),
+                this.getSoloDraftIds(userId),
+            ]);
+
+            const allDraftIds = Array.from(
+                new Set([...userDraftIds, ...soloDraftIds])
+            );
+
+            await Promise.all(
+                allDraftIds.map(async (draftId) => {
+                    await redisClient.del(`draft:user:${userId}:${draftId}`);
+
+                    const sharedKey = `draft:shared:${draftId}`;
+                    const raw = await redisClient.get(sharedKey);
+                    if (!raw) return;
+
+                    let draft: SharedDraft;
+                    try {
+                        draft = this.normalizeSharedDraft(JSON.parse(raw));
+                    } catch {
+                        return;
+                    }
+
+                    if (draft.ownerId === userId) {
+                        const participants = Array.from(
+                            new Set([userId, ...(draft.coCooksIds || [])])
+                        ).filter(Boolean);
+                        await Promise.all([
+                            redisClient.del(sharedKey),
+                            releaseAllLocks(draftId),
+                            ...participants.map((uid) =>
+                                this.removeFromUserDrafts(uid, draftId)
+                            ),
+                        ]);
+                    } else if (draft.coCooksIds?.includes(userId)) {
+                        draft.coCooksIds = draft.coCooksIds.filter(
+                            (id) => id !== userId
+                        );
+                        if (draft.coCookRoles && draft.coCookRoles[userId]) {
+                            delete draft.coCookRoles[userId];
+                        }
+                        if (draft.lastModifiedBy?.id === userId) {
+                            draft.lastModifiedBy = {
+                                id: draft.ownerId,
+                                name: draft.ownerName || 'Chef',
+                            };
+                        }
+                        draft.updatedAt = new Date().toISOString();
+                        await redisClient.set(
+                            sharedKey,
+                            JSON.stringify(draft),
+                            'EX',
+                            DRAFT_TTL_SECONDS
+                        );
+                    }
+                })
+            );
+
+            await Promise.all([
+                redisClient.del(`draft:user:${userId}`),
+                redisClient.del(`user:drafts:${userId}`),
+                redisClient.del(`user:solo-drafts:${userId}`),
+            ]);
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error ? error.message : String(error);
+            logger.error('DraftService.cleanupUserDrafts error', {
+                error: message,
+                userId,
+            });
+        }
     }
 }
