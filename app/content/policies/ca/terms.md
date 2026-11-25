@@ -5,7 +5,7 @@ description: 'Termes i Condicions de Jorbites'
 
 Última actualització: 25 de novembre de 2026
 
-Benvingut a **Jorbites** ("nosaltres", "nostre" o "ens"), un projecte comunitari independent i de codi obert operat per Jordi Bonet. Aquests Termes i Condicions ("Termes") regeixen el vostre accés i ús de la plataforma Jorbites, el lloc web accessible a [https://jorbites.com](https://jorbites.com) i els serveis relacionats (col·lectivament, la "Plataforma").
+Benvingut a **Jorbites** ("nosaltres", "nostre" o "ens"), un projecte comunitari independent i de codi obert. Aquests Termes i Condicions ("Termes") regeixen el vostre accés i ús de la plataforma Jorbites, el lloc web accessible a [https://jorbites.com](https://jorbites.com) i els serveis relacionats (col·lectivament, la "Plataforma").
 
 En crear un compte o accedir a la Plataforma, accepteu quedar vinculats per aquests Termes i reconeixeu haver llegit la nostra [Política de Privacitat](/policies/privacy).
 
@@ -18,14 +18,14 @@ Per crear un compte o utilitzar la Plataforma, heu de tenir almenys **14 anys** 
 - **Creació de Compte**: Podeu crear un compte utilitzant serveis d'autenticació de tercers (Google o GitHub) o mitjançant correu electrònic i contrasenya.
 - **Responsabilitat del Compte**: Sou responsables de mantenir la confidencialitat de les credencials del vostre compte (inclosos els codis de recuperació d'autenticació en dos passos) i de totes les activitats que s'hi realitzin.
 - **Eliminació de Compte**: Podeu eliminar el vostre compte en qualsevol moment des de la Configuració del Compte.
-- **Suspensió i Cancel·lació**: Ens reservem el dret de restringir, suspendre o cancel·lar comptes que infringeixin aquests Termes, vulnerin drets de tercers o facin un ús abusiu o il·lícit. Si el vostre contingut és retirat o el vostre compte és restringit, podeu escriure'ns a [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com) per sol·licitar aclariments o impugnar la decisió.
+- **Suspensió i Cancel·lació**: Ens reservem el dret de restringir, suspendre o cancel·lar comptes que infringeixin aquests Termes, vulnerin drets de tercers o facin un ús abusiu o il·lícit. Si el vostre contingut és retirat o el vostre compte és restringit, podeu escriure'ns a [jorbites.app@gmail.com](mailto:jorbites.app@gmail.com) per sol·licitar aclariments o impugnar la decisió.
 
 ## 3. Contingut de l'Usuari, Propietat Intel·lectual i Denúncia de Continguts Il·lícits
 
 - **Propietat**: Manteniu la propietat de les receptes, textos, imatges, cooksnaps, comentaris, tallers i altres continguts ("Contingut de l'Usuari") que publiqueu o carregueu a la Plataforma.
 - **Llicència a Jorbites**: En enviar Contingut de l'Usuari, concediu a Jorbites una llicència mundial, no exclusiva i lliure de drets per utilitzar, allotjar, emmagatzemar, reproduir, formatar, mostrar i distribuir el vostre contingut únicament per operar, millorar i promocionar la Plataforma. Aquesta llicència finalitza quan elimineu el vostre contingut o el vostre compte, subjecta a memòries catxé tècniques raonables i cicles rotatius de còpies de seguretat.
 - **Normes de Contingut**: Us comprometeu a no carregar contingut il·legal, difamatori, d'odi, enganyós, que infringeixi drets d'autor o propietat intel·lectual de tercers, vulneri la privacitat de tercers o contingui codi maliciós.
-- **Notificació i Retirada (Drets d'Autor i Continguts Il·lícits)**: Si considereu que algun contingut de la Plataforma infringeix els vostres drets de propietat intel·lectual o resulta il·lícit (inclòs en virtut del Reglament de Serveis Digitals de la UE — DSA), notifiqueu-nos-ho a [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com) indicant l'URL exacta, una descripció del problema i les vostres dades de contacte perquè puguem revisar-lo i actuar amb promptitud.
+- **Notificació i Retirada (Drets d'Autor i Continguts Il·lícits)**: Si considereu que algun contingut de la Plataforma infringeix els vostres drets de propietat intel·lectual o resulta il·lícit (inclòs en virtut del Reglament de Serveis Digitals de la UE — DSA), notifiqueu-nos-ho a [jorbites.app@gmail.com](mailto:jorbites.app@gmail.com) indicant l'URL exacta, una descripció del problema i les vostres dades de contacte perquè puguem revisar-lo i actuar amb promptitud.
 
 ## 4. Microserveis i Ecosistema de Serveis
 
@@ -69,4 +69,4 @@ Ens reservem el dret de modificar aquests Termes en qualsevol moment. Publicarem
 
 ## 12. Contacte
 
-Si teniu qualsevol pregunta sobre aquests Termes, voleu denunciar contingut il·lícit o que infringeixi drets d'autor, o impugnar una mesura de moderació, podeu contactar-nos a [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com) o consultar la nostra [Política de Privacitat](/policies/privacy).
+Si teniu qualsevol pregunta sobre aquests Termes, voleu denunciar contingut il·lícit o que infringeixi drets d'autor, o impugnar una mesura de moderació, podeu contactar-nos a [jorbites.app@gmail.com](mailto:jorbites.app@gmail.com) o consultar la nostra [Política de Privacitat](/policies/privacy).

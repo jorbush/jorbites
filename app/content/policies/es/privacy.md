@@ -9,9 +9,9 @@ Esta Política de Privacidad explica cómo **Jorbites** ("nosotros", "nuestro" o
 
 ## 1. Responsable del Tratamiento
 
-La Plataforma es un proyecto comunitario independiente y de código abierto operado por **Jordi Bonet** ("Jorbites").
+La Plataforma es un proyecto comunitario independiente y de código abierto operado por **Jorbites** ("Responsable del Tratamiento").
 
-- **Correo de contacto**: [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com)
+- **Correo de contacto**: [jorbites.app@gmail.com](mailto:jorbites.app@gmail.com)
 - **Sitio Web**: [https://jorbites.com](https://jorbites.com)
 
 ## 2. Información que Recopilamos
@@ -80,7 +80,7 @@ Conforme al RGPD y la normativa aplicable, usted dispone de los siguientes derec
 - **Retirada del Consentimiento (Art. 7(3))**: Retirar en cualquier momento su consentimiento para notificaciones por correo o push desde la configuración de la cuenta.
 - **Presentar una Reclamación (Art. 77)**: Presentar una reclamación ante la autoridad de control competente, como la **Agencia Española de Protección de Datos (AEPD)** en [https://www.aepd.es](https://www.aepd.es).
 
-Para ejercer cualquiera de estos derechos, contáctenos en [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com). Responderemos en el plazo máximo de un mes conforme al RGPD.
+Para ejercer cualquiera de estos derechos, contáctenos en [jorbites.app@gmail.com](mailto:jorbites.app@gmail.com). Responderemos en el plazo máximo de un mes conforme al RGPD.
 
 ## 7. Seguridad y Conservación de Datos
 
@@ -97,7 +97,7 @@ Conservamos los datos según los siguientes criterios:
 
 ## 8. Privacidad de Menores
 
-La Plataforma no está dirigida a menores que no alcancen la edad mínima aplicable de consentimiento digital (**14 años en España**, o entre **13 y 16 años** según su país de residencia; en ningún caso menor de **13 años** a nivel mundial). No recopilamos intencionadamente datos personales de menores por debajo de dicha edad. Si cree que un menor ha creado una cuenta, contáctenos en [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com) para eliminarla de inmediato.
+La Plataforma no está dirigida a menores que no alcancen la edad mínima aplicable de consentimiento digital (**14 años en España**, o entre **13 y 16 años** según su país de residencia; en ningún caso menor de **13 años** a nivel mundial). No recopilamos intencionadamente datos personales de menores por debajo de dicha edad. Si cree que un menor ha creado una cuenta, contáctenos en [jorbites.app@gmail.com](mailto:jorbites.app@gmail.com) para eliminarla de inmediato.
 
 ## 9. Cambios en esta Política
 
@@ -105,4 +105,4 @@ Podemos actualizar esta Política de Privacidad periódicamente. Publicaremos cu
 
 ## 10. Contacto
 
-Si tiene alguna pregunta sobre esta Política de Privacidad o desea ejercer sus derechos de privacidad, contáctenos en [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com).
+Si tiene alguna pregunta sobre esta Política de Privacidad o desea ejercer sus derechos de privacidad, contáctenos en [jorbites.app@gmail.com](mailto:jorbites.app@gmail.com).

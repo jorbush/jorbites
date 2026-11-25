@@ -9,9 +9,9 @@ This Privacy Policy explains how **Jorbites** ("we", "us", or "our") collects, u
 
 ## 1. Data Controller
 
-The Platform is an independent, open-source community project operated by **Jordi Bonet** ("Jorbites").
+The Platform is an independent, open-source community project operated by **Jorbites** ("Data Controller").
 
-- **Contact Email**: [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com)
+- **Contact Email**: [jorbites.app@gmail.com](mailto:jorbites.app@gmail.com)
 - **Website**: [https://jorbites.com](https://jorbites.com)
 
 ## 2. Information We Collect
@@ -80,7 +80,7 @@ Under the GDPR and applicable data protection laws, you have the following right
 - **Withdraw Consent (Art. 7(3))**: Withdraw consent for email or push notifications at any time via Account Settings.
 - **Lodge a Complaint (Art. 77)**: Lodge a complaint with your local Data Protection Supervisory Authority, such as the **Spanish Data Protection Agency (AEPD)** at [https://www.aepd.es](https://www.aepd.es).
 
-To exercise any of these rights, contact us at [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com). We will respond within one month as required by the GDPR.
+To exercise any of these rights, contact us at [jorbites.app@gmail.com](mailto:jorbites.app@gmail.com). We will respond within one month as required by the GDPR.
 
 ## 7. Data Security & Retention
 
@@ -97,7 +97,7 @@ We retain data according to the following criteria:
 
 ## 8. Children's Privacy
 
-The Platform is not directed to children below the applicable minimum age of digital consent (**14 years old in Spain**, or between **13 and 16 years old** depending on your country of residence; at least **13 years old** worldwide). We do not knowingly collect personal data from children under these age thresholds. If you believe an underage user has created an account, please contact [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com) so we can promptly delete it.
+The Platform is not directed to children below the applicable minimum age of digital consent (**14 years old in Spain**, or between **13 and 16 years old** depending on your country of residence; at least **13 years old** worldwide). We do not knowingly collect personal data from children under these age thresholds. If you believe an underage user has created an account, please contact [jorbites.app@gmail.com](mailto:jorbites.app@gmail.com) so we can promptly delete it.
 
 ## 9. Changes to This Policy
 
@@ -105,4 +105,4 @@ We may update this Privacy Policy from time to time. Any updates will be posted 
 
 ## 10. Contact
 
-If you have any questions about this Privacy Policy or wish to exercise your privacy rights, please contact us at [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com).
+If you have any questions about this Privacy Policy or wish to exercise your privacy rights, please contact us at [jorbites.app@gmail.com](mailto:jorbites.app@gmail.com).

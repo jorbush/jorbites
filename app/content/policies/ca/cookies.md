@@ -71,4 +71,4 @@ Podem actualitzar aquesta Política de Cookies periòdicament. Publicarem qualse
 
 ## 6. Contacte
 
-Si teniu qualsevol pregunta sobre aquesta Política de Cookies, podeu contactar-nos a [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com) o consultar la nostra [Política de Privacitat](/policies/privacy).
+Si teniu qualsevol pregunta sobre aquesta Política de Cookies, podeu contactar-nos a [jorbites.app@gmail.com](mailto:jorbites.app@gmail.com) o consultar la nostra [Política de Privacitat](/policies/privacy).

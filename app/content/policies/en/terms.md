@@ -5,7 +5,7 @@ description: 'Jorbites Terms of Service'
 
 Last Updated: November 25, 2026
 
-Welcome to **Jorbites** ("we", "us", or "our"), an independent open-source community project operated by Jordi Bonet. These Terms of Service ("Terms") govern your access to and use of the Jorbites platform, website accessible at [https://jorbites.com](https://jorbites.com), and related services (collectively, the "Platform").
+Welcome to **Jorbites** ("we", "us", or "our"), an independent open-source community project. These Terms of Service ("Terms") govern your access to and use of the Jorbites platform, website accessible at [https://jorbites.com](https://jorbites.com), and related services (collectively, the "Platform").
 
 By creating an account or accessing the Platform, you agree to be bound by these Terms and acknowledge our [Privacy Policy](/policies/privacy).
 
@@ -18,14 +18,14 @@ To create an account or use the Platform, you must be at least **14 years old** 
 - **Account Creation**: You may create an account using third-party authentication services (Google or GitHub) or email/password authentication.
 - **Account Responsibility**: You are responsible for maintaining the confidentiality of your account credentials (including any Two-Factor Authentication recovery codes) and for all activities that occur under your account.
 - **Account Deletion**: You may delete your account at any time from your Account Settings.
-- **Suspension & Termination**: We reserve the right to restrict, suspend, or terminate accounts that violate these Terms, infringe third-party rights, or engage in abusive or unlawful behavior. If your content is removed or your account is restricted, you may contact us at [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com) to request clarification or contest the decision.
+- **Suspension & Termination**: We reserve the right to restrict, suspend, or terminate accounts that violate these Terms, infringe third-party rights, or engage in abusive or unlawful behavior. If your content is removed or your account is restricted, you may contact us at [jorbites.app@gmail.com](mailto:jorbites.app@gmail.com) to request clarification or contest the decision.
 
 ## 3. User Content, Intellectual Property & Reporting Illegal Content
 
 - **Ownership**: You retain ownership of the recipes, text, images, cooksnaps, comments, workshops, and other content ("User Content") that you post or upload to the Platform.
 - **License to Jorbites**: By submitting User Content, you grant Jorbites a worldwide, non-exclusive, royalty-free license to use, host, store, reproduce, format, display, and distribute your content solely for the purpose of operating, improving, and promoting the Platform. This license ends when you delete your content or account, subject to reasonable technical caching and rolling backup cycles.
 - **Content Standards**: You agree not to upload content that is illegal, defamatory, hateful, deceptive, infringes third-party copyright or intellectual property rights, violates third-party privacy, or contains malicious code.
-- **Notice-and-Takedown (Copyright & Illegal Content)**: If you believe any content on the Platform infringes your intellectual property rights or is otherwise illegal (including under the EU Digital Services Act), please notify us at [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com) with the exact URL, a description of the issue, and your contact information so we can review and act promptly.
+- **Notice-and-Takedown (Copyright & Illegal Content)**: If you believe any content on the Platform infringes your intellectual property rights or is otherwise illegal (including under the EU Digital Services Act), please notify us at [jorbites.app@gmail.com](mailto:jorbites.app@gmail.com) with the exact URL, a description of the issue, and your contact information so we can review and act promptly.
 
 ## 4. Microservices & Ecosystem Services
 
@@ -69,4 +69,4 @@ We reserve the right to modify these Terms at any time. We will post any updated
 
 ## 12. Contact Us
 
-If you have any questions regarding these Terms, wish to report illegal or infringing content, or want to contest a moderation action, please contact us at [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com) or review our [Privacy Policy](/policies/privacy).
+If you have any questions regarding these Terms, wish to report illegal or infringing content, or want to contest a moderation action, please contact us at [jorbites.app@gmail.com](mailto:jorbites.app@gmail.com) or review our [Privacy Policy](/policies/privacy).
