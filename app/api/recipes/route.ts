@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, after } from 'next/server';
+import { emitServerAnalyticsEvent } from '@/app/lib/analytics/server';
 import prisma from '@/app/lib/prismadb';
 import { redisCache } from '@/app/lib/redis';
 import getCurrentUser from '@/app/actions/getCurrentUser';
@@ -404,6 +405,23 @@ export async function POST(request: Request) {
                 userId: currentUser.id,
             });
         }
+
+        after(async () => {
+            await emitServerAnalyticsEvent({
+                category: 'content',
+                name: finalForkedFromRecipeId
+                    ? 'recipe_forked'
+                    : 'recipe_published',
+                path: '/recipes',
+                locale: currentUser.language || undefined,
+                props: {
+                    has_draft: Boolean(body.draftId),
+                    has_co_cooks:
+                        Array.isArray(recipe.coCooksIds) &&
+                        recipe.coCooksIds.length > 0,
+                },
+            });
+        });
 
         return NextResponse.json(recipe);
     } catch (error: any) {

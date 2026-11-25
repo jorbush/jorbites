@@ -3,7 +3,7 @@ title: 'Términos y Condiciones'
 description: 'Términos y Condiciones de Jorbites'
 ---
 
-Última actualización: 29 de julio de 2026
+Última actualización: 24 de noviembre de 2026
 
 Bienvenido a **Jorbites** ("nosotros", "nuestro" o "nos"). Estos Términos y Condiciones ("Términos") rigen su acceso y uso de la plataforma Jorbites, el sitio web accesible en [https://jorbites.com](https://jorbites.com) y los servicios relacionados (colectivamente, la "Plataforma").
 
@@ -36,7 +36,7 @@ La Plataforma Jorbites utiliza microservicios automatizados en segundo plano par
 
 ## 5. Enlaces de Terceros e Infraestructura
 
-La Plataforma depende de proveedores de infraestructura de terceros, incluidos [Vercel](https://vercel.com), [Hostinger](https://www.hostinger.com), [MongoDB](https://www.mongodb.com), [Cloudinary](https://cloudinary.com/), [Upstash](https://www.upstash.com/) y [Axiom](https://axiom.co). No somos responsables de la disponibilidad o contenido de sitios o servicios de terceros.
+La Plataforma depende de proveedores de infraestructura de terceros, incluidos [Vercel](https://vercel.com), [Hostinger](https://www.hostinger.com), [MongoDB](https://www.mongodb.com), [Cloudinary](https://cloudinary.com/), [Upstash](https://www.upstash.com/), [Axiom](https://axiom.co), [Aiven](https://aiven.io/) y [Turso](https://turso.tech/). No somos responsables de la disponibilidad o contenido de sitios o servicios de terceros.
 
 ## 6. Limitación de Responsabilidad
 

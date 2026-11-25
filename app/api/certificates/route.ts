@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/dist/server/web/spec-extension/response';
+import { after } from 'next/server';
+import { emitServerAnalyticsEvent } from '@/app/lib/analytics/server';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { logger } from '@/app/lib/axiom/server';
@@ -228,6 +230,19 @@ export async function POST(request: Request) {
             certId: certificate.certId,
             userId: currentUser.id,
             courseId: certificate.courseId,
+        });
+
+        const courseIdForAnalytics = certificate.courseId;
+        after(async () => {
+            await emitServerAnalyticsEvent({
+                category: 'content',
+                name: 'certificate_issued',
+                path: '/certificates/[id]',
+                locale: currentUser.language || undefined,
+                props: {
+                    course_id: courseIdForAnalytics,
+                },
+            });
         });
 
         return NextResponse.json(toSafeCertificate(certificate));

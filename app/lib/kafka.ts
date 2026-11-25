@@ -49,3 +49,70 @@ if (process.env.KAFKA_BROKER) {
 }
 
 export default producer;
+
+const KAFKA_TIMEOUT_MS = 3000;
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+    let timeoutHandle: ReturnType<typeof setTimeout>;
+
+    const timeoutPromise = new Promise<T>((_, reject) => {
+        timeoutHandle = setTimeout(() => {
+            reject(new Error(`Kafka operation timed out after ${ms}ms`));
+        }, ms);
+    });
+
+    return Promise.race([promise, timeoutPromise]).finally(() => {
+        clearTimeout(timeoutHandle);
+    });
+}
+
+export interface KafkaBatchMessage {
+    key?: string;
+    value: string;
+}
+
+export async function produceKafkaBatch(
+    topic: string,
+    messages: KafkaBatchMessage[]
+): Promise<boolean> {
+    if (messages.length === 0) {
+        return true;
+    }
+
+    if (!producer) {
+        if (process.env.NODE_ENV !== 'production') {
+            logger.info(
+                `[Kafka Disabled] Mock batch send to ${topic} (${messages.length} events)`
+            );
+        } else {
+            logger.warn(
+                `[Kafka Disabled] Dropping ${messages.length} events for topic ${topic}`
+            );
+        }
+        return false;
+    }
+
+    try {
+        if (!kafkaStatus.isConnected) {
+            await withTimeout(producer.connect(), KAFKA_TIMEOUT_MS);
+            kafkaStatus.isConnected = true;
+        }
+
+        await withTimeout(
+            producer.send({
+                topic,
+                messages,
+            }),
+            KAFKA_TIMEOUT_MS
+        );
+        return true;
+    } catch (error) {
+        kafkaStatus.isConnected = false;
+        logger.error('Failed to produce Kafka batch', {
+            topic,
+            count: messages.length,
+            error: error instanceof Error ? error.message : String(error),
+        });
+        return false;
+    }
+}

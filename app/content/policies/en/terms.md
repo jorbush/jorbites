@@ -3,7 +3,7 @@ title: 'Terms of Service'
 description: 'Jorbites Terms of Service'
 ---
 
-Last Updated: July 29, 2026
+Last Updated: November 24, 2026
 
 Welcome to **Jorbites** ("we", "us", or "our"). These Terms of Service ("Terms") govern your access to and use of the Jorbites platform, website accessible at [https://jorbites.com](https://jorbites.com), and related services (collectively, the "Platform").
 
@@ -36,7 +36,7 @@ The Jorbites Platform relies on automated background microservices to manage and
 
 ## 5. Third-Party Links & Infrastructure
 
-The Platform relies on third-party infrastructure providers including [Vercel](https://vercel.com), [Hostinger](https://www.hostinger.com), [MongoDB](https://www.mongodb.com), [Cloudinary](https://cloudinary.com/), [Upstash](https://www.upstash.com/), and [Axiom](https://axiom.co). We are not responsible for the availability or content of third-party websites or services linked to or integrated with the Platform.
+The Platform relies on third-party infrastructure providers including [Vercel](https://vercel.com), [Hostinger](https://www.hostinger.com), [MongoDB](https://www.mongodb.com), [Cloudinary](https://cloudinary.com/), [Upstash](https://www.upstash.com/), [Axiom](https://axiom.co), [Aiven](https://aiven.io/), and [Turso](https://turso.tech/). We are not responsible for the availability or content of third-party websites or services linked to or integrated with the Platform.
 
 ## 6. Disclaimer of Warranties & Limitation of Liability
 

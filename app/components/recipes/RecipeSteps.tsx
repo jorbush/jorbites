@@ -6,6 +6,7 @@ import { FiCheck, FiPlay } from 'react-icons/fi';
 import useIsMounted from '@/app/hooks/useIsMounted';
 import useRecipeChecklist from '@/app/hooks/useRecipeChecklist';
 import { unlockCookingAudio } from '@/app/utils/cookingAudioEngine';
+import { trackAnalyticsEvent } from '@/app/lib/analytics/client';
 import { formatText } from '@/app/utils/textFormatting';
 import RecipeChecklistHeader from './RecipeChecklistHeader';
 import RecipeCookingGuideModal from './CookingGuide/RecipeCookingGuideModal';
@@ -55,6 +56,9 @@ export const RecipeSteps: React.FC<RecipeStepsProps> = ({
                         type="button"
                         onClick={() => {
                             unlockCookingAudio();
+                            trackAnalyticsEvent('feature', 'step_guide_open', {
+                                steps_count: items.length,
+                            });
                             setIsGuideOpen(true);
                         }}
                         className="border-green-450/50 bg-green-450 flex cursor-pointer items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-semibold text-neutral-900 shadow-xs transition-transform duration-200 hover:scale-102"

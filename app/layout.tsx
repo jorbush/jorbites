@@ -53,6 +53,9 @@ const SpeedInsights = dynamicImport<{}>(() =>
         default: mod.SpeedInsights,
     }))
 );
+const AnalyticsTracker = dynamicImport(
+    () => import('@/app/components/analytics/AnalyticsTracker')
+);
 
 const font = Nunito({
     subsets: ['latin'],
@@ -155,6 +158,9 @@ export default async function RootLayout({
                     <ToasterProvider />
                 </ClientOnly>
                 {process.env.NODE_ENV === 'production' && <SpeedInsights />}
+                <Suspense fallback={null}>
+                    <AnalyticsTracker />
+                </Suspense>
             </body>
         </html>
     );

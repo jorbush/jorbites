@@ -3,7 +3,7 @@ title: 'Privacy Policy'
 description: 'Jorbites Privacy Policy'
 ---
 
-Last Updated: July 29, 2026
+Last Updated: November 24, 2026
 
 This Privacy Policy explains how **Jorbites** ("we", "us", or "our") collects, uses, and discloses your personal information when you use our website, accessible at [https://jorbites.com](https://jorbites.com) (the "Website"), and our associated microservices.
 
@@ -19,6 +19,7 @@ We collect various types of information to provide, maintain, and improve our se
   - **Recipes & Interactions**: Recipes you create, edit, save to favorites, planning lists, and comments you post.
   - **Engagement & Levels**: Activity metrics (recipe creation counts, engagement points) processed to award user levels and achievement badges.
 - **Media Files**: Images you upload are stored and served via [Cloudinary](https://cloudinary.com/).
+- **Aggregated Feature & Usage Analytics**: Strictly anonymous, cookieless interaction metrics (normalized page routes, feature usage such as cooking tools or search filters, display language, general device class, country code, and referring domain). We do **not** attach user IDs, email addresses, IP addresses, cookies, or browser storage identifiers to these analytics events.
 
 ## 2. Artificial Intelligence & Microservices Processing
 
@@ -30,6 +31,7 @@ Our Platform integrates automated background microservices, telemetry, and AI te
 - **Transactional Notifications (Jorbites Notifier)**: System emails, welcome messages, and password resets are queued and dispatched via our *Jorbites Notifier* service.
 - **Automated Backups (Pantry Keeper)**: Database backups are processed by our automated system (*Pantry Keeper*) to prevent data loss and ensure system resiliency.
 - **Server Logging & Error Monitoring (Axiom)**: System logs, error diagnostics, and application performance metrics are securely processed by [Axiom](https://axiom.co/legal/privacy).
+- **Cookieless Analytics Aggregation (Kafkaroni)**: Anonymous feature-usage events streamed through [Aiven](https://aiven.io/privacy) are aggregated by our internal *Kafkaroni* service into daily rollups stored in an isolated [Turso](https://turso.tech/privacy-policy) database (EU region) with no personally identifiable information.
 
 ## 3. How We Use Your Information
 
@@ -40,13 +42,15 @@ We use the information we collect to:
 - Send transactional emails and notifications regarding your account.
 - Calculate gamification badges and user level progression.
 - Monitor application health, debug system errors, and analyze site performance using [Axiom](https://axiom.co/legal/privacy) and [Vercel Speed Insights](https://vercel.com/docs/speed-insights).
+- Understand feature adoption and improve user experience through aggregated, cookieless usage analytics based on our legitimate interest in improving the Platform (GDPR Art. 6(1)(f)), without cross-site tracking or individual profiling.
 
 ## 4. Third-Party Service Providers
 
 We do not sell or rent your personal data. We share data only with service providers required for operating the Platform:
 
 - **Hosting & Infrastructure**: [Vercel](https://vercel.com/legal/privacy-policy), [Hostinger](https://www.hostinger.com/privacy).
-- **Databases & Caching**: [MongoDB](https://www.mongodb.com/legal/privacy-policy), [Upstash Redis](https://upstash.com/trust/privacy.pdf).
+- **Databases & Caching**: [MongoDB](https://www.mongodb.com/legal/privacy-policy), [Upstash Redis](https://upstash.com/trust/privacy.pdf), [Turso](https://turso.tech/privacy-policy).
+- **Event Streaming**: [Aiven](https://aiven.io/privacy) (Managed Kafka).
 - **Media Storage**: [Cloudinary](https://cloudinary.com/privacy).
 - **Logging & Diagnostic Telemetry**: [Axiom](https://axiom.co/legal/privacy).
 - **AI & Analytics**: [Google Gemini API](https://policies.google.com/privacy), [Vercel Speed Insights](https://vercel.com/legal/privacy-policy).

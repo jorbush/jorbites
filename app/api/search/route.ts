@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, after } from 'next/server';
+import { emitServerAnalyticsEvent } from '@/app/lib/analytics/server';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import {
@@ -130,6 +131,19 @@ export async function GET(request: Request) {
             userCount: users.length,
             recipeCount: recipes.length,
         });
+        after(async () => {
+            await emitServerAnalyticsEvent({
+                category: 'discovery',
+                name: 'search_executed',
+                path: '/search',
+                locale: currentUser.language || undefined,
+                props: {
+                    mode: type,
+                    zero_results: users.length === 0 && recipes.length === 0,
+                },
+            });
+        });
+
         return NextResponse.json({
             users,
             recipes,

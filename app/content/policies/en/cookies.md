@@ -3,7 +3,7 @@ title: 'Cookies Policy'
 description: 'Jorbites Cookies Policy'
 ---
 
-Last Updated: July 29, 2026
+Last Updated: November 24, 2026
 
 This Cookies Policy explains how **Jorbites** ("we", "us", or "our") uses cookies and similar local storage technologies on our website, accessible at [https://jorbites.com](https://jorbites.com) (the "Website").
 
@@ -30,14 +30,15 @@ We use browser LocalStorage to preserve your user experience settings without se
 
 ### C. Analytics & Performance
 
-We utilize [Vercel Speed Insights](https://vercel.com/docs/speed-insights) to measure aggregate performance metrics (page load times, Web Vitals). This service measures overall performance without using third-party tracking cookies or storing personally identifiable profiles across the web.
+We utilize [Vercel Speed Insights](https://vercel.com/docs/speed-insights) to measure aggregate performance metrics (page load times, Web Vitals) and our own first-party cookieless interaction analytics pipeline (*Kafkaroni*) to measure aggregated feature usage. Neither system sets analytics cookies, reads or writes browser `localStorage`/`sessionStorage`, stores IP addresses, or tracks users across websites.
 
 ## 3. Third-Party Infrastructure
 
 Our Website is hosted on third-party servers and uses infrastructure providers that may set technical connections or session headers:
 
 - **Hosting**: [Vercel Privacy Policy](https://vercel.com/legal/privacy-policy), [Hostinger Privacy Policy](https://www.hostinger.com/privacy)
-- **Database & Caching**: [MongoDB Privacy Policy](https://www.mongodb.com/legal/privacy-policy), [Upstash Privacy Policy](https://upstash.com/trust/privacy.pdf)
+- **Database & Caching**: [MongoDB Privacy Policy](https://www.mongodb.com/legal/privacy-policy), [Upstash Privacy Policy](https://upstash.com/trust/privacy.pdf), [Turso Privacy Policy](https://turso.tech/privacy-policy)
+- **Event Streaming**: [Aiven Privacy Policy](https://aiven.io/privacy)
 - **Media**: [Cloudinary Privacy Policy](https://cloudinary.com/privacy)
 - **Logging & Monitoring**: [Axiom Privacy Policy](https://axiom.co/legal/privacy)
 

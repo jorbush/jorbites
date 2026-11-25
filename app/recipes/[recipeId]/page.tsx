@@ -7,6 +7,7 @@ import RecipeClient from '@/app/recipes/[recipeId]/RecipeClient';
 import getCommentsByRecipeId from '@/app/actions/getCommentsByRecipeId';
 import getCooksnapsByRecipeId from '@/app/actions/getCooksnapsByRecipeId';
 import getRecipeRemixes from '@/app/actions/getRecipeRemixes';
+import { after } from 'next/server';
 import { trackRecipeView } from '@/app/actions/tracking';
 import { createOGImageUrl } from '@/app/utils/seo-utils';
 
@@ -98,7 +99,11 @@ const RecipePage = async (props: { params: Promise<IParams> }) => {
     }
 
     if (recipe?.id && currentUser?.id) {
-        void trackRecipeView(recipe.id, currentUser.id);
+        const recipeId = recipe.id;
+        const userId = currentUser.id;
+        after(async () => {
+            await trackRecipeView(recipeId, userId);
+        });
     }
 
     return (
