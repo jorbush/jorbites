@@ -168,3 +168,106 @@ export async function deleteMultipleFromCloudinary(
 
     return { successful, failed };
 }
+
+const SAFE_USER_ID_REGEX = /^[a-zA-Z0-9_-]+$/;
+const CLOUDINARY_CLEANUP_MAX_PAGES = 5;
+
+export interface PrefixCleanupResult {
+    completed: boolean;
+    deletedCount: number;
+    error?: string;
+}
+
+/**
+ * Deletes all user-scoped Cloudinary assets under `users/<userId>/` in bounded batches.
+ * Designed for async background/cron cleanup so large accounts safely complete across runs.
+ */
+export async function deleteUserPrefixFromCloudinary(
+    userId: string
+): Promise<PrefixCleanupResult> {
+    if (!userId || !SAFE_USER_ID_REGEX.test(userId)) {
+        return {
+            completed: false,
+            deletedCount: 0,
+            error: 'Invalid userId for Cloudinary prefix cleanup',
+        };
+    }
+
+    const hasCredentials = Boolean(
+        process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME &&
+        process.env.CLOUDINARY_API_KEY &&
+        process.env.CLOUDINARY_API_SECRET
+    );
+
+    if (!hasCredentials) {
+        if (
+            process.env.NODE_ENV === 'production' ||
+            process.env.ENV === 'production'
+        ) {
+            return {
+                completed: false,
+                deletedCount: 0,
+                error: 'Missing Cloudinary credentials in production',
+            };
+        }
+        return { completed: true, deletedCount: 0 };
+    }
+
+    const prefix = `users/${userId}/`;
+    let deletedCount = 0;
+    let isPartial = false;
+
+    try {
+        for (let page = 0; page < CLOUDINARY_CLEANUP_MAX_PAGES; page++) {
+            const result = await cloudinary.api.delete_resources_by_prefix(
+                prefix,
+                {
+                    resource_type: 'image',
+                    type: 'upload',
+                    max_results: 500,
+                }
+            );
+
+            if (result?.deleted && typeof result.deleted === 'object') {
+                deletedCount += Object.keys(result.deleted).length;
+            }
+
+            isPartial = Boolean(result?.partial);
+            if (!isPartial) {
+                break;
+            }
+        }
+
+        if (!isPartial) {
+            // Best-effort removal of the now-empty user folder; ignore if folder does not exist.
+            try {
+                await cloudinary.api.delete_folder(`users/${userId}`);
+            } catch {
+                // Folder may not exist if the user never uploaded to Cloudinary.
+            }
+        }
+
+        return {
+            completed: !isPartial,
+            deletedCount,
+        };
+    } catch (error: unknown) {
+        const message =
+            error instanceof Error
+                ? error.message
+                : typeof error === 'object' &&
+                    error !== null &&
+                    'error' in error &&
+                    typeof (error as { error?: { message?: unknown } }).error
+                        ?.message === 'string'
+                  ? String(
+                        (error as { error: { message: string } }).error.message
+                    )
+                  : String(error);
+        return {
+            completed: false,
+            deletedCount,
+            error: message,
+        };
+    }
+}

@@ -342,3 +342,16 @@ model Certificate {
   @@index([userId])
   @@index([courseId])
 }
+
+model PendingMediaCleanup {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String   @unique
+  cloudinaryDone Boolean  @default(false)
+  r2Done         Boolean  @default(false)
+  attempts       Int      @default(0)
+  lastError      String?
+  requestedAt    DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([requestedAt])
+}

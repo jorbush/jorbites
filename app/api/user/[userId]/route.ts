@@ -266,6 +266,17 @@ export async function DELETE(
                     data: { acceptedSolverId: null },
                 });
             }
+            if (tx.pendingMediaCleanup?.upsert) {
+                await tx.pendingMediaCleanup.upsert({
+                    where: { userId },
+                    create: { userId },
+                    update: {
+                        cloudinaryDone: false,
+                        r2Done: false,
+                        lastError: null,
+                    },
+                });
+            }
             await tx.user.delete({
                 where: {
                     id: userId,
