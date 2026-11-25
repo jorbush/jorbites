@@ -214,31 +214,44 @@ export async function deleteUserPrefixFromCloudinary(
     }
 
     const prefix = `users/${userId}/`;
-    let deletedCount = 0;
-    let isPartial = false;
 
-    try {
-        for (let page = 0; page < CLOUDINARY_CLEANUP_MAX_PAGES; page++) {
-            const result = await cloudinary.api.delete_resources_by_prefix(
-                prefix,
-                {
-                    resource_type: 'image',
-                    type: 'upload',
-                    max_results: 500,
-                }
-            );
+    const deleteNextPage = async (
+        remainingPages: number,
+        accumulatedDeleted: number
+    ): Promise<{ completed: boolean; deletedCount: number }> => {
+        const result = await cloudinary.api.delete_resources_by_prefix(prefix, {
+            resource_type: 'image',
+            type: 'upload',
+            max_results: 500,
+        });
 
-            if (result?.deleted && typeof result.deleted === 'object') {
-                deletedCount += Object.keys(result.deleted).length;
-            }
+        const pageDeleted =
+            result?.deleted && typeof result.deleted === 'object'
+                ? Object.keys(result.deleted).length
+                : 0;
+        const totalDeleted = accumulatedDeleted + pageDeleted;
+        const isPartial = Boolean(result?.partial);
 
-            isPartial = Boolean(result?.partial);
-            if (!isPartial) {
-                break;
-            }
+        if (!isPartial || remainingPages <= 1) {
+            return {
+                completed: !isPartial,
+                deletedCount: totalDeleted,
+            };
         }
 
-        if (!isPartial) {
+        return deleteNextPage(remainingPages - 1, totalDeleted);
+    };
+
+    let deletedCount = 0;
+
+    try {
+        const pageResult = await deleteNextPage(
+            CLOUDINARY_CLEANUP_MAX_PAGES,
+            0
+        );
+        deletedCount = pageResult.deletedCount;
+
+        if (pageResult.completed) {
             // Best-effort removal of the now-empty user folder; ignore if folder does not exist.
             try {
                 await cloudinary.api.delete_folder(`users/${userId}`);
@@ -247,10 +260,7 @@ export async function deleteUserPrefixFromCloudinary(
             }
         }
 
-        return {
-            completed: !isPartial,
-            deletedCount,
-        };
+        return pageResult;
     } catch (error: unknown) {
         const message =
             error instanceof Error
