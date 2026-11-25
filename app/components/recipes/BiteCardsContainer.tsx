@@ -4,6 +4,7 @@ import React, { useState, useCallback, useRef, useMemo } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import { trackAnalyticsEvent } from '@/app/lib/analytics/client';
 import { SafeRecipe, SafeUser } from '@/app/types';
 import BiteCard from './BiteCard';
 import BiteCardsHeader from './BiteCardsHeader';
@@ -156,6 +157,9 @@ export default function BiteCardsContainer({
             setHistory((prev) => [...prev, { recipe, action: 'save' }]);
             setCurrentIndex(nextIndex);
             saveProgressToStorage(recipes, nextIndex, updatedSwipedIds);
+            trackAnalyticsEvent('discovery', 'bite_card_swipe', {
+                direction: 'right',
+            });
 
             try {
                 await axios.post(`/api/favorites/${recipe.id}`);
@@ -183,6 +187,9 @@ export default function BiteCardsContainer({
             setHistory((prev) => [...prev, { recipe, action: 'skip' }]);
             setCurrentIndex(nextIndex);
             saveProgressToStorage(recipes, nextIndex, updatedSwipedIds);
+            trackAnalyticsEvent('discovery', 'bite_card_swipe', {
+                direction: 'left',
+            });
         },
         [currentIndex, recipes]
     );
@@ -196,6 +203,7 @@ export default function BiteCardsContainer({
                 currentIndex,
                 swipedIdsRef.current || []
             );
+            trackAnalyticsEvent('discovery', 'bite_card_open');
             push?.(`/recipes/${recipe.id}`);
         },
         [recipes, currentIndex, push]

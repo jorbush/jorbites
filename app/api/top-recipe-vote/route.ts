@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, after } from 'next/server';
+import { emitServerAnalyticsEvent } from '@/app/lib/analytics/server';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import prisma from '@/app/lib/prismadb';
 import { logger } from '@/app/lib/axiom/server';
@@ -176,6 +177,14 @@ export async function POST(request: Request) {
             });
 
             const vote = await castVote(currentUser.id, sessionId, recipeId);
+            after(async () => {
+                await emitServerAnalyticsEvent({
+                    category: 'content',
+                    name: 'vote_cast',
+                    path: '/top-jorbiters',
+                    locale: currentUser.language || undefined,
+                });
+            });
             return NextResponse.json({ status: 'success', vote });
         }
     } catch (error: any) {

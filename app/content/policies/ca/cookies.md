@@ -3,7 +3,7 @@ title: 'Política de Cookies'
 description: 'Política de Cookies de Jorbites'
 ---
 
-Última actualització: 29 de juliol de 2026
+Última actualització: 24 de novembre de 2026
 
 Aquesta Política de Cookies explica com **Jorbites** ("nosaltres", "nostre" o "ens") utilitza cookies i tecnologies d'emmagatzematge local al nostre lloc web, accessible a [https://jorbites.com](https://jorbites.com) (el "Lloc Web").
 
@@ -30,14 +30,15 @@ Utilitzem el LocalStorage del navegador per conservar els vostres ajustos d'expe
 
 ### C. Analítica i Rendiment
 
-Utilitzem [Vercel Speed Insights](https://vercel.com/docs/speed-insights) per mesurar mètriques de rendiment agregades (temps de càrrega de pàgines). Aquest servei mesura el rendiment general sense utilitzar cookies de seguiment de tercers ni emmagatzemar perfils identificables.
+Utilitzem [Vercel Speed Insights](https://vercel.com/docs/speed-insights) per mesurar mètriques de rendiment agregades (temps de càrrega de pàgines) i el nostre propi sistema d'analítica d'interaccions sense cookies (*Kafkaroni*) per mesurar l'ús agregat de funcionalitats. Cap d'aquests sistemes estableix cookies d'analítica, accedeix a `localStorage`/`sessionStorage`, emmagatzema adreces IP ni rastreja usuaris entre llocs web.
 
 ## 3. Infraestructura de Tercers
 
 El nostre Lloc Web s'allotja en servidors de tercers i utilitza proveïdors d'infraestructura que poden establir connexions tècniques:
 
 - **Allotjament**: [Política de Privacitat de Vercel](https://vercel.com/legal/privacy-policy), [Política de Privacitat de Hostinger](https://www.hostinger.com/privacy)
-- **Base de Dades i Memòria Catxé**: [Política de Privacitat de MongoDB](https://www.mongodb.com/legal/privacy-policy), [Política de Privacitat de Upstash](https://upstash.com/trust/privacy.pdf)
+- **Base de Dades i Memòria Catxé**: [Política de Privacitat de MongoDB](https://www.mongodb.com/legal/privacy-policy), [Política de Privacitat de Upstash](https://upstash.com/trust/privacy.pdf), [Política de Privacitat de Turso](https://turso.tech/privacy-policy)
+- **Streaming d'Esdeveniments**: [Política de Privacitat d'Aiven](https://aiven.io/privacy)
 - **Multimèdia**: [Política de Privacitat de Cloudinary](https://cloudinary.com/privacy)
 - **Registres i Monitoratge**: [Política de Privacitat d'Axiom](https://axiom.co/legal/privacy)
 

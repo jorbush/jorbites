@@ -8,6 +8,7 @@ import useIsMounted from '@/app/hooks/useIsMounted';
 import useRecipeChecklist from '@/app/hooks/useRecipeChecklist';
 import { resolveRecipeAllergens } from '@/app/utils/allergenDetector';
 import { scaleIngredient } from '@/app/utils/ingredientScaler';
+import { trackAnalyticsEvent } from '@/app/lib/analytics/client';
 import { formatText } from '@/app/utils/textFormatting';
 import RecipeChecklistHeader from './RecipeChecklistHeader';
 
@@ -50,9 +51,13 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
     const handleServingsChange = useCallback(
         (nextValue: number) => {
             if (!hasValidYield) return;
+            const clamped = Math.max(1, nextValue);
             setCustomServings({
                 baseYield: recipeYield,
-                value: Math.max(1, nextValue),
+                value: clamped,
+            });
+            trackAnalyticsEvent('feature', 'ingredient_scaler_used', {
+                direction: clamped > recipeYield ? 'up' : 'down',
             });
         },
         [hasValidYield, recipeYield]

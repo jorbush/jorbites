@@ -3,7 +3,7 @@ title: 'Política de Privacidad'
 description: 'Política de Privacidad de Jorbites'
 ---
 
-Última actualización: 29 de julio de 2026
+Última actualización: 24 de noviembre de 2026
 
 Esta Política de Privacidad explica cómo **Jorbites** ("nosotros", "nuestro" o "nos") recopila, utiliza y divulga su información personal cuando utiliza nuestro sitio web, accesible en [https://jorbites.com](https://jorbites.com) (el "Sitio Web"), y nuestros microservicios asociados.
 
@@ -19,6 +19,7 @@ Recopilamos varios tipos de información para proporcionar, mantener y mejorar n
   - **Recetas e Interacciones**: Recetas que crea, edita, guarda en favoritos, listas de planificación y comentarios que publica.
   - **Niveles e Insignias**: Métricas de actividad procesadas para otorgar niveles de usuario e insignias de logros.
 - **Archivos Multimedia**: Las imágenes que carga se almacenan y sirven a través de [Cloudinary](https://cloudinary.com/).
+- **Analítica Agregada de Uso y Funciones**: Métricas de interacción estrictamente anónimas y sin cookies (rutas de página normalizadas, uso de funciones como herramientas de cocina o filtros de búsqueda, idioma de interfaz, tipo de dispositivo general, código de país y dominio de referencia). **No** adjuntamos identificadores de usuario, correos electrónicos, direcciones IP, cookies ni identificadores de almacenamiento del navegador a estos eventos analíticos.
 
 ## 2. Procesamiento por Inteligencia Artificial y Microservicios
 
@@ -30,6 +31,7 @@ Nuestra Plataforma integra microservicios automatizados en segundo plano, teleme
 - **Notificaciones Transaccionales (Jorbites Notifier)**: Los correos del sistema y restablecimientos de contraseña se envían a través de nuestro servicio *Jorbites Notifier*.
 - **Copias de Seguridad (Pantry Keeper)**: Las copias de seguridad de la base de datos son gestionadas por nuestro sistema automatizado (*Pantry Keeper*).
 - **Registros del Servidor y Diagnóstico (Axiom)**: Los registros del sistema y diagnóstico de errores son procesados de forma segura mediante [Axiom](https://axiom.co/legal/privacy).
+- **Agregación de Analítica sin Cookies (Kafkaroni)**: Los eventos anónimos de uso de funciones transmitidos mediante [Aiven](https://aiven.io/privacy) se agregan mediante nuestro servicio interno *Kafkaroni* en resúmenes diarios almacenados en una base de datos aislada de [Turso](https://turso.tech/privacy-policy) (región UE) sin información personalmente identificable.
 
 ## 3. Cómo Utilizamos su Información
 
@@ -40,13 +42,15 @@ Utilizamos la información recopilada para:
 - Enviar correos electrónicos transaccionales y notificaciones de cuenta.
 - Calcular insignias de gamificación y progresión de nivel.
 - Supervisar la salud de la aplicación, solucionar errores y analizar el rendimiento del sitio mediante [Axiom](https://axiom.co/legal/privacy) y [Vercel Speed Insights](https://vercel.com/docs/speed-insights).
+- Comprender la adopción de funciones y mejorar la experiencia de usuario mediante analítica agregada y sin cookies, amparada en nuestro interés legítimo por mejorar la Plataforma (RGPD Art. 6(1)(f)), sin seguimiento entre sitios ni elaboración de perfiles individuales.
 
 ## 4. Proveedores de Servicios de Terceros
 
 No vendemos ni alquilamos sus datos personales. Compartimos información solo con proveedores de servicios necesarios para operar la Plataforma:
 
 - **Alojamiento e Infraestructura**: [Vercel](https://vercel.com/legal/privacy-policy), [Hostinger](https://www.hostinger.com/privacy).
-- **Bases de Datos y Caché**: [MongoDB](https://www.mongodb.com/legal/privacy-policy), [Upstash Redis](https://upstash.com/trust/privacy.pdf).
+- **Bases de Datos y Caché**: [MongoDB](https://www.mongodb.com/legal/privacy-policy), [Upstash Redis](https://upstash.com/trust/privacy.pdf), [Turso](https://turso.tech/privacy-policy).
+- **Streaming de Eventos**: [Aiven](https://aiven.io/privacy) (Kafka gestionado).
 - **Almacenamiento Multimedia**: [Cloudinary](https://cloudinary.com/privacy).
 - **Registros y Telemetría de Diagnóstico**: [Axiom](https://axiom.co/legal/privacy).
 - **IA y Analítica**: [Google Gemini API](https://policies.google.com/privacy), [Vercel Speed Insights](https://vercel.com/legal/privacy-policy).

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
 import ToggleSwitch from '@/app/components/inputs/ToggleSwitch';
+import { trackAnalyticsEvent } from '@/app/lib/analytics/client';
 
 let listeners: (() => void)[] = [];
 const themeStore = {
@@ -38,6 +39,7 @@ const ThemeSelector: React.FC = () => {
     const toggleTheme = () => {
         const newTheme = theme === 'light' ? 'dark' : 'light';
         themeStore.setTheme(newTheme);
+        trackAnalyticsEvent('feature', 'theme_change', { theme: newTheme });
         refresh();
     };
 

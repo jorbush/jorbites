@@ -110,3 +110,14 @@ export const twoFactorRatelimit = hasUpstashConfig
           prefix: '@upstash/ratelimit/two-factor',
       })
     : createMockRatelimit('twoFactorRatelimit');
+
+// Rate limiting for cookieless client analytics ingestion batches
+// 30 batches per minute per IP - accommodates normal SPA navigation & feature bursts
+export const analyticsRatelimit = hasUpstashConfig
+    ? new Ratelimit({
+          redis: Redis.fromEnv(),
+          limiter: Ratelimit.slidingWindow(30, '1 m'),
+          analytics: false,
+          prefix: '@upstash/ratelimit/analytics',
+      })
+    : createMockRatelimit('analyticsRatelimit');

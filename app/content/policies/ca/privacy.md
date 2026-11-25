@@ -3,7 +3,7 @@ title: 'Política de Privacitat'
 description: 'Política de Privacitat de Jorbites'
 ---
 
-Última actualització: 29 de juliol de 2026
+Última actualització: 24 de novembre de 2026
 
 Aquesta Política de Privacitat explica com **Jorbites** ("nosaltres", "nostre" o "ens") recopila, utilitza i divulga la vostra informació personal quan utilitzeu el nostre lloc web, accessible a [https://jorbites.com](https://jorbites.com) (el "Lloc Web"), i els nostres microserveis associats.
 
@@ -19,6 +19,7 @@ Recopilem diversos tipus d'informació per proporcionar, mantenir i millorar els
   - **Receptes i Interaccions**: Receptes que creeu, editeu, deseu a preferits, llistes de planificació i comentaris que publiqueu.
   - **Nivells i Insígnies**: Mètriques d'activitat processades per atorgar nivells d'usuari i insígnies d'assoliments.
 - **Arxius Multimèdia**: Les imatges que carregueu s'emmagatzemen i serveixen mitjançant [Cloudinary](https://cloudinary.com/).
+- **Analítica Agregada d'Ús i Funcionalitats**: Mètriques d'interacció estrictament anònimes i sense cookies (rutes de pàgina normalitzades, ús de funcionalitats com eines de cuina o filtres de cerca, idioma d'interfície, tipus de dispositiu general, codi de país i domini de referència). **No** adjuntem identificadors d'usuari, adreces electròniques, adreces IP, cookies ni identificadors d'emmagatzematge del navegador a aquests esdeveniments analítics.
 
 ## 2. Processament per Intel·ligència Artificial i Microserveis
 
@@ -30,6 +31,7 @@ La nostra Plataforma integra microserveis automatitzats en segon pla, telemetria
 - **Notificacions Transaccionals (Jorbites Notifier)**: Els correus del sistema i restabliments de contrasenya s'envien a través del nostre servei *Jorbites Notifier*.
 - **Còpies de Seguretat (Pantry Keeper)**: Les còpies de seguretat de la base de dades són gestionades pel nostre sistema automatitzat (*Pantry Keeper*).
 - **Registres del Servidor i Diagnòstic (Axiom)**: Els registres del sistema i diagnòstic d'errors es processen de forma segura mitjançant [Axiom](https://axiom.co/legal/privacy).
+- **Agregació d'Analítica sense Cookies (Kafkaroni)**: Els esdeveniments anònims d'ús de funcionalitats transmesos mitjançant [Aiven](https://aiven.io/privacy) s'agreguen pel nostre servei intern *Kafkaroni* en resums diaris emmagatzemats en una base de dades aïllada de [Turso](https://turso.tech/privacy-policy) (regió UE) sense informació personalment identificable.
 
 ## 3. Com Utilitzem la Vostra Informació
 
@@ -40,13 +42,15 @@ Utilitzem la informació recopilada per a:
 - Enviar correus electrònics transaccionals i notificacions de compte.
 - Calcular insígnies de gamificació i progressió de nivell.
 - Supervisar la salut de l'aplicació, solucionar errors i analitzar el rendiment del lloc mitjançant [Axiom](https://axiom.co/legal/privacy) i [Vercel Speed Insights](https://vercel.com/docs/speed-insights).
+- Comprendre l'adopció de funcionalitats i millorar l'experiència d'usuari mitjançant analítica agregada i sense cookies, emparada en el nostre interès legítim per millorar la Plataforma (RGPD Art. 6(1)(f)), sense seguiment entre llocs ni elaboració de perfils individuals.
 
 ## 4. Proveïdors de Serveis de Tercers
 
 No venem ni lloguem les vostres dades personals. Compartim informació només amb proveïdors de serveis necessaris per operar la Plataforma:
 
 - **Allotjament i Infraestructura**: [Vercel](https://vercel.com/legal/privacy-policy), [Hostinger](https://www.hostinger.com/privacy).
-- **Bases de Dades i Memòria Catxé**: [MongoDB](https://www.mongodb.com/legal/privacy-policy), [Upstash Redis](https://upstash.com/trust/privacy.pdf).
+- **Bases de Dades i Memòria Catxé**: [MongoDB](https://www.mongodb.com/legal/privacy-policy), [Upstash Redis](https://upstash.com/trust/privacy.pdf), [Turso](https://turso.tech/privacy-policy).
+- **Streaming d'Esdeveniments**: [Aiven](https://aiven.io/privacy) (Kafka gestionat).
 - **Emmagatzematge Multimèdia**: [Cloudinary](https://cloudinary.com/privacy).
 - **Registres i Telemetria de Diagnòstic**: [Axiom](https://axiom.co/legal/privacy).
 - **IA i Analítica**: [Google Gemini API](https://policies.google.com/privacy), [Vercel Speed Insights](https://vercel.com/legal/privacy-policy).

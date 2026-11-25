@@ -3,7 +3,7 @@ title: 'Política de Cookies'
 description: 'Política de Cookies de Jorbites'
 ---
 
-Última actualización: 29 de julio de 2026
+Última actualización: 24 de noviembre de 2026
 
 Esta Política de Cookies explica cómo **Jorbites** ("nosotros", "nuestro" o "nos") utiliza cookies y tecnologías de almacenamiento local en nuestro sitio web, accesible en [https://jorbites.com](https://jorbites.com) (el "Sitio Web").
 
@@ -30,14 +30,15 @@ Utilizamos el LocalStorage del navegador para conservar sus ajustes de experienc
 
 ### C. Analítica y Rendimiento
 
-Utilizamos [Vercel Speed Insights](https://vercel.com/docs/speed-insights) para medir métricas de rendimiento agregadas (tiempos de carga de páginas). Este servicio mide el rendimiento general sin utilizar cookies de seguimiento de terceros ni almacenar perfiles identificables.
+Utilizamos [Vercel Speed Insights](https://vercel.com/docs/speed-insights) para medir métricas de rendimiento agregadas (tiempos de carga de páginas) y nuestro propio sistema de analítica de interacciones sin cookies (*Kafkaroni*) para medir el uso agregado de funciones. Ninguno de estos sistemas establece cookies de analítica, accede a `localStorage`/`sessionStorage`, almacena direcciones IP ni rastrea usuarios entre sitios web.
 
 ## 3. Infraestructura de Terceros
 
 Nuestro Sitio Web se aloja en servidores de terceros y utiliza proveedores de infraestructura que pueden establecer conexiones técnicas:
 
 - **Alojamiento**: [Política de Privacidad de Vercel](https://vercel.com/legal/privacy-policy), [Política de Privacidad de Hostinger](https://www.hostinger.com/privacy)
-- **Base de Datos y Caché**: [Política de Privacidad de MongoDB](https://www.mongodb.com/legal/privacy-policy), [Política de Privacidad de Upstash](https://upstash.com/trust/privacy.pdf)
+- **Base de Datos y Caché**: [Política de Privacidad de MongoDB](https://www.mongodb.com/legal/privacy-policy), [Política de Privacidad de Upstash](https://upstash.com/trust/privacy.pdf), [Política de Privacidad de Turso](https://turso.tech/privacy-policy)
+- **Streaming de Eventos**: [Política de Privacidad de Aiven](https://aiven.io/privacy)
 - **Multimedia**: [Política de Privacidad de Cloudinary](https://cloudinary.com/privacy)
 - **Registros y Monitorización**: [Política de Privacidad de Axiom](https://axiom.co/legal/privacy)
 
