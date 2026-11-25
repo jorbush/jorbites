@@ -6,6 +6,9 @@ import {
 import { NextRequest } from 'next/server';
 
 jest.mock('@/app/lib/prismadb', () => ({
+    user: {
+        findMany: jest.fn(),
+    },
     pendingMediaCleanup: {
         findMany: jest.fn(),
         update: jest.fn(),
@@ -24,6 +27,7 @@ describe('Media Cleanup Outbox API Route Tests', () => {
         jest.clearAllMocks();
         process.env = { ...originalEnv };
         process.env.CRON_SECRET = 'test-cron-secret';
+        (prisma.user.findMany as jest.Mock).mockResolvedValue([]);
     });
 
     afterEach(() => {
@@ -102,13 +106,14 @@ describe('Media Cleanup Outbox API Route Tests', () => {
             processed: 1,
             completed: 1,
             pending: 0,
+            skipped: 0,
             cloudinaryDeleted: 12,
             r2Deleted: 4,
         });
 
         expect(prisma.pendingMediaCleanup.findMany).toHaveBeenCalledWith({
-            orderBy: { requestedAt: 'asc' },
-            take: 10,
+            orderBy: [{ attempts: 'asc' }, { requestedAt: 'asc' }],
+            take: 5,
         });
         expect(deleteUserPrefixFromCloudinary).toHaveBeenCalledWith('user-123');
         expect(deleteUserPrefixFromR2).toHaveBeenCalledWith('user-123');
@@ -116,6 +121,51 @@ describe('Media Cleanup Outbox API Route Tests', () => {
             where: { id: 'job-1' },
         });
         expect(prisma.pendingMediaCleanup.update).not.toHaveBeenCalled();
+    });
+
+    it('should skip media deletion and remove stale queue entry if user still exists', async () => {
+        (prisma.pendingMediaCleanup.findMany as jest.Mock).mockResolvedValue([
+            {
+                id: 'job-active',
+                userId: 'active-user-1',
+                cloudinaryDone: false,
+                r2Done: false,
+                attempts: 0,
+            },
+        ]);
+        (prisma.user.findMany as jest.Mock).mockResolvedValue([
+            { id: 'active-user-1' },
+        ]);
+        (prisma.pendingMediaCleanup.delete as jest.Mock).mockResolvedValue({});
+
+        const request = new NextRequest(
+            'http://localhost:3000/api/media-cleanup/outbox',
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer test-cron-secret',
+                },
+            }
+        );
+
+        const response = await MediaCleanupPOST(request);
+        const data = await response.json();
+
+        expect(response.status).toBe(200);
+        expect(data).toEqual({
+            status: 'success',
+            processed: 1,
+            completed: 0,
+            pending: 0,
+            skipped: 1,
+            cloudinaryDeleted: 0,
+            r2Deleted: 0,
+        });
+        expect(deleteUserPrefixFromCloudinary).not.toHaveBeenCalled();
+        expect(deleteUserPrefixFromR2).not.toHaveBeenCalled();
+        expect(prisma.pendingMediaCleanup.delete).toHaveBeenCalledWith({
+            where: { id: 'job-active' },
+        });
     });
 
     it('should preserve partial progress and record error when one provider fails', async () => {
@@ -158,6 +208,7 @@ describe('Media Cleanup Outbox API Route Tests', () => {
             processed: 1,
             completed: 0,
             pending: 1,
+            skipped: 0,
             cloudinaryDeleted: 3,
             r2Deleted: 0,
         });

@@ -3,12 +3,13 @@ import { deleteUserPrefixFromCloudinary } from '@/app/utils/cloudinary';
 import { deleteUserPrefixFromR2 } from '@/app/utils/r2';
 import { logger } from '@/app/lib/axiom/server';
 
-const DEFAULT_BATCH_SIZE = 10;
+const DEFAULT_BATCH_SIZE = 5;
 
 export interface MediaCleanupOutboxSummary {
     processed: number;
     completed: number;
     pending: number;
+    skipped: number;
     cloudinaryDeleted: number;
     r2Deleted: number;
 }
@@ -25,13 +26,14 @@ export async function processPendingMediaCleanups(
         processed: 0,
         completed: 0,
         pending: 0,
+        skipped: 0,
         cloudinaryDeleted: 0,
         r2Deleted: 0,
     };
 
     try {
         const pendingJobs = await prisma.pendingMediaCleanup.findMany({
-            orderBy: { requestedAt: 'asc' },
+            orderBy: [{ attempts: 'asc' }, { requestedAt: 'asc' }],
             take: batchSize,
         });
 
@@ -39,12 +41,31 @@ export async function processPendingMediaCleanups(
             return summary;
         }
 
+        const candidateUserIds = pendingJobs.map((job) => job.userId);
+        const existingUsers = await prisma.user.findMany({
+            where: { id: { in: candidateUserIds } },
+            select: { id: true },
+        });
+        const activeUserIds = new Set(existingUsers.map((u) => u.id));
+
         logger.info('Processing pending media cleanup outbox', {
             count: pendingJobs.length,
         });
 
         for (const job of pendingJobs) {
             summary.processed += 1;
+
+            if (activeUserIds.has(job.userId)) {
+                logger.warn(
+                    'Skipping media cleanup for still-active user and removing stale queue entry',
+                    { userId: job.userId, jobId: job.id }
+                );
+                await prisma.pendingMediaCleanup.delete({
+                    where: { id: job.id },
+                });
+                summary.skipped += 1;
+                continue;
+            }
 
             let cloudinaryDone = job.cloudinaryDone;
             let r2Done = job.r2Done;

@@ -7,6 +7,8 @@ import {
 } from '@/app/utils/apiErrors';
 import { safeCompareSecret } from '@/app/utils/cryptoUtils';
 
+export const maxDuration = 60;
+
 export async function GET(request: Request) {
     return handleMediaCleanupOutbox(request);
 }
@@ -48,6 +50,7 @@ async function handleMediaCleanupOutbox(request: Request) {
             processed: result.processed,
             completed: result.completed,
             pending: result.pending,
+            skipped: result.skipped,
             cloudinaryDeleted: result.cloudinaryDeleted,
             r2Deleted: result.r2Deleted,
         });
