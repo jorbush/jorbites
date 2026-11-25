@@ -1752,5 +1752,10 @@
     "dietary_one_pot": "Una sola olla",
     "dietary_comfort_food": "Casera",
     "dietary_kid_friendly": "Para niños",
-    "dietary_spicy": "Picante"
+    "dietary_spicy": "Picante",
+    "register_accept_terms_prefix": "Confirmo que tengo al menos 14 años (o la edad mínima de consentimiento digital en mi país) y acepto los",
+    "register_accept_terms_and": "y la",
+    "register_oauth_terms_notice": "Al continuar con Google o GitHub, confirmas que cumples la edad mínima requerida y aceptas nuestros",
+    "error_accept_terms": "Por favor, acepta los Términos y Condiciones y la Política de Privacidad para crear una cuenta",
+    "allergen_disclaimer": "Estimación automática a partir de los ingredientes y etiquetas de la receta; puede estar incompleta. Verifica siempre los ingredientes en caso de alergia alimentaria."
 }

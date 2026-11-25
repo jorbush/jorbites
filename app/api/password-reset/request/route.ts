@@ -33,8 +33,7 @@ export async function POST(request: Request) {
                     Math.ceil(retryAfterSeconds / 60)
                 );
                 logger.warn(
-                    'POST /api/password-reset/request - rate limit exceeded',
-                    { ip }
+                    'POST /api/password-reset/request - rate limit exceeded'
                 );
                 return rateLimitExceeded(
                     `Too many password reset attempts. Please try again in ${retryAfterMinutes} minutes.`,
@@ -46,7 +45,7 @@ export async function POST(request: Request) {
         const body = await request.json();
         const { email } = body;
 
-        logger.info('POST /api/password-reset/request - start', { email });
+        logger.info('POST /api/password-reset/request - start');
 
         if (!email) {
             return badRequest('Email is required');
@@ -89,7 +88,9 @@ export async function POST(request: Request) {
             },
         });
 
-        logger.info('POST /api/password-reset/request - success', { email });
+        logger.info('POST /api/password-reset/request - success', {
+            userId: user.id,
+        });
         return NextResponse.json({ success: true });
     } catch (error: any) {
         logger.error('POST /api/password-reset/request - error', {

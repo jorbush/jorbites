@@ -38,7 +38,6 @@ const sendNotification = async ({
         const { resetUrl: rawResetUrl, ...loggableParams } = params;
         logger.info('sendNotification - start', {
             type,
-            userEmail,
             params: {
                 ...loggableParams,
                 ...(rawResetUrl ? { resetUrl: '[REDACTED]' } : {}),
@@ -116,7 +115,6 @@ const sendNotification = async ({
                 status: response.status,
                 errorData,
                 type,
-                userEmail,
             });
             throw new Error(
                 `Notification service responded with status ${response.status}: ${JSON.stringify(errorData)}`
@@ -124,13 +122,12 @@ const sendNotification = async ({
         }
 
         const result = await response.json();
-        logger.info('sendNotification - success', { type, userEmail });
+        logger.info('sendNotification - success', { type });
         return result;
     } catch (error: any) {
         logger.error('sendNotification - error', {
             error: error.message,
             type,
-            userEmail,
         });
     }
 };

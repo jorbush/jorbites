@@ -12,6 +12,19 @@ import { NextRequest } from 'next/server';
 
 let mockedSession: Session | null = null;
 
+const mockTx = {
+    workshopParticipant: { deleteMany: jest.fn() },
+    recipeVote: { deleteMany: jest.fn() },
+    quest: { updateMany: jest.fn() },
+    user: { delete: jest.fn() },
+};
+
+jest.mock('@/app/services/draftService', () => ({
+    DraftService: {
+        cleanupUserDrafts: jest.fn().mockResolvedValue(undefined),
+    },
+}));
+
 jest.mock('@/app/lib/prismadb', () => ({
     user: {
         findUnique: jest.fn(),
@@ -23,11 +36,7 @@ jest.mock('@/app/lib/prismadb', () => ({
     recipe: {
         findMany: jest.fn().mockResolvedValue([]),
     },
-    $transaction: jest.fn((cb: any) =>
-        cb({
-            user: { delete: jest.fn() },
-        })
-    ),
+    $transaction: jest.fn((cb: any) => cb(mockTx)),
 }));
 
 import prisma from '@/app/lib/prismadb';
@@ -194,6 +203,16 @@ describe('User API Routes and Server Actions', () => {
 
         expect(res.status).toBe(200);
         expect(data.success).toBe(true);
+        expect(mockTx.workshopParticipant.deleteMany).toHaveBeenCalledWith({
+            where: { userId: 'user-123' },
+        });
+        expect(mockTx.recipeVote.deleteMany).toHaveBeenCalledWith({
+            where: { userId: 'user-123' },
+        });
+        expect(mockTx.quest.updateMany).toHaveBeenCalledWith({
+            where: { acceptedSolverId: 'user-123' },
+            data: { acceptedSolverId: null },
+        });
     });
 
     it('should return error 409 when email already exists', async () => {

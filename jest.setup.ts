@@ -161,11 +161,6 @@ jest.mock('@/app/actions/updateUserLevel', () => ({
     default: jest.fn().mockResolvedValue(undefined),
 }));
 
-jest.mock('@/app/actions/tracking', () => ({
-    trackRecipeLike: jest.fn().mockResolvedValue(undefined),
-    trackRecipeUnlike: jest.fn().mockResolvedValue(undefined),
-}));
-
 // Mock AWS S3 / Cloudflare R2
 jest.mock(
     '@aws-sdk/client-s3',

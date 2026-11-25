@@ -1751,5 +1751,10 @@
     "dietary_one_pot": "Una sola olla",
     "dietary_comfort_food": "Casolana",
     "dietary_kid_friendly": "Per a nens",
-    "dietary_spicy": "Picant"
+    "dietary_spicy": "Picant",
+    "register_accept_terms_prefix": "Confirmo que tinc almenys 14 anys (o l'edat mínima de consentiment digital al meu país) i accepto els",
+    "register_accept_terms_and": "i la",
+    "register_oauth_terms_notice": "En continuar amb Google o GitHub, confirmes que compleixes l'edat mínima requerida i acceptes els nostres",
+    "error_accept_terms": "Si us plau, accepta els Termes i Condicions i la Política de Privacitat per crear un compte",
+    "allergen_disclaimer": "Estimació automàtica a partir dels ingredients i etiquetes de la recepta; pot ser incompleta. Verifica sempre els ingredients en cas d'al·lèrgia alimentària."
 }

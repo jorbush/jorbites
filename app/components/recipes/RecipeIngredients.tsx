@@ -194,6 +194,14 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
                             );
                         })}
                     </div>
+                    <p
+                        className="mt-2.5 text-xs text-neutral-500 dark:text-neutral-400"
+                        data-testid="allergen-disclaimer"
+                    >
+                        {mounted
+                            ? t('allergen_disclaimer')
+                            : 'Automatically estimated from recipe ingredients and tags — may be incomplete. Always verify ingredients for food allergies.'}
+                    </p>
                 </div>
             )}
         </div>

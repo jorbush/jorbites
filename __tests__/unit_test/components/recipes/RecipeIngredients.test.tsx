@@ -160,6 +160,7 @@ describe('RecipeIngredients', () => {
         expect(screen.getByTestId('recipe-allergens')).toBeDefined();
         expect(screen.getByTestId('allergen-badge-gluten')).toBeDefined();
         expect(screen.getByTestId('allergen-badge-eggs')).toBeDefined();
+        expect(screen.getByTestId('allergen-disclaimer')).toBeDefined();
     });
 
     it('does not render allergens section when ingredients have no allergens', () => {
