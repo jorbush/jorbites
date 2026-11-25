@@ -1493,26 +1493,30 @@ export class DraftService {
                                 this.removeFromUserDrafts(uid, draftId)
                             ),
                         ]);
-                    } else if (draft.coCooksIds?.includes(userId)) {
-                        draft.coCooksIds = draft.coCooksIds.filter(
-                            (id) => id !== userId
-                        );
-                        if (draft.coCookRoles && draft.coCookRoles[userId]) {
-                            delete draft.coCookRoles[userId];
+                    } else {
+                        const coCooksSet = new Set(draft.coCooksIds || []);
+                        if (coCooksSet.delete(userId)) {
+                            draft.coCooksIds = Array.from(coCooksSet);
+                            if (
+                                draft.coCookRoles &&
+                                draft.coCookRoles[userId]
+                            ) {
+                                delete draft.coCookRoles[userId];
+                            }
+                            if (draft.lastModifiedBy?.id === userId) {
+                                draft.lastModifiedBy = {
+                                    id: draft.ownerId,
+                                    name: draft.ownerName || 'Chef',
+                                };
+                            }
+                            draft.updatedAt = new Date().toISOString();
+                            await redisClient.set(
+                                sharedKey,
+                                JSON.stringify(draft),
+                                'EX',
+                                DRAFT_TTL_SECONDS
+                            );
                         }
-                        if (draft.lastModifiedBy?.id === userId) {
-                            draft.lastModifiedBy = {
-                                id: draft.ownerId,
-                                name: draft.ownerName || 'Chef',
-                            };
-                        }
-                        draft.updatedAt = new Date().toISOString();
-                        await redisClient.set(
-                            sharedKey,
-                            JSON.stringify(draft),
-                            'EX',
-                            DRAFT_TTL_SECONDS
-                        );
                     }
                 })
             );
