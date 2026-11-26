@@ -1772,5 +1772,22 @@
     "macro_short_carbohydrates": "C",
     "macro_short_fat": "G",
     "macro_short_fiber": "Fib",
-    "quick_filters": "Filtros rápidos"
+    "quick_filters": "Filtros rápidos",
+    "daily_nutrition_goals": "Objetivos nutricionales diarios",
+    "daily_nutrition_goals_hint": "Objetivos opcionales para seguir el progreso diario",
+    "daily_target_calories": "Calorías diarias (kcal)",
+    "daily_target_protein": "Proteína (g)",
+    "daily_target_carbohydrates": "Carbohidratos (g)",
+    "daily_target_fat": "Grasas (g)",
+    "daily_goal_progress": "Progreso del objetivo diario",
+    "daily_goal_reached": "Objetivo diario alcanzado",
+    "over_target": "de más",
+    "fill_remaining_macros": "Completar macros restantes",
+    "suggest_recipes_for_budget": "Sugerir recetas",
+    "remaining_macro_budget": "Presupuesto de macros restante",
+    "add_to_meal_slot": "Añadir a",
+    "need_for_meal": "Faltan {{budget}} para {{meal}}",
+    "remaining_budget_summary": "Restante: {{budget}}",
+    "optional_macro_caps": "Ajustar con límites restantes",
+    "target_must_be_positive": "Introduce un número entero mayor que 0"
 }

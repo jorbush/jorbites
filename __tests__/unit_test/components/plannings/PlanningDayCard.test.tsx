@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import React from 'react';
 import { PlanningDayCard } from '@/app/components/plannings/PlanningDayCard';
 
@@ -224,5 +224,124 @@ describe('PlanningDayCard', () => {
         );
         expect(screen.getByTestId('day-fat').textContent).toContain('24g F');
         expect(screen.queryByTestId('day-fiber')).toBeNull();
+    });
+
+    it('renders progress bars and triggers Fill Remaining Macros when daily targets are configured', () => {
+        const onFillRemainingMacros = vi.fn();
+        const groupedMeals = {
+            'monday-breakfast': [
+                {
+                    id: 'meal-1',
+                    recipe: {
+                        id: 'rec-1',
+                        title: 'Oats',
+                        calories: 500,
+                        protein: 35,
+                        carbohydrates: 60,
+                        fat: 15,
+                    },
+                },
+            ],
+            'monday-lunch': [
+                {
+                    id: 'meal-2',
+                    recipe: {
+                        id: 'rec-2',
+                        title: 'Chicken Bowl',
+                        calories: 1000,
+                        protein: 70,
+                        carbohydrates: 80,
+                        fat: 30,
+                    },
+                },
+            ],
+        };
+
+        render(
+            <PlanningDayCard
+                day="monday"
+                groupedMeals={groupedMeals}
+                isOwner={true}
+                onAddRecipeClick={vi.fn()}
+                onRemoveRecipe={vi.fn()}
+                dailyTargets={{
+                    targetCalories: 2000,
+                    targetProtein: 140,
+                    targetCarbohydrates: 200,
+                    targetFat: 65,
+                }}
+                onFillRemainingMacros={onFillRemainingMacros}
+                push={push}
+                t={t}
+            />
+        );
+
+        expect(screen.getByTestId('day-goal-progress')).toBeDefined();
+
+        const caloriesBar = screen.getByTestId('day-goal-bar-calories');
+        expect(caloriesBar.getAttribute('aria-valuenow')).toBe('1500');
+        expect(caloriesBar.getAttribute('aria-valuemax')).toBe('2000');
+
+        const proteinBar = screen.getByTestId('day-goal-bar-protein');
+        expect(proteinBar.getAttribute('aria-valuenow')).toBe('105');
+        expect(proteinBar.getAttribute('aria-valuemax')).toBe('140');
+
+        // Hint mentions remaining 35g P & 500 kcal for dinner
+        const hint = screen.getByTestId('day-remaining-hint');
+        expect(hint.textContent).toContain('≥35g P');
+        expect(hint.textContent).toContain('≤500 kcal');
+        expect(hint.textContent).toContain('dinner');
+
+        const fillButton = screen.getByTestId('fill-remaining-macros-button');
+        fireEvent.click(fillButton);
+
+        expect(onFillRemainingMacros).toHaveBeenCalledWith(
+            'monday',
+            'dinner',
+            expect.objectContaining({
+                hasRemaining: true,
+                initialFilters: { maxCalories: 500, minProtein: 35 },
+                optionalFilters: { maxCarbohydrates: 60, maxFat: 20 },
+            })
+        );
+    });
+
+    it('shows daily goal reached badge and hides fill button when calories target is met or exceeded', () => {
+        const groupedMeals = {
+            'monday-dinner': [
+                {
+                    id: 'meal-1',
+                    recipe: {
+                        id: 'rec-1',
+                        title: 'Feast',
+                        calories: 2150,
+                        protein: 150,
+                    },
+                },
+            ],
+        };
+
+        render(
+            <PlanningDayCard
+                day="monday"
+                groupedMeals={groupedMeals}
+                isOwner={true}
+                onAddRecipeClick={vi.fn()}
+                onRemoveRecipe={vi.fn()}
+                dailyTargets={{
+                    targetCalories: 2000,
+                    targetProtein: 140,
+                }}
+                onFillRemainingMacros={vi.fn()}
+                push={push}
+                t={t}
+            />
+        );
+
+        expect(screen.getByTestId('day-goal-reached')).toBeDefined();
+        expect(screen.queryByTestId('fill-remaining-macros-button')).toBeNull();
+        expect(
+            screen.getByTestId('day-goal-item-calories').textContent
+        ).toContain('(+150)');
     });
 });

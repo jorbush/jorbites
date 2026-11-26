@@ -195,5 +195,37 @@ describe('Search API Error Handling', () => {
                 })
             );
         });
+
+        it('should filter recipes by remaining macro budget params and apply orderBy without a text query', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: {
+                    name: 'test',
+                    email: 'test@a.com',
+                },
+            };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+
+            const mockRequest = {
+                url: 'http://localhost:3000/api/search?type=recipes&maxCalories=500&minProtein=35&maxCarbohydrates=40&maxFat=20&orderBy=highest_protein',
+            } as Request;
+
+            const response = await SearchGET(mockRequest);
+
+            expect(response.status).toBe(200);
+            expect(prisma.user.findMany).not.toHaveBeenCalled();
+            expect(prisma.recipe.findMany).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    where: {
+                        calories: { lte: 500 },
+                        protein: { gte: 35 },
+                        carbohydrates: { lte: 40 },
+                        fat: { lte: 20 },
+                    },
+                    orderBy: [{ protein: 'desc' }, { id: 'asc' }],
+                    take: 12,
+                })
+            );
+        });
     });
 });

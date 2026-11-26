@@ -3,19 +3,38 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import axios from 'axios';
 import debounce from 'lodash/debounce';
+import { MacroBudgetFilter } from '@/app/utils/planningNutrition';
+
+export type MacroBudgetKey = keyof MacroBudgetFilter;
 
 export interface QuickFilterParams {
     query: string;
     difficulty: string | null;
     selectedTags: string[];
     excludedAllergens: string[];
+    macroBudget?: MacroBudgetFilter;
 }
+
+const EMPTY_MACRO_BUDGET: MacroBudgetFilter = {};
+
+const isPositiveBudgetValue = (value?: number | null): value is number =>
+    typeof value === 'number' && Number.isFinite(value) && value > 0;
+
+export const hasAnyMacroBudget = (budget?: MacroBudgetFilter): boolean =>
+    Boolean(
+        budget &&
+        (isPositiveBudgetValue(budget.maxCalories) ||
+            isPositiveBudgetValue(budget.minProtein) ||
+            isPositiveBudgetValue(budget.maxCarbohydrates) ||
+            isPositiveBudgetValue(budget.maxFat))
+    );
 
 export const buildRecipeSelectSearchUrl = ({
     query,
     difficulty,
     selectedTags,
     excludedAllergens,
+    macroBudget,
 }: QuickFilterParams): string => {
     const trimmed = query.trim();
     const parts: string[] = [];
@@ -36,6 +55,26 @@ export const buildRecipeSelectSearchUrl = ({
             `excludeAllergens=${encodeURIComponent(excludedAllergens.join(','))}`
         );
     }
+    if (macroBudget) {
+        if (isPositiveBudgetValue(macroBudget.maxCalories)) {
+            parts.push(`maxCalories=${macroBudget.maxCalories}`);
+        }
+        if (isPositiveBudgetValue(macroBudget.minProtein)) {
+            parts.push(`minProtein=${macroBudget.minProtein}`);
+        }
+        if (isPositiveBudgetValue(macroBudget.maxCarbohydrates)) {
+            parts.push(`maxCarbohydrates=${macroBudget.maxCarbohydrates}`);
+        }
+        if (isPositiveBudgetValue(macroBudget.maxFat)) {
+            parts.push(`maxFat=${macroBudget.maxFat}`);
+        }
+
+        if (isPositiveBudgetValue(macroBudget.minProtein)) {
+            parts.push('orderBy=highest_protein');
+        } else if (isPositiveBudgetValue(macroBudget.maxCalories)) {
+            parts.push('orderBy=lowest_calories');
+        }
+    }
 
     return `/api/search?${parts.join('&')}`;
 };
@@ -43,21 +82,29 @@ export const buildRecipeSelectSearchUrl = ({
 const hasAnyFilter = (params: QuickFilterParams): boolean =>
     Boolean(params.difficulty) ||
     params.selectedTags.length > 0 ||
-    params.excludedAllergens.length > 0;
+    params.excludedAllergens.length > 0 ||
+    hasAnyMacroBudget(params.macroBudget);
 
-export function useRecipeSelectSearch() {
+export function useRecipeSelectSearch(
+    initialMacroBudget: MacroBudgetFilter = EMPTY_MACRO_BUDGET
+) {
     const [query, setQuery] = useState('');
     const [difficulty, setDifficulty] = useState<string | null>(null);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [excludedAllergens, setExcludedAllergens] = useState<string[]>([]);
+    const [macroBudget, setMacroBudget] = useState<MacroBudgetFilter>(() => ({
+        ...initialMacroBudget,
+    }));
     const [results, setResults] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const requestIdRef = useRef(0);
+    const initialBudgetRef = useRef(initialMacroBudget);
 
     const hasActiveFilters =
         Boolean(difficulty) ||
         selectedTags.length > 0 ||
-        excludedAllergens.length > 0;
+        excludedAllergens.length > 0 ||
+        hasAnyMacroBudget(macroBudget);
 
     const executeSearch = useCallback(async (params: QuickFilterParams) => {
         if (params.query.trim().length < 2 && !hasAnyFilter(params)) {
@@ -84,6 +131,18 @@ export function useRecipeSelectSearch() {
         }
     }, []);
 
+    useEffect(() => {
+        if (hasAnyMacroBudget(initialBudgetRef.current)) {
+            void executeSearch({
+                query: '',
+                difficulty: null,
+                selectedTags: [],
+                excludedAllergens: [],
+                macroBudget: initialBudgetRef.current,
+            });
+        }
+    }, [executeSearch]);
+
     const debouncedSearch = useMemo(
         () =>
             debounce((params: QuickFilterParams) => {
@@ -106,9 +165,16 @@ export function useRecipeSelectSearch() {
                 difficulty,
                 selectedTags,
                 excludedAllergens,
+                macroBudget,
             });
         },
-        [debouncedSearch, difficulty, selectedTags, excludedAllergens]
+        [
+            debouncedSearch,
+            difficulty,
+            selectedTags,
+            excludedAllergens,
+            macroBudget,
+        ]
     );
 
     const runImmediate = useCallback(
@@ -128,9 +194,17 @@ export function useRecipeSelectSearch() {
                 difficulty: nextDifficulty,
                 selectedTags,
                 excludedAllergens,
+                macroBudget,
             });
         },
-        [difficulty, query, selectedTags, excludedAllergens, runImmediate]
+        [
+            difficulty,
+            query,
+            selectedTags,
+            excludedAllergens,
+            macroBudget,
+            runImmediate,
+        ]
     );
 
     const handleToggleTag = useCallback(
@@ -144,9 +218,17 @@ export function useRecipeSelectSearch() {
                 difficulty,
                 selectedTags: nextTags,
                 excludedAllergens,
+                macroBudget,
             });
         },
-        [query, difficulty, selectedTags, excludedAllergens, runImmediate]
+        [
+            query,
+            difficulty,
+            selectedTags,
+            excludedAllergens,
+            macroBudget,
+            runImmediate,
+        ]
     );
 
     const handleToggleAllergen = useCallback(
@@ -160,20 +242,55 @@ export function useRecipeSelectSearch() {
                 difficulty,
                 selectedTags,
                 excludedAllergens: nextAllergens,
+                macroBudget,
             });
         },
-        [query, difficulty, selectedTags, excludedAllergens, runImmediate]
+        [
+            query,
+            difficulty,
+            selectedTags,
+            excludedAllergens,
+            macroBudget,
+            runImmediate,
+        ]
+    );
+
+    const handleSetMacroBudgetField = useCallback(
+        (key: MacroBudgetKey, value: number | null) => {
+            const nextBudget: MacroBudgetFilter = {
+                ...macroBudget,
+                [key]: value,
+            };
+            setMacroBudget(nextBudget);
+            runImmediate({
+                query,
+                difficulty,
+                selectedTags,
+                excludedAllergens,
+                macroBudget: nextBudget,
+            });
+        },
+        [
+            query,
+            difficulty,
+            selectedTags,
+            excludedAllergens,
+            macroBudget,
+            runImmediate,
+        ]
     );
 
     const handleClearFilters = useCallback(() => {
         setDifficulty(null);
         setSelectedTags([]);
         setExcludedAllergens([]);
+        setMacroBudget(EMPTY_MACRO_BUDGET);
         runImmediate({
             query,
             difficulty: null,
             selectedTags: [],
             excludedAllergens: [],
+            macroBudget: EMPTY_MACRO_BUDGET,
         });
     }, [query, runImmediate]);
 
@@ -184,6 +301,7 @@ export function useRecipeSelectSearch() {
         setDifficulty(null);
         setSelectedTags([]);
         setExcludedAllergens([]);
+        setMacroBudget(EMPTY_MACRO_BUDGET);
         setResults([]);
         setIsLoading(false);
     }, [debouncedSearch]);
@@ -193,6 +311,7 @@ export function useRecipeSelectSearch() {
         difficulty,
         selectedTags,
         excludedAllergens,
+        macroBudget,
         results,
         isLoading,
         hasActiveFilters,
@@ -200,6 +319,7 @@ export function useRecipeSelectSearch() {
         handleToggleDifficulty,
         handleToggleTag,
         handleToggleAllergen,
+        handleSetMacroBudgetField,
         handleClearFilters,
         resetSearch,
     };

@@ -105,4 +105,83 @@ describe('PlanningModal', () => {
             });
         });
     });
+
+    it('submits optional daily nutrition targets and clears previously-set targets when emptied', async () => {
+        const mockSubmit = vi.fn();
+        render(
+            <PlanningModal
+                isOpen={true}
+                onClose={vi.fn()}
+                onSubmit={mockSubmit}
+                title="Edit Diet"
+                actionLabel="Save"
+                initialValues={{
+                    name: 'Cut Plan',
+                    description: 'High protein',
+                    isPrivate: false,
+                    targetCalories: 2200,
+                    targetProtein: 160,
+                    targetCarbohydrates: null,
+                    targetFat: null,
+                }}
+            />
+        );
+
+        const caloriesInput = screen.getByTestId(
+            'plan-target-calories-input'
+        ) as HTMLInputElement;
+        const proteinInput = screen.getByTestId(
+            'plan-target-protein-input'
+        ) as HTMLInputElement;
+        const carbsInput = screen.getByTestId(
+            'plan-target-carbohydrates-input'
+        ) as HTMLInputElement;
+
+        expect(caloriesInput.value).toBe('2200');
+        expect(proteinInput.value).toBe('160');
+        expect(carbsInput.value).toBe('');
+
+        fireEvent.change(caloriesInput, { target: { value: '2000' } });
+        fireEvent.change(proteinInput, { target: { value: '' } });
+        fireEvent.change(carbsInput, { target: { value: '180' } });
+
+        fireEvent.click(screen.getByTestId('modal-action-button'));
+
+        await waitFor(() => {
+            expect(mockSubmit).toHaveBeenCalledWith({
+                name: 'Cut Plan',
+                description: 'High protein',
+                isPrivate: false,
+                targetCalories: 2000,
+                targetProtein: null,
+                targetCarbohydrates: 180,
+            });
+        });
+    });
+
+    it('blocks submission when a daily target is zero or negative', async () => {
+        const mockSubmit = vi.fn();
+        render(
+            <PlanningModal
+                isOpen={true}
+                onClose={vi.fn()}
+                onSubmit={mockSubmit}
+                title="Create Diet"
+                actionLabel="Create"
+            />
+        );
+
+        fireEvent.change(screen.getByLabelText('plan_name'), {
+            target: { value: 'Invalid Target Plan' },
+        });
+        fireEvent.change(screen.getByTestId('plan-target-calories-input'), {
+            target: { value: '0' },
+        });
+
+        fireEvent.click(screen.getByTestId('modal-action-button'));
+
+        await waitFor(() => {
+            expect(mockSubmit).not.toHaveBeenCalled();
+        });
+    });
 });

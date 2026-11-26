@@ -11,6 +11,7 @@ import {
 } from '@/app/utils/apiErrors';
 import { toSafeRecipe } from '@/app/utils/toSafeRecipe';
 import { invalidateRecipeInclusionsCache } from '@/app/lib/recipeInclusionsCache';
+import { parseDailyNutritionTargets } from '@/app/utils/planningNutrition';
 
 interface IParams {
     planningId?: string;
@@ -147,6 +148,11 @@ export async function PATCH(
             return badRequest('Invalid isPrivate flag');
         }
 
+        const parsedTargets = parseDailyNutritionTargets(body);
+        if (!parsedTargets.valid) {
+            return badRequest(parsedTargets.error);
+        }
+
         if (meals !== undefined) {
             if (!Array.isArray(meals)) {
                 return badRequest('Invalid meals payload');
@@ -203,6 +209,7 @@ export async function PATCH(
                         isPrivate !== undefined
                             ? isPrivate
                             : existingPlanning.isPrivate,
+                    ...parsedTargets.provided,
                 },
                 include: {
                     user: {

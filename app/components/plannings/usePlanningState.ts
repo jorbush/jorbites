@@ -13,6 +13,13 @@ import {
     MEAL_TYPES,
     MAX_RECIPES_PER_MEAL,
 } from '@/app/utils/constants';
+import {
+    DailyNutritionTargets,
+    getSuggestedMealSlotForDay,
+    RemainingMacroBudget,
+} from '@/app/utils/planningNutrition';
+import { PlanningModalFormData } from '@/app/components/modals/PlanningModal';
+import { MacroSuggestionContext } from '@/app/components/modals/RecipeSelectBudgetBar';
 
 interface UsePlanningStateProps {
     planning: SafePlanning;
@@ -39,6 +46,12 @@ export function usePlanningState({
     const [editedName, setEditedName] = useState(planning.name);
     const [editedDesc, setEditedDesc] = useState(planning.description || '');
     const [isPrivate, setIsPrivate] = useState(planning.isPrivate);
+    const [dailyTargets, setDailyTargets] = useState<DailyNutritionTargets>({
+        targetCalories: planning.targetCalories ?? null,
+        targetProtein: planning.targetProtein ?? null,
+        targetCarbohydrates: planning.targetCarbohydrates ?? null,
+        targetFat: planning.targetFat ?? null,
+    });
     const [meals, setMeals] = useState<any[]>(planning.meals || []);
     const [isSaving, setIsSaving] = useState(false);
 
@@ -48,6 +61,8 @@ export function usePlanningState({
         day: string;
         mealType: string;
     } | null>(null);
+    const [suggestionContext, setSuggestionContext] =
+        useState<MacroSuggestionContext | null>(null);
     const [isShoppingListOpen, setIsShoppingListOpen] = useState(false);
     const [isCalendarExportOpen, setIsCalendarExportOpen] = useState(false);
     const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
@@ -93,15 +108,11 @@ export function usePlanningState({
         }
     };
 
-    // Update plan metadata via PlanningModal
-    const handleUpdatePlanning = async (data: {
-        name: string;
-        description: string;
-        isPrivate: boolean;
-    }) => {
+    // Update plan metadata & optional daily nutrition targets via PlanningModal
+    const handleUpdatePlanning = async (data: PlanningModalFormData) => {
         setIsSaving(true);
         try {
-            await axios.patch(`/api/plannings/${planning.id}`, {
+            const payload: Record<string, unknown> = {
                 name: data.name,
                 description: data.description,
                 isPrivate: data.isPrivate,
@@ -110,10 +121,43 @@ export function usePlanningState({
                     mealType: m.mealType,
                     recipeId: m.recipeId,
                 })),
-            });
+            };
+
+            if (data.targetCalories !== undefined) {
+                payload.targetCalories = data.targetCalories;
+            }
+            if (data.targetProtein !== undefined) {
+                payload.targetProtein = data.targetProtein;
+            }
+            if (data.targetCarbohydrates !== undefined) {
+                payload.targetCarbohydrates = data.targetCarbohydrates;
+            }
+            if (data.targetFat !== undefined) {
+                payload.targetFat = data.targetFat;
+            }
+
+            await axios.patch(`/api/plannings/${planning.id}`, payload);
             setEditedName(data.name);
             setEditedDesc(data.description);
             setIsPrivate(data.isPrivate);
+            setDailyTargets((prev) => ({
+                targetCalories:
+                    data.targetCalories !== undefined
+                        ? data.targetCalories
+                        : prev.targetCalories,
+                targetProtein:
+                    data.targetProtein !== undefined
+                        ? data.targetProtein
+                        : prev.targetProtein,
+                targetCarbohydrates:
+                    data.targetCarbohydrates !== undefined
+                        ? data.targetCarbohydrates
+                        : prev.targetCarbohydrates,
+                targetFat:
+                    data.targetFat !== undefined
+                        ? data.targetFat
+                        : prev.targetFat,
+            }));
             toast.success(t('meal_plan_updated'));
             setIsPlanningModalOpen(false);
             refresh?.();
@@ -126,12 +170,78 @@ export function usePlanningState({
 
     // Add recipe to slot
     const handleAddRecipeClick = (day: string, mealType: string) => {
+        setSuggestionContext(null);
         setActiveSlot({ day, mealType });
         setIsRecipeSelectOpen(true);
     };
 
+    // Open recipe suggestions pre-filtered to remaining daily macro budget
+    const handleFillRemainingMacros = useCallback(
+        (
+            day: string,
+            suggestedSlot: string | null,
+            remainingBudget: RemainingMacroBudget
+        ) => {
+            if (!currentUser) {
+                loginModal.onOpen();
+                return;
+            }
+
+            if (isOwner) {
+                const { availableSlots } = getSuggestedMealSlotForDay(
+                    day,
+                    groupedMeals
+                );
+                const resolvedSlot = suggestedSlot ?? availableSlots[0] ?? null;
+                if (!resolvedSlot) {
+                    return;
+                }
+
+                setActiveSlot({ day, mealType: resolvedSlot });
+                setSuggestionContext({
+                    day,
+                    mealType: resolvedSlot,
+                    availableMealTypes: availableSlots,
+                    onMealTypeChange: (nextMealType: string) => {
+                        setActiveSlot({ day, mealType: nextMealType });
+                        setSuggestionContext((prev) =>
+                            prev ? { ...prev, mealType: nextMealType } : prev
+                        );
+                    },
+                    initialBudget: remainingBudget.initialFilters,
+                    optionalBudget: remainingBudget.optionalFilters,
+                });
+                setIsRecipeSelectOpen(true);
+                return;
+            }
+
+            setActiveSlot(null);
+            setSuggestionContext({
+                day,
+                mealType: null,
+                initialBudget: remainingBudget.initialFilters,
+                optionalBudget: remainingBudget.optionalFilters,
+            });
+            setIsRecipeSelectOpen(true);
+        },
+        [currentUser, groupedMeals, isOwner, loginModal]
+    );
+
+    const handleCloseRecipeSelect = useCallback(() => {
+        setIsRecipeSelectOpen(false);
+        setActiveSlot(null);
+        setSuggestionContext(null);
+    }, []);
+
     const handleRecipeSelect = async (recipe: any) => {
-        if (!activeSlot) return;
+        if (!activeSlot) {
+            if (!isOwner && recipe?.id) {
+                setIsRecipeSelectOpen(false);
+                setSuggestionContext(null);
+                push?.(`/recipes/${recipe.id}`);
+            }
+            return;
+        }
 
         const currentSlotMeals = meals.filter(
             (m) =>
@@ -172,6 +282,7 @@ export function usePlanningState({
         setMeals(updatedMeals);
         setIsRecipeSelectOpen(false);
         setActiveSlot(null);
+        setSuggestionContext(null);
 
         await saveMeals(updatedMeals);
     };
@@ -275,12 +386,16 @@ export function usePlanningState({
         editedName,
         editedDesc,
         isPrivate,
+        dailyTargets,
         meals,
         isSaving,
         isRecipeSelectOpen,
         setIsRecipeSelectOpen,
         activeSlot,
         setActiveSlot,
+        suggestionContext,
+        handleCloseRecipeSelect,
+        handleFillRemainingMacros,
         isShoppingListOpen,
         setIsShoppingListOpen,
         isCalendarExportOpen,

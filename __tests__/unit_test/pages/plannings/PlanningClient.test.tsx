@@ -4,6 +4,7 @@ import {
     fireEvent,
     cleanup,
     act,
+    waitFor,
 } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import PlanningClient from '@/app/plannings/[planningId]/PlanningClient';
@@ -303,5 +304,104 @@ describe('PlanningClient', () => {
             '[data-testid="add-recipe-button"]'
         );
         expect(addButton).toBeNull();
+    });
+
+    it('renders day goal progress and opens pre-filtered recipe suggestions for remaining calorie/protein budget', async () => {
+        vi.mocked(axios.get).mockResolvedValue({
+            data: {
+                recipes: [
+                    {
+                        id: 'rec-dinner',
+                        title: 'High Protein Cod',
+                        imageSrc: '/cod.jpg',
+                        calories: 420,
+                        protein: 40,
+                        user: { name: 'Chef Ana' },
+                    },
+                ],
+            },
+        });
+        vi.mocked(axios.patch).mockResolvedValue({ data: {} });
+
+        const planningWithTargets: SafePlanning = {
+            ...mockPlanning,
+            targetCalories: 2000,
+            targetProtein: 140,
+            meals: [
+                {
+                    id: 'm1',
+                    planningId: 'plan-1',
+                    day: 'monday',
+                    mealType: 'breakfast',
+                    recipeId: 'r1',
+                    recipe: {
+                        id: 'r1',
+                        title: 'Oats',
+                        imageSrc: '/oats.jpg',
+                        calories: 500,
+                        protein: 35,
+                    } as any,
+                },
+                {
+                    id: 'm2',
+                    planningId: 'plan-1',
+                    day: 'monday',
+                    mealType: 'lunch',
+                    recipeId: 'r2',
+                    recipe: {
+                        id: 'r2',
+                        title: 'Chicken Bowl',
+                        imageSrc: '/bowl.jpg',
+                        calories: 1000,
+                        protein: 70,
+                    } as any,
+                },
+            ],
+        };
+
+        render(
+            <PlanningClient
+                planning={planningWithTargets}
+                currentUser={mockUser}
+            />
+        );
+
+        // Find Monday card and click Fill Remaining Macros
+        const mondayHeading = screen.getByRole('heading', { name: /monday/i });
+        const mondayCard = mondayHeading.closest('.rounded-3xl')!;
+        const fillButton = mondayCard.querySelector(
+            '[data-testid="fill-remaining-macros-button"]'
+        ) as HTMLButtonElement;
+        expect(fillButton).toBeDefined();
+
+        fireEvent.click(fillButton);
+
+        await waitFor(() => {
+            expect(axios.get).toHaveBeenCalledWith(
+                '/api/search?type=recipes&maxCalories=500&minProtein=35&orderBy=highest_protein'
+            );
+        });
+
+        await waitFor(() => {
+            expect(screen.getByText('High Protein Cod')).toBeDefined();
+        });
+
+        // Select suggested recipe -> adds to Monday dinner slot
+        fireEvent.click(screen.getByText('High Protein Cod'));
+
+        await waitFor(() => {
+            expect(axios.patch).toHaveBeenCalledWith(
+                '/api/plannings/plan-1',
+                expect.objectContaining({
+                    meals: expect.arrayContaining([
+                        expect.objectContaining({
+                            day: 'monday',
+                            mealType: 'dinner',
+                            recipeId: 'rec-dinner',
+                        }),
+                    ]),
+                })
+            );
+        });
     });
 });

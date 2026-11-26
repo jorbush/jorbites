@@ -64,6 +64,62 @@ export const RecipeSelectResults: React.FC<RecipeSelectResultsProps> = ({
                                             {recipe.calories} kcal
                                         </span>
                                     )}
+                                    {typeof recipe.protein === 'number' && (
+                                        <span
+                                            data-testid="recipe-result-protein"
+                                            className="dark:text-green-450 font-medium text-neutral-600"
+                                        >
+                                            {recipe.protein}g{' '}
+                                            {String(
+                                                t?.('macro_short_protein', {
+                                                    defaultValue: 'P',
+                                                }) === 'macro_short_protein'
+                                                    ? 'P'
+                                                    : t?.(
+                                                          'macro_short_protein',
+                                                          {
+                                                              defaultValue: 'P',
+                                                          }
+                                                      ) || 'P'
+                                            )}
+                                        </span>
+                                    )}
+                                    {typeof recipe.carbohydrates ===
+                                        'number' && (
+                                        <span className="text-neutral-500 dark:text-neutral-400">
+                                            {recipe.carbohydrates}g{' '}
+                                            {String(
+                                                t?.(
+                                                    'macro_short_carbohydrates',
+                                                    {
+                                                        defaultValue: 'C',
+                                                    }
+                                                ) ===
+                                                    'macro_short_carbohydrates'
+                                                    ? 'C'
+                                                    : t?.(
+                                                          'macro_short_carbohydrates',
+                                                          {
+                                                              defaultValue: 'C',
+                                                          }
+                                                      ) || 'C'
+                                            )}
+                                        </span>
+                                    )}
+                                    {typeof recipe.fat === 'number' && (
+                                        <span className="text-neutral-500 dark:text-neutral-400">
+                                            {recipe.fat}g{' '}
+                                            {String(
+                                                t?.('macro_short_fat', {
+                                                    defaultValue: 'F',
+                                                }) === 'macro_short_fat'
+                                                    ? 'F'
+                                                    : t?.('macro_short_fat', {
+                                                          defaultValue: 'F',
+                                                      }) || 'F'
+                                            )}
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                         </button>

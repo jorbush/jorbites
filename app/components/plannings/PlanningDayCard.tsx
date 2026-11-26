@@ -2,8 +2,17 @@
 
 import React, { useMemo } from 'react';
 import { PlanningMealSlot } from './PlanningMealSlot';
+import { PlanningDayGoalProgress } from './PlanningDayGoalProgress';
 import { MEAL_TYPES } from '@/app/utils/constants';
-import { aggregateDayMacros, hasAnyMacro } from '@/app/utils/planningNutrition';
+import {
+    aggregateDayMacros,
+    computeDayGoalProgress,
+    computeRemainingMacroBudget,
+    DailyNutritionTargets,
+    getSuggestedMealSlotForDay,
+    hasAnyMacro,
+    RemainingMacroBudget,
+} from '@/app/utils/planningNutrition';
 
 interface PlanningDayCardProps {
     day: string;
@@ -13,6 +22,12 @@ interface PlanningDayCardProps {
     onRemoveRecipe: (mealId: string) => void;
     push: (url: string) => void;
     t: any;
+    dailyTargets?: DailyNutritionTargets | null;
+    onFillRemainingMacros?: (
+        day: string,
+        suggestedSlot: string | null,
+        remainingBudget: RemainingMacroBudget
+    ) => void;
 }
 
 interface MacroSegment {
@@ -39,9 +54,26 @@ export const PlanningDayCard: React.FC<PlanningDayCardProps> = ({
     onRemoveRecipe,
     push,
     t,
+    dailyTargets,
+    onFillRemainingMacros,
 }) => {
     const dayMacros = useMemo(
         () => aggregateDayMacros(day, groupedMeals),
+        [day, groupedMeals]
+    );
+
+    const progressItems = useMemo(
+        () => computeDayGoalProgress(dayMacros, dailyTargets),
+        [dayMacros, dailyTargets]
+    );
+
+    const remainingBudget = useMemo(
+        () => computeRemainingMacroBudget(dayMacros, dailyTargets),
+        [dayMacros, dailyTargets]
+    );
+
+    const { suggestedSlot } = useMemo(
+        () => getSuggestedMealSlotForDay(day, groupedMeals),
         [day, groupedMeals]
     );
 
@@ -143,6 +175,28 @@ export const PlanningDayCard: React.FC<PlanningDayCardProps> = ({
                     </div>
                 )}
             </div>
+
+            {/* Daily Goal Progress Bars & Remaining-Macro Suggestion Action */}
+            {progressItems.length > 0 && (
+                <PlanningDayGoalProgress
+                    day={day}
+                    progressItems={progressItems}
+                    remainingBudget={remainingBudget}
+                    suggestedSlot={suggestedSlot}
+                    isOwner={isOwner}
+                    onSuggestRecipes={
+                        onFillRemainingMacros
+                            ? (targetDay, slot) =>
+                                  onFillRemainingMacros(
+                                      targetDay,
+                                      slot,
+                                      remainingBudget
+                                  )
+                            : undefined
+                    }
+                    t={t}
+                />
+            )}
 
             {/* 4 Meal Slots Grid */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">

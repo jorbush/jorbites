@@ -9,7 +9,16 @@ import {
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
 import { authenticatedRatelimit } from '@/app/lib/ratelimit';
-import { buildRecipeWhereClause, parseListParam } from '@/app/utils/filter';
+import {
+    buildRecipeWhereClause,
+    getPrismaOrderByClause,
+    ORDER_BY_OPTIONS,
+    OrderByType,
+    parseListParam,
+} from '@/app/utils/filter';
+
+const hasNumericParam = (value?: string): boolean =>
+    Boolean(value && /^\d+$/.test(value.trim()));
 
 export async function GET(request: Request) {
     try {
@@ -21,12 +30,27 @@ export async function GET(request: Request) {
         const dietaryTags = url.searchParams.get('dietaryTags') || undefined;
         const excludeAllergens =
             url.searchParams.get('excludeAllergens') || undefined;
+        const maxCalories = url.searchParams.get('maxCalories') || undefined;
+        const minProtein = url.searchParams.get('minProtein') || undefined;
+        const maxCarbohydrates =
+            url.searchParams.get('maxCarbohydrates') || undefined;
+        const maxFat = url.searchParams.get('maxFat') || undefined;
+        const rawOrderBy = url.searchParams.get('orderBy') || undefined;
+        const validatedOrderBy =
+            rawOrderBy &&
+            (ORDER_BY_OPTIONS as readonly string[]).includes(rawOrderBy)
+                ? (rawOrderBy as OrderByType)
+                : undefined;
 
         const hasValidQuery = trimmedQuery.length >= 2;
         const hasRecipeFilters = Boolean(
             difficulty?.trim() ||
             parseListParam(dietaryTags).length > 0 ||
-            parseListParam(excludeAllergens).length > 0
+            parseListParam(excludeAllergens).length > 0 ||
+            hasNumericParam(maxCalories) ||
+            hasNumericParam(minProtein) ||
+            hasNumericParam(maxCarbohydrates) ||
+            hasNumericParam(maxFat)
         );
 
         if (!hasValidQuery && !(type === 'recipes' && hasRecipeFilters)) {
@@ -127,7 +151,18 @@ export async function GET(request: Request) {
                 difficulty,
                 dietaryTags,
                 excludeAllergens,
+                maxCalories,
+                minProtein,
+                maxCarbohydrates,
+                maxFat,
+                orderBy: validatedOrderBy,
             });
+
+            const recipeOrderBy = validatedOrderBy
+                ? getPrismaOrderByClause(validatedOrderBy)
+                : hasRecipeFilters
+                  ? { createdAt: 'desc' as const }
+                  : undefined;
 
             recipes = await prisma.recipe.findMany({
                 where: recipeWhere,
@@ -153,9 +188,7 @@ export async function GET(request: Request) {
                         },
                     },
                 },
-                ...(hasRecipeFilters
-                    ? { orderBy: { createdAt: 'desc' as const } }
-                    : {}),
+                ...(recipeOrderBy ? { orderBy: recipeOrderBy } : {}),
                 take: hasRecipeFilters ? 12 : 5,
             });
         }

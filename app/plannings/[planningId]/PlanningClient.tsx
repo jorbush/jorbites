@@ -36,10 +36,13 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
         editedName,
         editedDesc,
         isPrivate,
+        dailyTargets,
         meals,
         isSaving,
         isRecipeSelectOpen,
-        setIsRecipeSelectOpen,
+        suggestionContext,
+        handleCloseRecipeSelect,
+        handleFillRemainingMacros,
         isShoppingListOpen,
         setIsShoppingListOpen,
         isCalendarExportOpen,
@@ -54,7 +57,6 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
         handleSaveToggle,
         togglePrivacy,
         handleDeletePlanning,
-        setActiveSlot,
     } = usePlanningState({ planning, currentUser });
 
     return (
@@ -113,6 +115,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                         t={t}
                         mealsCount={meals.length}
                         meals={meals}
+                        dailyTargets={dailyTargets}
                         showLock={false}
                     />
                 </div>
@@ -127,6 +130,8 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                             isOwner={isOwner}
                             onAddRecipeClick={handleAddRecipeClick}
                             onRemoveRecipe={handleRemoveRecipe}
+                            dailyTargets={dailyTargets}
+                            onFillRemainingMacros={handleFillRemainingMacros}
                             push={push}
                             t={t}
                         />
@@ -137,15 +142,12 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
             {/* Recipe Selection Modal */}
             <RecipeSelectModal
                 isOpen={isRecipeSelectOpen}
-                onClose={() => {
-                    setIsRecipeSelectOpen(false);
-                    setActiveSlot(null);
-                }}
+                onClose={handleCloseRecipeSelect}
                 onSelect={handleRecipeSelect}
+                suggestionContext={suggestionContext}
             />
 
-            {/* Shopping List Modal */}
-            {/* Planning Modal (for editing metadata) */}
+            {/* Planning Modal (for editing metadata & daily targets) */}
             <PlanningModal
                 key={isPlanningModalOpen ? 'open' : 'closed'}
                 isOpen={isPlanningModalOpen}
@@ -161,6 +163,10 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                     name: editedName,
                     description: editedDesc,
                     isPrivate: isPrivate,
+                    targetCalories: dailyTargets.targetCalories,
+                    targetProtein: dailyTargets.targetProtein,
+                    targetCarbohydrates: dailyTargets.targetCarbohydrates,
+                    targetFat: dailyTargets.targetFat,
                 }}
                 isLoading={isSaving}
             />

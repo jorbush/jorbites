@@ -274,13 +274,17 @@ model List {
 }
 
 model Planning {
-  id          String         @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  description String?
-  isPrivate   Boolean        @default(true)
-  userId      String         @db.ObjectId
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  id                  String         @id @default(auto()) @map("_id") @db.ObjectId
+  name                String
+  description         String?
+  isPrivate           Boolean        @default(true)
+  targetCalories      Int?
+  targetProtein       Int?
+  targetCarbohydrates Int?
+  targetFat           Int?
+  userId              String         @db.ObjectId
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
 
   user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   meals       PlanningMeal[]

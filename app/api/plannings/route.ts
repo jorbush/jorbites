@@ -9,6 +9,7 @@ import {
     badRequest,
 } from '@/app/utils/apiErrors';
 import { toSafeRecipe } from '@/app/utils/toSafeRecipe';
+import { parseDailyNutritionTargets } from '@/app/utils/planningNutrition';
 
 export async function GET() {
     try {
@@ -132,11 +133,17 @@ export async function POST(request: Request) {
             }
         }
 
+        const parsedTargets = parseDailyNutritionTargets(body);
+        if (!parsedTargets.valid) {
+            return badRequest(parsedTargets.error);
+        }
+
         const planning = await prisma.planning.create({
             data: {
                 name: name.trim(),
                 description: description ? description.trim() : null,
                 isPrivate: isPrivate !== undefined ? isPrivate : true,
+                ...parsedTargets.provided,
                 userId: currentUser.id,
             },
             include: {

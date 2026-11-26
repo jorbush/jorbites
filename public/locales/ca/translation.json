@@ -1771,5 +1771,22 @@
     "macro_short_carbohydrates": "C",
     "macro_short_fat": "G",
     "macro_short_fiber": "Fib",
-    "quick_filters": "Filtres ràpids"
+    "quick_filters": "Filtres ràpids",
+    "daily_nutrition_goals": "Objectius nutricionals diaris",
+    "daily_nutrition_goals_hint": "Objectius opcionals per seguir el progrés diari",
+    "daily_target_calories": "Calories diàries (kcal)",
+    "daily_target_protein": "Proteïna (g)",
+    "daily_target_carbohydrates": "Carbohidrats (g)",
+    "daily_target_fat": "Greixos (g)",
+    "daily_goal_progress": "Progrés de l'objectiu diari",
+    "daily_goal_reached": "Objectiu diari assolit",
+    "over_target": "de més",
+    "fill_remaining_macros": "Completar macros restants",
+    "suggest_recipes_for_budget": "Suggerir receptes",
+    "remaining_macro_budget": "Pressupost de macros restant",
+    "add_to_meal_slot": "Afegir a",
+    "need_for_meal": "Falten {{budget}} per a {{meal}}",
+    "remaining_budget_summary": "Restant: {{budget}}",
+    "optional_macro_caps": "Ajustar amb límits restants",
+    "target_must_be_positive": "Introdueix un nombre enter superior a 0"
 }
