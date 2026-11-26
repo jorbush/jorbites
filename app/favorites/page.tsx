@@ -12,6 +12,7 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import getFavoriteRecipes, {
     IFavoriteRecipesParams,
 } from '@/app/actions/getFavoriteRecipes';
+import { hasActiveRecipeFilterParams } from '@/app/utils/filter';
 
 import FavoritesClient from './FavoritesClient';
 
@@ -42,17 +43,7 @@ const FavoritesPage = async ({ searchParams }: FavoritesPageProps) => {
 
     if (favoriteRecipesResponse.totalRecipes === 0) {
         // Check if it's because of filters or truly no favorites
-        const hasFilters = !!(
-            resolvedParams.category ||
-            resolvedParams.search ||
-            resolvedParams.startDate ||
-            resolvedParams.endDate ||
-            resolvedParams.minCalories ||
-            resolvedParams.maxCalories ||
-            resolvedParams.minYield ||
-            resolvedParams.maxYield ||
-            resolvedParams.recipeCuisine
-        );
+        const hasFilters = hasActiveRecipeFilterParams(resolvedParams);
 
         return (
             <ClientOnly>

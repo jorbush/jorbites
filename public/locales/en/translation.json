@@ -1756,5 +1756,12 @@
     "register_accept_terms_and": "and",
     "register_oauth_terms_notice": "By continuing with Google or GitHub, you confirm you meet the minimum age requirement and agree to our",
     "error_accept_terms": "Please accept the Terms of Service and Privacy Policy to create an account",
-    "allergen_disclaimer": "Automatically estimated from recipe ingredients and tags — may be incomplete. Always verify ingredients for food allergies."
+    "allergen_disclaimer": "Automatically estimated from recipe ingredients and tags — may be incomplete. Always verify ingredients for food allergies.",
+    "exclude_allergens": "Hide recipes with…",
+    "macros_per_serving": "Macros per serving (g)",
+    "min_protein": "Min protein",
+    "max_carbs": "Max carbs",
+    "max_fat": "Max fat",
+    "highest_protein": "Highest protein",
+    "lowest_calories": "Lowest calories"
 }

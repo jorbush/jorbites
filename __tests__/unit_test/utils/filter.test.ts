@@ -1,8 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import {
     OrderByType,
+    applyOrderByWhereFilters,
+    buildRecipeWhereClause,
     getPrismaOrderByClause,
     getDateRangeFilter,
+    hasActiveRecipeFilterParams,
+    parseListParam,
 } from '@/app/utils/filter';
 
 describe('getPrismaOrderByClause', () => {
@@ -40,8 +44,17 @@ describe('getPrismaOrderByClause', () => {
         ]);
     });
 
+    it('should return correct order for HIGHEST_PROTEIN', () => {
+        const result = getPrismaOrderByClause(OrderByType.HIGHEST_PROTEIN);
+        expect(result).toEqual([{ protein: 'desc' }, { id: 'asc' }]);
+    });
+
+    it('should return correct order for LOWEST_CALORIES', () => {
+        const result = getPrismaOrderByClause(OrderByType.LOWEST_CALORIES);
+        expect(result).toEqual([{ calories: 'asc' }, { id: 'asc' }]);
+    });
+
     it('should always include id as final sort for consistent pagination', () => {
-        // Test all order types to ensure they all have id as final sort
         const orderTypes = [
             OrderByType.NEWEST,
             OrderByType.OLDEST,
@@ -49,6 +62,8 @@ describe('getPrismaOrderByClause', () => {
             OrderByType.TITLE_DESC,
             OrderByType.MOST_LIKED,
             OrderByType.BEST_RATED,
+            OrderByType.HIGHEST_PROTEIN,
+            OrderByType.LOWEST_CALORIES,
         ];
 
         orderTypes.forEach((orderType) => {
@@ -56,6 +71,30 @@ describe('getPrismaOrderByClause', () => {
             expect(result.length).toBeGreaterThanOrEqual(2);
             expect(result[result.length - 1]).toEqual({ id: 'asc' });
         });
+    });
+});
+
+describe('applyOrderByWhereFilters', () => {
+    it('adds non-null calories constraint for LOWEST_CALORIES when calories filter is absent', () => {
+        expect(
+            applyOrderByWhereFilters({}, OrderByType.LOWEST_CALORIES)
+        ).toEqual({
+            calories: { not: null, isSet: true },
+        });
+    });
+
+    it('preserves existing calories filter for LOWEST_CALORIES', () => {
+        const where = { calories: { lte: 500 } };
+        expect(
+            applyOrderByWhereFilters(where, OrderByType.LOWEST_CALORIES)
+        ).toEqual(where);
+    });
+
+    it('leaves where unchanged for other orderBy options', () => {
+        const where = { title: { contains: 'pasta' } };
+        expect(
+            applyOrderByWhereFilters(where, OrderByType.HIGHEST_PROTEIN)
+        ).toEqual(where);
     });
 });
 
@@ -115,5 +154,156 @@ describe('getDateRangeFilter', () => {
         expect(endDateTime?.getMinutes()).toBe(59);
         expect(endDateTime?.getSeconds()).toBe(59);
         expect(endDateTime?.getMilliseconds()).toBe(999);
+    });
+});
+
+describe('parseListParam', () => {
+    it('returns empty array for empty or undefined input', () => {
+        expect(parseListParam(undefined)).toEqual([]);
+        expect(parseListParam('')).toEqual([]);
+        expect(parseListParam([])).toEqual([]);
+    });
+
+    it('splits, normalizes, trims, and deduplicates comma-separated values', () => {
+        expect(parseListParam('Vegan, one-pot , VEGAN,  spicy ')).toEqual([
+            'vegan',
+            'one-pot',
+            'spicy',
+        ]);
+    });
+
+    it('handles array inputs including comma-separated entries', () => {
+        expect(parseListParam(['gluten, milk', 'EGGS', 'milk'])).toEqual([
+            'gluten',
+            'milk',
+            'eggs',
+        ]);
+    });
+});
+
+describe('buildRecipeWhereClause', () => {
+    it('filters difficulty by exact match (case-insensitive against allowed values)', () => {
+        expect(buildRecipeWhereClause({ difficulty: 'easy' })).toEqual({
+            difficulty: { equals: 'Easy', mode: 'insensitive' },
+        });
+        expect(buildRecipeWhereClause({ difficulty: 'Hard' })).toEqual({
+            difficulty: { equals: 'Hard', mode: 'insensitive' },
+        });
+    });
+
+    it('uses sentinel value when difficulty is invalid', () => {
+        expect(buildRecipeWhereClause({ difficulty: 'impossible' })).toEqual({
+            difficulty: { equals: 'NON_EXISTENT_DIFFICULTY_VAL' },
+        });
+    });
+
+    it('filters dietaryTags with hasEvery for multiple tags', () => {
+        expect(
+            buildRecipeWhereClause({ dietaryTags: 'vegan,one-pot,spicy' })
+        ).toEqual({
+            dietaryTags: { hasEvery: ['vegan', 'one-pot', 'spicy'] },
+        });
+    });
+
+    it('uses sentinel tag if any requested dietary tag is invalid', () => {
+        expect(
+            buildRecipeWhereClause({ dietaryTags: 'vegan,unknown-tag' })
+        ).toEqual({
+            dietaryTags: { hasEvery: ['NON_EXISTENT_DIETARY_TAG'] },
+        });
+    });
+
+    it('excludes allergens using NOT allergens hasSome', () => {
+        expect(
+            buildRecipeWhereClause({ excludeAllergens: 'gluten,milk,peanuts' })
+        ).toEqual({
+            NOT: {
+                allergens: {
+                    hasSome: ['gluten', 'milk', 'peanuts'],
+                },
+            },
+        });
+    });
+
+    it('ignores unknown allergen values when building exclusion clause', () => {
+        expect(buildRecipeWhereClause({ excludeAllergens: 'unknown' })).toEqual(
+            {}
+        );
+        expect(
+            buildRecipeWhereClause({ excludeAllergens: 'gluten,unknown' })
+        ).toEqual({
+            NOT: {
+                allergens: {
+                    hasSome: ['gluten'],
+                },
+            },
+        });
+    });
+
+    it('filters numeric macro ranges and ignores invalid or negative values', () => {
+        expect(
+            buildRecipeWhereClause({
+                minProtein: '25',
+                maxProtein: '60',
+                maxCarbohydrates: '40',
+                maxFat: '15',
+                minFat: '-5',
+                minCarbohydrates: 'abc',
+            })
+        ).toEqual({
+            protein: { gte: 25, lte: 60 },
+            carbohydrates: { lte: 40 },
+            fat: { lte: 15 },
+        });
+    });
+
+    it('merges baseWhere with all combined filters', () => {
+        const result = buildRecipeWhereClause(
+            {
+                difficulty: 'Medium',
+                dietaryTags: ['mediterranean', 'meal-prep'],
+                excludeAllergens: ['nuts', 'soy'],
+                minProtein: 30,
+                maxCarbohydrates: 50,
+                orderBy: OrderByType.LOWEST_CALORIES,
+            },
+            { id: { in: ['r1', 'r2'] } }
+        );
+
+        expect(result).toEqual({
+            id: { in: ['r1', 'r2'] },
+            difficulty: { equals: 'Medium', mode: 'insensitive' },
+            dietaryTags: { hasEvery: ['mediterranean', 'meal-prep'] },
+            NOT: { allergens: { hasSome: ['nuts', 'soy'] } },
+            protein: { gte: 30 },
+            carbohydrates: { lte: 50 },
+            calories: { not: null, isSet: true },
+        });
+    });
+});
+
+describe('hasActiveRecipeFilterParams', () => {
+    it('returns false when empty or only orderBy is provided', () => {
+        expect(hasActiveRecipeFilterParams({})).toBe(false);
+        expect(
+            hasActiveRecipeFilterParams({
+                orderBy: OrderByType.HIGHEST_PROTEIN,
+            })
+        ).toBe(false);
+    });
+
+    it('returns true when any new or existing filter param is set', () => {
+        expect(hasActiveRecipeFilterParams({ difficulty: 'Easy' })).toBe(true);
+        expect(hasActiveRecipeFilterParams({ dietaryTags: 'vegan' })).toBe(
+            true
+        );
+        expect(
+            hasActiveRecipeFilterParams({ excludeAllergens: 'gluten' })
+        ).toBe(true);
+        expect(hasActiveRecipeFilterParams({ minProtein: '20' })).toBe(true);
+        expect(hasActiveRecipeFilterParams({ maxCarbohydrates: '40' })).toBe(
+            true
+        );
+        expect(hasActiveRecipeFilterParams({ maxFat: '15' })).toBe(true);
     });
 });

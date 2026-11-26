@@ -57,6 +57,12 @@ describe('useNavbarSearch helpers', () => {
             'minYield=2',
             'maxYield=6',
             'recipeCuisine=Italian',
+            'difficulty=Easy',
+            'dietaryTags=vegan,spicy',
+            'excludeAllergens=gluten,milk',
+            'minProtein=25',
+            'maxCarbohydrates=40',
+            'maxFat=15',
         ])('returns true when %s is set', (param) => {
             expect(hasAnyActiveFilter(new URLSearchParams(param))).toBe(true);
         });

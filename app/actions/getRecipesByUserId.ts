@@ -1,7 +1,11 @@
 import prisma from '@/app/lib/prismadb';
 import { Prisma } from '@prisma/client';
 import { logger } from '@/app/lib/axiom/server';
-import { OrderByType, getPrismaOrderByClause } from '@/app/utils/filter';
+import {
+    OrderByType,
+    applyOrderByWhereFilters,
+    getPrismaOrderByClause,
+} from '@/app/utils/filter';
 import { SafeRecipe } from '@/app/types';
 import { toSafeRecipe } from '@/app/utils/toSafeRecipe';
 
@@ -33,13 +37,13 @@ export default async function getRecipesByUserId(
             search,
         } = params;
 
-        const where: Prisma.RecipeWhereInput = {
+        const baseWhere: Prisma.RecipeWhereInput = {
             userId: userId,
         };
 
         const trimmedSearch = typeof search === 'string' ? search.trim() : '';
         if (trimmedSearch) {
-            where.OR = [
+            baseWhere.OR = [
                 {
                     title: {
                         contains: trimmedSearch,
@@ -54,6 +58,8 @@ export default async function getRecipesByUserId(
                 },
             ];
         }
+
+        const where = applyOrderByWhereFilters(baseWhere, orderBy);
 
         const recipes = await prisma.recipe.findMany({
             where,

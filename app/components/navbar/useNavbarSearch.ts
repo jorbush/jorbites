@@ -2,16 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { ADVANCED_FILTER_QUERY_PARAMS } from '@/app/utils/filter';
 
 export const ACTIVE_FILTER_PARAMS = [
     'category',
-    'startDate',
-    'endDate',
-    'minCalories',
-    'maxCalories',
-    'minYield',
-    'maxYield',
-    'recipeCuisine',
+    ...ADVANCED_FILTER_QUERY_PARAMS,
 ] as const;
 
 export interface SearchParamsLike {

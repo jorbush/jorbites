@@ -44,36 +44,12 @@ vi.mock('@/app/components/navbar/AdvancedFilters', () => ({
     default: () => <div data-testid="advanced-filters">AdvancedFilters</div>,
 }));
 
-vi.mock('@/app/utils/filter', () => ({
-    OrderByType: {
-        NEWEST: 'newest',
-        OLDEST: 'oldest',
-        TITLE_ASC: 'title_asc',
-        TITLE_DESC: 'title_desc',
-        MOST_LIKED: 'most_liked',
-    },
-    ORDER_BY_OPTIONS: [
-        'newest',
-        'oldest',
-        'title_asc',
-        'title_desc',
-        'most_liked',
-    ],
-    ORDER_BY_LABELS: {
-        newest: 'newest_first',
-        oldest: 'oldest_first',
-        title_asc: 'title_a_z',
-        title_desc: 'title_z_a',
-        most_liked: 'most_liked',
-    },
-    ORDER_BY_FALLBACK_LABELS: {
-        newest: 'Newest first',
-        oldest: 'Oldest first',
-        title_asc: 'Title A-Z',
-        title_desc: 'Title Z-A',
-        most_liked: 'Most liked',
-    },
-}));
+vi.mock('@/app/utils/filter', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/app/utils/filter')>();
+    return {
+        ...actual,
+    };
+});
 
 // Mock useMediaQuery hook
 vi.mock('@/app/hooks/useMediaQuery', () => ({

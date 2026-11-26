@@ -1756,5 +1756,12 @@
     "register_accept_terms_and": "i la",
     "register_oauth_terms_notice": "En continuar amb Google o GitHub, confirmes que compleixes l'edat mínima requerida i acceptes els nostres",
     "error_accept_terms": "Si us plau, accepta els Termes i Condicions i la Política de Privacitat per crear un compte",
-    "allergen_disclaimer": "Estimació automàtica a partir dels ingredients i etiquetes de la recepta; pot ser incompleta. Verifica sempre els ingredients en cas d'al·lèrgia alimentària."
+    "allergen_disclaimer": "Estimació automàtica a partir dels ingredients i etiquetes de la recepta; pot ser incompleta. Verifica sempre els ingredients en cas d'al·lèrgia alimentària.",
+    "exclude_allergens": "Amagar receptes amb…",
+    "macros_per_serving": "Macros per ració (g)",
+    "min_protein": "Proteïna mín.",
+    "max_carbs": "Carbs màx.",
+    "max_fat": "Greixos màx.",
+    "highest_protein": "Més proteïna",
+    "lowest_calories": "Menys calories"
 }
