@@ -43,6 +43,8 @@ describe('CommentHeader', () => {
         render(<CommentHeader {...defaultProps} />);
         const nameButton = screen.getByRole('button', { name: 'Chef Gordon' });
         expect(nameButton).toBeDefined();
+        expect(nameButton.className).toContain('hover:underline');
+        expect(nameButton.className).toContain('decoration-green-450');
 
         fireEvent.click(nameButton);
         expect(mockNavigate).toHaveBeenCalledTimes(1);
