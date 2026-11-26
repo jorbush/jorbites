@@ -146,4 +146,21 @@ describe('InfoTooltip', () => {
         expect(tooltip.className).toContain('left-0');
         expect(trigger.parentElement!.className).not.toContain('relative');
     });
+
+    it('renders custom icon and triggerClassName when provided', () => {
+        render(
+            <InfoTooltip
+                text="Helpful disclaimer text"
+                ariaLabel="More info"
+                icon={<span data-testid="custom-icon">!</span>}
+                triggerClassName="text-amber-600"
+                triggerTestId="info-trigger"
+                tooltipTestId="info-tooltip"
+            />
+        );
+
+        const trigger = screen.getByTestId('info-trigger');
+        expect(screen.getByTestId('custom-icon')).toBeDefined();
+        expect(trigger.className).toContain('text-amber-600');
+    });
 });

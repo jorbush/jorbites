@@ -160,11 +160,6 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
                     data-testid="recipe-allergens"
                 >
                     <div className="relative flex items-center gap-1.5 text-xs font-semibold tracking-wide text-neutral-600 uppercase dark:text-neutral-400">
-                        <FiAlertCircle
-                            size={14}
-                            className="shrink-0 text-amber-600 dark:text-amber-400"
-                        />
-                        <span>{mounted ? t('allergens') : 'allergens'}</span>
                         <InfoTooltip
                             text={String(
                                 mounted
@@ -178,10 +173,18 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
                                       })
                                     : 'Allergen disclaimer'
                             )}
+                            icon={
+                                <FiAlertCircle
+                                    size={14}
+                                    aria-hidden="true"
+                                />
+                            }
+                            triggerClassName="-ml-0.5 shrink-0 text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300"
                             anchorToParent
                             triggerTestId="allergen-disclaimer-trigger"
                             tooltipTestId="allergen-disclaimer"
                         />
+                        <span>{mounted ? t('allergens') : 'allergens'}</span>
                     </div>
                     <div className="mt-2.5 flex flex-wrap gap-2">
                         {detectedAllergens.map((allergen) => {

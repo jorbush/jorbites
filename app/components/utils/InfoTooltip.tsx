@@ -6,21 +6,25 @@ import { FiInfo } from 'react-icons/fi';
 export interface InfoTooltipProps {
     text: string;
     ariaLabel: string;
+    icon?: React.ReactNode;
     iconSize?: number;
     anchorToParent?: boolean;
     triggerTestId?: string;
     tooltipTestId?: string;
     className?: string;
+    triggerClassName?: string;
 }
 
 const InfoTooltip: React.FC<InfoTooltipProps> = ({
     text,
     ariaLabel,
+    icon,
     iconSize = 14,
     anchorToParent = false,
     triggerTestId,
     tooltipTestId,
     className = '',
+    triggerClassName = '',
 }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
@@ -56,7 +60,9 @@ const InfoTooltip: React.FC<InfoTooltipProps> = ({
         };
 
         document.addEventListener('mousedown', handlePointerDownOutside);
-        document.addEventListener('touchstart', handlePointerDownOutside);
+        document.addEventListener('touchstart', handlePointerDownOutside, {
+            passive: true,
+        });
         document.addEventListener('keydown', handleKeyDown);
 
         return () => {
@@ -119,12 +125,17 @@ const InfoTooltip: React.FC<InfoTooltipProps> = ({
                 data-testid={triggerTestId}
                 onTouchStart={handleTouchStart}
                 onClick={handleClick}
-                className="focus-visible:ring-green-450/30 inline-flex cursor-pointer items-center justify-center rounded-full p-0.5 text-neutral-400 transition-colors hover:text-neutral-600 focus:outline-hidden focus-visible:ring-2 dark:text-neutral-500 dark:hover:text-neutral-300"
+                className={`focus-visible:ring-green-450/30 inline-flex cursor-pointer items-center justify-center rounded-full p-0.5 transition-colors focus:outline-hidden focus-visible:ring-2 ${
+                    triggerClassName ||
+                    'text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-300'
+                }`}
             >
-                <FiInfo
-                    size={iconSize}
-                    aria-hidden="true"
-                />
+                {icon ?? (
+                    <FiInfo
+                        size={iconSize}
+                        aria-hidden="true"
+                    />
+                )}
             </button>
 
             {isOpen && (
