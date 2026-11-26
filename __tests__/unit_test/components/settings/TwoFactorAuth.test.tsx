@@ -120,7 +120,7 @@ describe('TwoFactorAuth Component', () => {
         });
     });
 
-    it('renders enabled status badge and allows disabling 2FA with password confirmation', async () => {
+    it('renders enabled status badge and requires password + 2FA code to disable 2FA', async () => {
         vi.mocked(axios.post).mockResolvedValueOnce({
             data: { success: true },
         });
@@ -134,19 +134,65 @@ describe('TwoFactorAuth Component', () => {
         fireEvent.click(screen.getByTestId('disable-2fa-button'));
 
         const passwordInput = screen.getByTestId('disable-2fa-password-input');
+        const codeInput = screen.getByTestId('disable-2fa-code-input');
+        const confirmButton = screen.getByTestId(
+            'confirm-disable-2fa-button'
+        ) as HTMLButtonElement;
+
         fireEvent.change(passwordInput, {
             target: { value: 'mySecretPassword' },
         });
-        fireEvent.click(screen.getByTestId('confirm-disable-2fa-button'));
+        expect(confirmButton.disabled).toBe(true);
+
+        fireEvent.change(codeInput, {
+            target: { value: '123456' },
+        });
+        expect(confirmButton.disabled).toBe(false);
+        fireEvent.click(confirmButton);
 
         await waitFor(() => {
             expect(axios.post).toHaveBeenCalledWith('/api/2fa/disable', {
                 currentPassword: 'mySecretPassword',
+                twoFactorCode: '123456',
             });
             expect(toast.success).toHaveBeenCalledWith(
                 'two_factor_disabled_success'
             );
             expect(mockRefresh).toHaveBeenCalled();
+        });
+    });
+
+    it('requires password + 2FA code to regenerate backup codes', async () => {
+        vi.mocked(axios.post).mockResolvedValueOnce({
+            data: {
+                success: true,
+                backupCodes: ['WXYZ-1234', 'QWER-5678'],
+            },
+        });
+
+        render(<TwoFactorAuth currentUser={enabledUser} />);
+
+        fireEvent.click(screen.getByTestId('regenerate-backup-codes-button'));
+
+        fireEvent.change(screen.getByTestId('regenerate-2fa-password-input'), {
+            target: { value: 'mySecretPassword' },
+        });
+        fireEvent.change(screen.getByTestId('regenerate-2fa-code-input'), {
+            target: { value: '654321' },
+        });
+        fireEvent.click(
+            screen.getByTestId('confirm-regenerate-backup-codes-button')
+        );
+
+        await waitFor(() => {
+            expect(axios.post).toHaveBeenCalledWith('/api/2fa/backup-codes', {
+                currentPassword: 'mySecretPassword',
+                twoFactorCode: '654321',
+            });
+            expect(screen.getByText('WXYZ-1234')).toBeDefined();
+            expect(toast.success).toHaveBeenCalledWith(
+                'backup_codes_regenerated'
+            );
         });
     });
 });

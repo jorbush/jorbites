@@ -11,11 +11,15 @@ import {
     rateLimitExceeded,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
-import { authenticatedRatelimit } from '@/app/lib/ratelimit';
+import {
+    authenticatedRatelimit,
+    twoFactorRatelimit,
+} from '@/app/lib/ratelimit';
 import {
     normalizeSocialHandle,
     normalizeWebsiteUrl,
 } from '@/app/utils/profile-utils';
+import { verifyAndConsumeTwoFactorCode } from '@/app/utils/twoFactorVerification';
 import { DraftService } from '@/app/services/draftService';
 
 interface IParams {
@@ -242,11 +246,59 @@ export async function DELETE(
             },
             select: {
                 id: true,
+                twoFactorEnabled: true,
+                twoFactorSecret: true,
+                twoFactorBackupCodes: true,
+                twoFactorLastUsedStep: true,
             },
         });
 
         if (!userToDelete) {
             return notFoundResponse('User not found');
+        }
+
+        if (userToDelete.twoFactorEnabled && userToDelete.twoFactorSecret) {
+            if (
+                process.env.NODE_ENV === 'production' ||
+                process.env.ENV === 'production'
+            ) {
+                const { success, reset } = await twoFactorRatelimit.limit(
+                    `delete_account:${currentUser.id}`
+                );
+                if (!success) {
+                    const retryAfterSeconds = Math.max(
+                        1,
+                        Math.ceil((reset - Date.now()) / 1000)
+                    );
+                    return rateLimitExceeded(
+                        'Too many 2FA verification attempts. Please try again later.',
+                        retryAfterSeconds
+                    );
+                }
+            }
+
+            const body = await request.json().catch(() => ({}));
+            const twoFactorCode = (body as { twoFactorCode?: unknown })
+                ?.twoFactorCode;
+
+            if (
+                !twoFactorCode ||
+                typeof twoFactorCode !== 'string' ||
+                !twoFactorCode.trim()
+            ) {
+                return badRequest(
+                    'Two-factor authentication code is required to delete your account'
+                );
+            }
+
+            const verification = await verifyAndConsumeTwoFactorCode({
+                user: userToDelete,
+                code: twoFactorCode,
+            });
+
+            if (!verification.valid) {
+                return badRequest('Invalid two-factor authentication code');
+            }
         }
 
         await prisma.$transaction(async (tx) => {

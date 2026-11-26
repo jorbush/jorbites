@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SafeUser } from '@/app/types';
 import axios from 'axios';
@@ -19,13 +19,30 @@ const DeleteAccount: React.FC<DeleteAccountProps> = ({ currentUser }) => {
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [twoFactorCode, setTwoFactorCode] = useState('');
+    const twoFactorInputId = useId();
+    const requiresTwoFactor = Boolean(currentUser?.twoFactorEnabled);
 
     const handleDeleteAccount = async () => {
         if (isLoading || !currentUser) return;
 
+        if (requiresTwoFactor && !twoFactorCode.trim()) {
+            toast.error(
+                t('enter_2fa_code_error') ||
+                    'Please enter your verification code'
+            );
+            return;
+        }
+
         setIsLoading(true);
         try {
-            await axios.delete(`/api/user/${currentUser.id}`);
+            if (requiresTwoFactor) {
+                await axios.delete(`/api/user/${currentUser.id}`, {
+                    data: { twoFactorCode: twoFactorCode.trim() },
+                });
+            } else {
+                await axios.delete(`/api/user/${currentUser.id}`);
+            }
             toast.success(
                 t('account_deleted_successfully') ||
                     'Account deleted successfully'
@@ -33,6 +50,7 @@ const DeleteAccount: React.FC<DeleteAccountProps> = ({ currentUser }) => {
 
             // Sign out the user after successful deletion
             await signOut({ redirect: false });
+            setTwoFactorCode('');
             push('/');
             refresh();
         } catch (error: any) {
@@ -45,6 +63,7 @@ const DeleteAccount: React.FC<DeleteAccountProps> = ({ currentUser }) => {
     };
 
     const handleDeleteClick = () => {
+        setTwoFactorCode('');
         setShowConfirmModal(true);
     };
 
@@ -89,6 +108,40 @@ const DeleteAccount: React.FC<DeleteAccountProps> = ({ currentUser }) => {
                     'This action cannot be undone. All your recipes and data will be permanently deleted.'
                 }
                 insideModal={true}
+                canConfirm={!requiresTwoFactor || Boolean(twoFactorCode.trim())}
+                onValidationFailed={() =>
+                    toast.error(
+                        t('enter_2fa_code_error') ||
+                            'Please enter your verification code'
+                    )
+                }
+                extraContent={
+                    requiresTwoFactor ? (
+                        <div className="flex flex-col gap-1.5">
+                            <label
+                                htmlFor={twoFactorInputId}
+                                className="text-xs font-medium text-neutral-700 dark:text-neutral-300"
+                            >
+                                {t('delete_account_2fa_prompt') ||
+                                    'Enter your 6-digit 2FA code or a backup recovery code'}
+                            </label>
+                            <input
+                                id={twoFactorInputId}
+                                type="text"
+                                inputMode="text"
+                                autoComplete="one-time-code"
+                                value={twoFactorCode}
+                                onChange={(e) =>
+                                    setTwoFactorCode(e.target.value)
+                                }
+                                disabled={isLoading}
+                                placeholder="000000 / XXXX-XXXX"
+                                data-testid="delete-account-2fa-input"
+                                className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2 font-mono text-sm tracking-widest text-neutral-900 focus:border-neutral-900 focus:outline-hidden disabled:opacity-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:border-neutral-300"
+                            />
+                        </div>
+                    ) : undefined
+                }
             />
         </>
     );

@@ -11,6 +11,7 @@ import {
 import { logger } from '@/app/lib/axiom/server';
 import { twoFactorRatelimit } from '@/app/lib/ratelimit';
 import { generateBackupCodes } from '@/app/utils/totp';
+import { verifyAndConsumeTwoFactorCode } from '@/app/utils/twoFactorVerification';
 
 export async function POST(request: Request) {
     try {
@@ -21,7 +22,10 @@ export async function POST(request: Request) {
             );
         }
 
-        if (process.env.ENV === 'production') {
+        if (
+            process.env.NODE_ENV === 'production' ||
+            process.env.ENV === 'production'
+        ) {
             const { success, reset } = await twoFactorRatelimit.limit(
                 currentUser.id
             );
@@ -38,10 +42,20 @@ export async function POST(request: Request) {
         }
 
         const body = await request.json().catch(() => ({}));
-        const { currentPassword } = body;
+        const { currentPassword, twoFactorCode } = body;
 
         if (!currentPassword || typeof currentPassword !== 'string') {
             return badRequest('Current password is required');
+        }
+
+        if (
+            !twoFactorCode ||
+            typeof twoFactorCode !== 'string' ||
+            !twoFactorCode.trim()
+        ) {
+            return badRequest(
+                'A valid 2FA verification code or backup code is required'
+            );
         }
 
         const user = await prisma.user.findUnique({
@@ -63,6 +77,15 @@ export async function POST(request: Request) {
 
         if (!isCorrectPassword) {
             return badRequest('Current password is incorrect');
+        }
+
+        const verification = await verifyAndConsumeTwoFactorCode({
+            user,
+            code: twoFactorCode,
+        });
+
+        if (!verification.valid) {
+            return badRequest('Invalid verification code');
         }
 
         const { rawCodes, hashedCodes } = generateBackupCodes(8);

@@ -20,6 +20,11 @@ interface TwoFactorPasswordFormProps {
     togglePasswordTestId: string;
     buttonTestId: string;
     buttonDataCy?: string;
+    requireTwoFactorCode?: boolean;
+    twoFactorCode?: string;
+    onTwoFactorCodeChange?: (value: string) => void;
+    twoFactorCodeId?: string;
+    twoFactorCodeTestId?: string;
     onSubmit: (e: React.FormEvent) => void;
 }
 
@@ -39,11 +44,20 @@ export const TwoFactorPasswordForm: React.FC<TwoFactorPasswordFormProps> = ({
     togglePasswordTestId,
     buttonTestId,
     buttonDataCy,
+    requireTwoFactorCode = false,
+    twoFactorCode = '',
+    onTwoFactorCodeChange,
+    twoFactorCodeId,
+    twoFactorCodeTestId,
     onSubmit,
 }) => {
     const { t } = useTranslation();
     const hidePasswordText = t('hide_password') || 'Hide password';
     const showPasswordText = t('show_password') || 'Show password';
+    const isSubmitDisabled =
+        isPending ||
+        !currentPassword ||
+        (requireTwoFactorCode && !twoFactorCode.trim());
 
     const buttonClasses =
         buttonVariant === 'red'
@@ -74,10 +88,34 @@ export const TwoFactorPasswordForm: React.FC<TwoFactorPasswordFormProps> = ({
                 hidePasswordLabel={hidePasswordText}
                 showPasswordLabel={showPasswordText}
             />
+            {requireTwoFactorCode && (
+                <div className="flex flex-col gap-1">
+                    <label
+                        htmlFor={twoFactorCodeId}
+                        className="text-xs font-medium text-neutral-700 dark:text-neutral-300"
+                    >
+                        {t('verification_code') || 'Verification Code'}
+                    </label>
+                    <input
+                        id={twoFactorCodeId}
+                        type="text"
+                        inputMode="text"
+                        autoComplete="one-time-code"
+                        value={twoFactorCode}
+                        onChange={(e) =>
+                            onTwoFactorCodeChange?.(e.target.value)
+                        }
+                        disabled={isPending}
+                        placeholder="000000 / XXXX-XXXX"
+                        data-testid={twoFactorCodeTestId}
+                        className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2 font-mono text-sm tracking-widest text-neutral-900 focus:border-neutral-900 focus:outline-hidden disabled:opacity-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:border-neutral-300"
+                    />
+                </div>
+            )}
             <div className="flex justify-end">
                 <button
                     type="submit"
-                    disabled={isPending || !currentPassword}
+                    disabled={isSubmitDisabled}
                     data-testid={buttonTestId}
                     data-cy={buttonDataCy}
                     className={buttonClasses}

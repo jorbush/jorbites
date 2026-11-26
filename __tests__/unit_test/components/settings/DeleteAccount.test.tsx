@@ -56,7 +56,7 @@ vi.mock('next-auth/react', () => ({
 vi.mock('axios');
 
 vi.mock('@/app/components/modals/WriteToDeleteModal', () => ({
-    default: ({ open, setIsOpen, onConfirm }: any) => (
+    default: ({ open, setIsOpen, onConfirm, extraContent }: any) => (
         <div
             data-testid="write-to-delete-modal"
             style={{ display: open ? 'block' : 'none' }}
@@ -65,6 +65,7 @@ vi.mock('@/app/components/modals/WriteToDeleteModal', () => ({
                 data-testid="delete-confirmation-text"
                 placeholder="Type 'Delete' to confirm"
             />
+            {extraContent}
             <button
                 data-testid="write-to-delete-modal-confirm"
                 onClick={onConfirm}
@@ -298,6 +299,40 @@ describe('DeleteAccount', () => {
             expect(toast.success).toHaveBeenCalledWith(
                 'Account deleted successfully'
             );
+        });
+    });
+
+    it('requires and sends twoFactorCode when 2FA is enabled on the account', async () => {
+        mockAxios.delete.mockResolvedValue({ data: { success: true } });
+        mockSignOut.mockResolvedValue({});
+        const { toast } = await import('react-hot-toast');
+
+        const twoFactorUser = {
+            ...mockCurrentUser,
+            twoFactorEnabled: true,
+        } as unknown as SafeUser;
+
+        render(<DeleteAccount currentUser={twoFactorUser} />);
+
+        fireEvent.click(screen.getByTestId('delete-account-button'));
+
+        const codeInput = screen.getByTestId('delete-account-2fa-input');
+        expect(codeInput).toBeDefined();
+
+        // Attempting without entering code shows error and does not call DELETE
+        fireEvent.click(screen.getByTestId('write-to-delete-modal-confirm'));
+        expect(mockAxios.delete).not.toHaveBeenCalled();
+        expect(toast.error).toHaveBeenCalled();
+
+        // Entering 2FA code sends it in the DELETE request body
+        fireEvent.change(codeInput, { target: { value: '123456' } });
+        fireEvent.click(screen.getByTestId('write-to-delete-modal-confirm'));
+
+        await waitFor(() => {
+            expect(mockAxios.delete).toHaveBeenCalledWith('/api/user/1', {
+                data: { twoFactorCode: '123456' },
+            });
+            expect(mockSignOut).toHaveBeenCalledWith({ redirect: false });
         });
     });
 });

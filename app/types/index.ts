@@ -153,6 +153,7 @@ export type SafeUser = Omit<
     | 'twoFactorEnabled'
     | 'twoFactorSecret'
     | 'twoFactorBackupCodes'
+    | 'twoFactorLastUsedStep'
     | 'tokenVersion'
     | 'email'
     | 'favoriteIds'

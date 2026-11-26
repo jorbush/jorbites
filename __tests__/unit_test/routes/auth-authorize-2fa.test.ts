@@ -103,7 +103,7 @@ describe('NextAuth Credentials authorize() - 2FA Flow', () => {
         ).rejects.toThrow('2FA_REQUIRED');
     });
 
-    it('returns user when a valid 6-digit TOTP code is provided', async () => {
+    it('returns user when a valid 6-digit TOTP code is provided and records twoFactorLastUsedStep', async () => {
         const secret = generateTotpSecret();
         const validTotp = generateTotpCode(secret);
         const mockUser = {
@@ -113,10 +113,12 @@ describe('NextAuth Credentials authorize() - 2FA Flow', () => {
             twoFactorEnabled: true,
             twoFactorSecret: encryptTotpSecret(secret),
             twoFactorBackupCodes: [],
+            twoFactorLastUsedStep: null,
         };
 
         jest.mocked(prisma.user.findUnique).mockResolvedValue(mockUser as any);
         jest.mocked(bcrypt.compare).mockResolvedValue(true as never);
+        jest.mocked(prisma.user.updateMany).mockResolvedValue({ count: 1 });
 
         const result = await authorize({
             email: 'chef@jorbites.com',
@@ -125,7 +127,72 @@ describe('NextAuth Credentials authorize() - 2FA Flow', () => {
         });
 
         expect(result).toEqual(mockUser);
+        expect(prisma.user.updateMany).toHaveBeenCalledWith({
+            where: {
+                id: 'user-1',
+                OR: [
+                    { twoFactorLastUsedStep: { isSet: false } },
+                    { twoFactorLastUsedStep: null },
+                    { twoFactorLastUsedStep: { lt: expect.any(Number) } },
+                ],
+            },
+            data: {
+                twoFactorLastUsedStep: expect.any(Number),
+            },
+        });
+    });
+
+    it('rejects replayed TOTP code within the same or earlier time step', async () => {
+        const secret = generateTotpSecret();
+        const validTotp = generateTotpCode(secret);
+        const currentStep = Math.floor(Date.now() / 1000 / 30);
+        const mockUser = {
+            id: 'user-1',
+            email: 'chef@jorbites.com',
+            hashedPassword: 'hashed-password',
+            twoFactorEnabled: true,
+            twoFactorSecret: encryptTotpSecret(secret),
+            twoFactorBackupCodes: [],
+            twoFactorLastUsedStep: currentStep,
+        };
+
+        jest.mocked(prisma.user.findUnique).mockResolvedValue(mockUser as any);
+        jest.mocked(bcrypt.compare).mockResolvedValue(true as never);
+
+        await expect(
+            authorize({
+                email: 'chef@jorbites.com',
+                password: 'correctPassword',
+                twoFactorCode: validTotp,
+            })
+        ).rejects.toThrow('INVALID_2FA_CODE');
         expect(prisma.user.updateMany).not.toHaveBeenCalled();
+    });
+
+    it('rejects concurrent TOTP replay when atomic updateMany returns count === 0', async () => {
+        const secret = generateTotpSecret();
+        const validTotp = generateTotpCode(secret);
+        const mockUser = {
+            id: 'user-1',
+            email: 'chef@jorbites.com',
+            hashedPassword: 'hashed-password',
+            twoFactorEnabled: true,
+            twoFactorSecret: encryptTotpSecret(secret),
+            twoFactorBackupCodes: [],
+            twoFactorLastUsedStep: null,
+        };
+
+        jest.mocked(prisma.user.findUnique).mockResolvedValue(mockUser as any);
+        jest.mocked(bcrypt.compare).mockResolvedValue(true as never);
+        jest.mocked(prisma.user.updateMany).mockResolvedValue({ count: 0 });
+
+        await expect(
+            authorize({
+                email: 'chef@jorbites.com',
+                password: 'correctPassword',
+                twoFactorCode: validTotp,
+            })
+        ).rejects.toThrow('INVALID_2FA_CODE');
     });
 
     it('consumes a backup code with optimistic concurrency and returns user', async () => {

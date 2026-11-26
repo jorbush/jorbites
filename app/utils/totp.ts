@@ -107,15 +107,20 @@ export function generateTotpCode(
     return generateHotp(secretBuffer, counter);
 }
 
-export function verifyTotpCode(
+export interface TotpVerificationResult {
+    valid: boolean;
+    step?: number;
+}
+
+export function verifyTotpCodeWithStep(
     code: string,
     secret: string,
     window = 1,
     timestampMs = Date.now()
-): boolean {
+): TotpVerificationResult {
     const normalized = code.trim().replace(/\s+/g, '');
     if (!/^\d{6}$/.test(normalized)) {
-        return false;
+        return { valid: false };
     }
 
     try {
@@ -134,13 +139,22 @@ export function verifyTotpCode(
                 inputBytes.length === candidateBytes.length &&
                 crypto.timingSafeEqual(inputBytes, candidateBytes)
             ) {
-                return true;
+                return { valid: true, step: Number(counter) };
             }
         }
-        return false;
+        return { valid: false };
     } catch {
-        return false;
+        return { valid: false };
     }
+}
+
+export function verifyTotpCode(
+    code: string,
+    secret: string,
+    window = 1,
+    timestampMs = Date.now()
+): boolean {
+    return verifyTotpCodeWithStep(code, secret, window, timestampMs).valid;
 }
 
 function getEncryptionKey(): Uint8Array {
