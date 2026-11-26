@@ -130,21 +130,34 @@ describe('usePlanningState hook', () => {
             title: 'Pasta',
             imageSrc: '/pasta.png',
             ingredients: ['pasta', 'sauce'],
+            categories: ['Pasta'],
             description: 'Delicious pasta',
             user: { name: 'Chef Luigi' },
             calories: 450,
+            protein: 18,
+            carbohydrates: 65,
+            fat: 12,
+            fiber: 0,
+            difficulty: 'Easy',
+            dietaryTags: ['one-pot'],
+            allergens: ['gluten'],
         };
 
         await act(async () => {
             await result.current.handleRecipeSelect(mockSelectedRecipe);
         });
 
-        // The meals array should now contain our new meal with mapped calories
+        // The meals array should now contain our new meal with mapped nutrition & allergens
         const newMeal = result.current.meals.find(
             (m) => m.recipeId === 'rec-2'
         );
         expect(newMeal).toBeDefined();
         expect(newMeal.recipe.calories).toBe(450);
+        expect(newMeal.recipe.protein).toBe(18);
+        expect(newMeal.recipe.carbohydrates).toBe(65);
+        expect(newMeal.recipe.fat).toBe(12);
+        expect(newMeal.recipe.fiber).toBe(0);
+        expect(newMeal.recipe.allergens).toEqual(['gluten']);
         expect(result.current.groupedMeals['monday-lunch']).toHaveLength(1);
         expect(
             result.current.groupedMeals['monday-lunch'][0].recipe.calories

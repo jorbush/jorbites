@@ -154,4 +154,104 @@ describe('RecipeSelectModal', () => {
             expect(screen.getByText('no_recipes_found')).toBeDefined();
         });
     });
+
+    it('renders quick filter chips and triggers filtered search when toggled', async () => {
+        const mockRecipes = [
+            {
+                id: 'recipe-2',
+                title: 'Easy Meal Prep Bowl',
+                imageSrc: '/bowl.jpg',
+                calories: 520,
+                user: { name: 'Chef Ana' },
+            },
+        ];
+
+        vi.mocked(axios.get).mockResolvedValue({
+            data: { recipes: mockRecipes },
+        });
+
+        render(
+            <RecipeSelectModal
+                isOpen={true}
+                onClose={vi.fn()}
+                onSelect={vi.fn()}
+            />
+        );
+
+        const easyChip = screen.getByTestId('quick-filter-difficulty-easy');
+        const mealPrepChip = screen.getByTestId('quick-filter-tag-meal-prep');
+        const onePotChip = screen.getByTestId('quick-filter-tag-one-pot');
+        const budgetChip = screen.getByTestId(
+            'quick-filter-tag-budget-friendly'
+        );
+        const glutenChip = screen.getByTestId(
+            'quick-filter-exclude-allergen-gluten'
+        );
+
+        expect(easyChip).toBeDefined();
+        expect(mealPrepChip).toBeDefined();
+        expect(onePotChip).toBeDefined();
+        expect(budgetChip).toBeDefined();
+        expect(glutenChip).toBeDefined();
+
+        fireEvent.click(easyChip);
+        await waitFor(() => {
+            expect(axios.get).toHaveBeenCalledWith(
+                '/api/search?type=recipes&difficulty=Easy'
+            );
+        });
+
+        fireEvent.click(mealPrepChip);
+        await waitFor(() => {
+            expect(axios.get).toHaveBeenCalledWith(
+                '/api/search?type=recipes&difficulty=Easy&dietaryTags=meal-prep'
+            );
+        });
+
+        fireEvent.click(glutenChip);
+        await waitFor(() => {
+            expect(axios.get).toHaveBeenCalledWith(
+                '/api/search?type=recipes&difficulty=Easy&dietaryTags=meal-prep&excludeAllergens=gluten'
+            );
+        });
+
+        await waitFor(() => {
+            expect(screen.getByText('Easy Meal Prep Bowl')).toBeDefined();
+            expect(screen.getByText('520 kcal')).toBeDefined();
+        });
+
+        // Clear all filters
+        const clearBtn = screen.getByTestId('clear-quick-filters');
+        fireEvent.click(clearBtn);
+
+        expect(easyChip.getAttribute('aria-pressed')).toBe('false');
+        expect(mealPrepChip.getAttribute('aria-pressed')).toBe('false');
+        expect(glutenChip.getAttribute('aria-pressed')).toBe('false');
+        expect(screen.queryByTestId('clear-quick-filters')).toBeNull();
+        expect(screen.getByText('type_to_search')).toBeDefined();
+    });
+
+    it('combines search query with active quick filters', async () => {
+        vi.mocked(axios.get).mockResolvedValue({
+            data: { recipes: [] },
+        });
+
+        render(
+            <RecipeSelectModal
+                isOpen={true}
+                onClose={vi.fn()}
+                onSelect={vi.fn()}
+            />
+        );
+
+        const input = screen.getByPlaceholderText('search_recipes_placeholder');
+        fireEvent.change(input, { target: { value: 'Soup' } });
+        fireEvent.click(screen.getByTestId('quick-filter-tag-one-pot'));
+
+        await waitFor(() => {
+            expect(axios.get).toHaveBeenCalledWith(
+                '/api/search?q=Soup&type=recipes&dietaryTags=one-pot'
+            );
+        });
+    });
 });

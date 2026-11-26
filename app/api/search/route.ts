@@ -9,14 +9,27 @@ import {
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
 import { authenticatedRatelimit } from '@/app/lib/ratelimit';
+import { buildRecipeWhereClause, parseListParam } from '@/app/utils/filter';
 
 export async function GET(request: Request) {
     try {
         const url = new URL(request.url);
-        const query = url.searchParams.get('q');
+        const query = url.searchParams.get('q') || '';
+        const trimmedQuery = query.trim();
         const type = url.searchParams.get('type') || 'all';
+        const difficulty = url.searchParams.get('difficulty') || undefined;
+        const dietaryTags = url.searchParams.get('dietaryTags') || undefined;
+        const excludeAllergens =
+            url.searchParams.get('excludeAllergens') || undefined;
 
-        if (!query || query.length < 2) {
+        const hasValidQuery = trimmedQuery.length >= 2;
+        const hasRecipeFilters = Boolean(
+            difficulty?.trim() ||
+            parseListParam(dietaryTags).length > 0 ||
+            parseListParam(excludeAllergens).length > 0
+        );
+
+        if (!hasValidQuery && !(type === 'recipes' && hasRecipeFilters)) {
             return NextResponse.json({ users: [], recipes: [] });
         }
 
@@ -48,8 +61,9 @@ export async function GET(request: Request) {
         }
 
         logger.info('GET /api/search - start', {
-            query,
+            query: trimmedQuery,
             type,
+            hasRecipeFilters,
             userId: currentUser.id,
         });
 
@@ -67,6 +81,14 @@ export async function GET(request: Request) {
             imageSrc: string | null;
             userId: string;
             calories?: number | null;
+            protein?: number | null;
+            carbohydrates?: number | null;
+            fat?: number | null;
+            fiber?: number | null;
+            difficulty?: string | null;
+            dietaryTags?: string[];
+            allergens?: string[];
+            categories?: string[];
             ingredients?: string[];
             user: {
                 name: string | null;
@@ -77,11 +99,11 @@ export async function GET(request: Request) {
         let users: SearchedUser[] = [];
         let recipes: SearchedRecipe[] = [];
 
-        if (type === 'all' || type === 'users') {
+        if ((type === 'all' || type === 'users') && hasValidQuery) {
             users = await prisma.user.findMany({
                 where: {
                     name: {
-                        contains: query,
+                        contains: trimmedQuery,
                         mode: 'insensitive',
                     },
                     NOT: {
@@ -100,19 +122,29 @@ export async function GET(request: Request) {
         }
 
         if (type === 'all' || type === 'recipes') {
+            const recipeWhere = buildRecipeWhereClause({
+                search: hasValidQuery ? trimmedQuery : undefined,
+                difficulty,
+                dietaryTags,
+                excludeAllergens,
+            });
+
             recipes = await prisma.recipe.findMany({
-                where: {
-                    title: {
-                        contains: query,
-                        mode: 'insensitive',
-                    },
-                },
+                where: recipeWhere,
                 select: {
                     id: true,
                     title: true,
                     imageSrc: true,
                     userId: true,
                     calories: true,
+                    protein: true,
+                    carbohydrates: true,
+                    fat: true,
+                    fiber: true,
+                    difficulty: true,
+                    dietaryTags: true,
+                    allergens: true,
+                    categories: true,
                     ingredients: true,
                     user: {
                         select: {
@@ -121,12 +153,15 @@ export async function GET(request: Request) {
                         },
                     },
                 },
-                take: 5,
+                ...(hasRecipeFilters
+                    ? { orderBy: { createdAt: 'desc' as const } }
+                    : {}),
+                take: hasRecipeFilters ? 12 : 5,
             });
         }
 
         logger.info('GET /api/search - success', {
-            query,
+            query: trimmedQuery,
             type,
             userCount: users.length,
             recipeCount: recipes.length,

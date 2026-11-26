@@ -112,6 +112,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                         push={push}
                         t={t}
                         mealsCount={meals.length}
+                        meals={meals}
                         showLock={false}
                     />
                 </div>

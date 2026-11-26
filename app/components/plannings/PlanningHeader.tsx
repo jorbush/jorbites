@@ -6,6 +6,10 @@ import Avatar from '@/app/components/utils/Avatar';
 import { formatDate } from '@/app/utils/date-utils';
 import { GiPadlock, GiPadlockOpen } from 'react-icons/gi';
 import VerificationBadge from '@/app/components/VerificationBadge';
+import { PlanningMealLike } from '@/app/utils/planningNutrition';
+import { PlanningNutritionSummary } from '@/app/components/plannings/PlanningNutritionSummary';
+
+const EMPTY_MEALS: PlanningMealLike[] = [];
 
 export interface PlanningHeaderProps {
     editedName: string;
@@ -19,6 +23,7 @@ export interface PlanningHeaderProps {
     push: (url: string) => void;
     t: any;
     mealsCount?: number;
+    meals?: PlanningMealLike[];
     showLock?: boolean;
 }
 
@@ -34,8 +39,12 @@ export const PlanningHeader: React.FC<PlanningHeaderProps> = ({
     push,
     t,
     mealsCount,
+    meals,
     showLock = true,
 }) => {
+    const effectiveMeals = meals ?? planning.meals ?? EMPTY_MEALS;
+    const privacyLabel = String((isPrivate ? t('private') : t('public')) || '');
+
     return (
         <div className="flex w-full flex-col">
             {/* Fallback lock for standalone tests */}
@@ -46,10 +55,8 @@ export const PlanningHeader: React.FC<PlanningHeaderProps> = ({
                         onClick={togglePrivacy}
                         disabled={isSaving}
                         data-cy="toggle-plan-privacy"
-                        aria-label={
-                            (isPrivate ? t('private') : t('public')) || ''
-                        }
-                        title={(isPrivate ? t('private') : t('public')) || ''}
+                        aria-label={privacyLabel}
+                        title={privacyLabel}
                         className="flex size-9 cursor-pointer items-center justify-center rounded-xl border border-neutral-200/80 bg-white text-neutral-700 shadow-2xs transition-colors duration-200 hover:border-neutral-300 disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:border-neutral-600"
                     >
                         {isPrivate ? (
@@ -129,9 +136,15 @@ export const PlanningHeader: React.FC<PlanningHeaderProps> = ({
                 )}
 
                 <div className="self-end text-xs font-medium text-neutral-500 sm:self-auto dark:text-neutral-400">
-                    {`${mealsCount ?? planning.meals?.length ?? 0} ${t('meals')}`}
+                    {`${mealsCount ?? effectiveMeals.length} ${t('meals')}`}
                 </div>
             </div>
+
+            {/* Weekly Macro Averages & Plan-wide EU-14 Allergens */}
+            <PlanningNutritionSummary
+                meals={effectiveMeals}
+                t={t}
+            />
         </div>
     );
 };

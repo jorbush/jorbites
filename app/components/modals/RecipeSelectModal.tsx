@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import axios from 'axios';
+import React from 'react';
 import { FiSearch } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
-import debounce from 'lodash/debounce';
 import Modal from '@/app/components/modals/Modal';
-import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
+import { useRecipeSelectSearch } from '@/app/components/modals/useRecipeSelectSearch';
+import { RecipeSelectFilters } from '@/app/components/modals/RecipeSelectFilters';
+import { RecipeSelectResults } from '@/app/components/modals/RecipeSelectResults';
 
 interface RecipeSelectModalProps {
     isOpen: boolean;
@@ -20,45 +20,33 @@ const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
     onSelect,
 }) => {
     const { t } = useTranslation();
-    const [query, setQuery] = useState('');
-    const [results, setResults] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const {
+        query,
+        difficulty,
+        selectedTags,
+        excludedAllergens,
+        results,
+        isLoading,
+        hasActiveFilters,
+        handleQueryChange,
+        handleToggleDifficulty,
+        handleToggleTag,
+        handleToggleAllergen,
+        handleClearFilters,
+        resetSearch,
+    } = useRecipeSelectSearch();
 
-    const debouncedSearch = useMemo(
-        () =>
-            debounce(async (searchQuery: string) => {
-                if (searchQuery.trim().length < 2) {
-                    setResults([]);
-                    return;
-                }
-
-                setIsLoading(true);
-                try {
-                    const response = await axios.get(
-                        `/api/search?q=${encodeURIComponent(searchQuery)}&type=recipes`
-                    );
-                    setResults(response.data.recipes || []);
-                } catch (error) {
-                    console.error('Recipe search failed:', error);
-                } finally {
-                    setIsLoading(false);
-                }
-            }, 300),
-        []
-    );
-
-    useEffect(() => {
-        return () => {
-            debouncedSearch.cancel();
-        };
-    }, [debouncedSearch]);
-
-    // Reset state on close
     const handleClose = () => {
-        setQuery('');
-        setResults([]);
+        resetSearch();
         onClose();
     };
+
+    const handleSelectRecipe = (recipe: any) => {
+        onSelect(recipe);
+        handleClose();
+    };
+
+    const canShowNoResults = query.trim().length >= 2 || hasActiveFilters;
 
     const bodyContent = (
         <div className="flex flex-col gap-4 text-black dark:text-neutral-100">
@@ -67,79 +55,43 @@ const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
                 <FiSearch
                     className="absolute top-3.5 left-3 text-neutral-400"
                     size={18}
+                    aria-hidden="true"
                 />
                 <input
                     type="text"
                     value={query}
-                    onChange={(e) => {
-                        const val = e.target.value;
-                        setQuery(val);
-                        debouncedSearch(val);
-                    }}
-                    placeholder={
+                    onChange={(e) => handleQueryChange(e.target.value)}
+                    placeholder={String(
                         t('search_recipes_placeholder') ||
-                        'Search recipes by title...'
-                    }
-                    aria-label={
+                            'Search recipes by title...'
+                    )}
+                    aria-label={String(
                         t('search_recipes_placeholder') || 'Search recipes'
-                    }
+                    )}
                     data-cy="recipe-select-search-input"
-                    className="focus:border-neutral-450 w-full rounded-xl border border-neutral-200 bg-neutral-50 py-3 pr-4 pl-10 text-sm font-light text-neutral-900 outline-hidden dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:focus:border-neutral-700"
+                    className="focus:border-green-450 focus:ring-green-450/30 w-full rounded-xl border border-neutral-200 bg-neutral-50 py-3 pr-4 pl-10 text-sm font-light text-neutral-900 outline-hidden focus:ring-2 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100"
                 />
             </div>
 
-            {/* Results List */}
-            <div className="max-h-[300px] overflow-y-auto pr-1">
-                {isLoading ? (
-                    <div className="py-6 text-center text-sm font-light text-neutral-400">
-                        {t('loading') || 'Loading...'}
-                    </div>
-                ) : results.length > 0 ? (
-                    <div className="flex flex-col gap-2">
-                        {results.map((recipe) => (
-                            <button
-                                key={recipe.id}
-                                type="button"
-                                onClick={() => {
-                                    onSelect(recipe);
-                                    handleClose();
-                                }}
-                                data-cy="recipe-select-option"
-                                className="flex w-full cursor-pointer flex-row items-center gap-3 rounded-xl p-2 text-left transition-colors duration-200 hover:bg-neutral-100 focus:outline-hidden dark:hover:bg-neutral-800"
-                            >
-                                {recipe.imageSrc && (
-                                    <CustomProxyImage
-                                        src={recipe.imageSrc}
-                                        alt={recipe.title}
-                                        width={48}
-                                        height={48}
-                                        className="size-12 rounded-lg object-cover"
-                                    />
-                                )}
-                                <div className="flex flex-col">
-                                    <span className="text-sm font-semibold">
-                                        {recipe.title}
-                                    </span>
-                                    {recipe.user && (
-                                        <span className="text-xs font-light text-neutral-400">
-                                            by {recipe.user.name || 'Anonymous'}
-                                        </span>
-                                    )}
-                                </div>
-                            </button>
-                        ))}
-                    </div>
-                ) : query.trim().length >= 2 ? (
-                    <div className="text-neutral-450 py-6 text-center text-sm font-light">
-                        {t('no_recipes_found')}
-                    </div>
-                ) : (
-                    <div className="text-neutral-450 py-8 text-center text-sm font-light dark:text-neutral-500">
-                        {t('type_to_search') ||
-                            'Type at least 2 characters to search'}
-                    </div>
-                )}
-            </div>
+            <RecipeSelectFilters
+                difficulty={difficulty}
+                selectedTags={selectedTags}
+                excludedAllergens={excludedAllergens}
+                hasActiveFilters={hasActiveFilters}
+                onToggleDifficulty={handleToggleDifficulty}
+                onToggleTag={handleToggleTag}
+                onToggleAllergen={handleToggleAllergen}
+                onClearFilters={handleClearFilters}
+                t={t}
+            />
+
+            <RecipeSelectResults
+                results={results}
+                isLoading={isLoading}
+                canShowNoResults={canShowNoResults}
+                onSelectRecipe={handleSelectRecipe}
+                t={t}
+            />
         </div>
     );
 
@@ -148,8 +100,8 @@ const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
             isOpen={isOpen}
             onClose={handleClose}
             onSubmit={handleClose}
-            title={t('select_recipe') || 'Select Recipe'}
-            actionLabel={t('cancel') || 'Cancel'}
+            title={String(t('select_recipe') || 'Select Recipe')}
+            actionLabel={String(t('cancel') || 'Cancel')}
             body={bodyContent}
         />
     );
