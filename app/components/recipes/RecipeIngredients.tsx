@@ -4,6 +4,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiAlertCircle, FiCheck } from 'react-icons/fi';
 import Counter from '@/app/components/inputs/Counter';
+import InfoTooltip from '@/app/components/utils/InfoTooltip';
 import useIsMounted from '@/app/hooks/useIsMounted';
 import useRecipeChecklist from '@/app/hooks/useRecipeChecklist';
 import { resolveRecipeAllergens } from '@/app/utils/allergenDetector';
@@ -158,12 +159,29 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
                     data-cy="recipe-allergens"
                     data-testid="recipe-allergens"
                 >
-                    <div className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-neutral-600 uppercase dark:text-neutral-400">
+                    <div className="relative flex items-center gap-1.5 text-xs font-semibold tracking-wide text-neutral-600 uppercase dark:text-neutral-400">
                         <FiAlertCircle
                             size={14}
                             className="shrink-0 text-amber-600 dark:text-amber-400"
                         />
                         <span>{mounted ? t('allergens') : 'allergens'}</span>
+                        <InfoTooltip
+                            text={String(
+                                mounted
+                                    ? t('allergen_disclaimer')
+                                    : 'Automatically estimated from recipe ingredients and tags — may be incomplete. Always verify ingredients for food allergies.'
+                            )}
+                            ariaLabel={String(
+                                mounted
+                                    ? t('allergen_disclaimer_label', {
+                                          defaultValue: 'Allergen disclaimer',
+                                      })
+                                    : 'Allergen disclaimer'
+                            )}
+                            anchorToParent
+                            triggerTestId="allergen-disclaimer-trigger"
+                            tooltipTestId="allergen-disclaimer"
+                        />
                     </div>
                     <div className="mt-2.5 flex flex-wrap gap-2">
                         {detectedAllergens.map((allergen) => {
@@ -194,14 +212,6 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
                             );
                         })}
                     </div>
-                    <p
-                        className="mt-2.5 text-xs text-neutral-500 dark:text-neutral-400"
-                        data-testid="allergen-disclaimer"
-                    >
-                        {mounted
-                            ? t('allergen_disclaimer')
-                            : 'Automatically estimated from recipe ingredients and tags — may be incomplete. Always verify ingredients for food allergies.'}
-                    </p>
                 </div>
             )}
         </div>

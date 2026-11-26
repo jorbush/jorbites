@@ -1758,6 +1758,7 @@
     "register_oauth_terms_notice": "Al continuar con Google o GitHub, confirmas que cumples la edad mínima requerida y aceptas nuestros",
     "error_accept_terms": "Por favor, acepta los Términos y Condiciones y la Política de Privacidad para crear una cuenta",
     "allergen_disclaimer": "Estimación automática a partir de los ingredientes y etiquetas de la receta; puede estar incompleta. Verifica siempre los ingredientes en caso de alergia alimentaria.",
+    "allergen_disclaimer_label": "Aviso sobre alérgenos",
     "exclude_allergens": "Ocultar recetas con…",
     "macros_per_serving": "Macros por ración (g)",
     "min_protein": "Proteína mín.",
