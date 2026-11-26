@@ -5,6 +5,7 @@ import { Suspense } from 'react';
 import Button from '@/app/components/buttons/Button';
 import Heading from '@/app/components/navigation/Heading';
 import { useTranslation } from 'react-i18next';
+import { ADVANCED_FILTER_QUERY_PARAMS } from '@/app/utils/filter';
 
 interface EmptyStateProps {
     title?: string;
@@ -16,13 +17,7 @@ interface EmptyStateProps {
 const FILTER_QUERY_PARAMS = [
     'search',
     'category',
-    'startDate',
-    'endDate',
-    'minCalories',
-    'maxCalories',
-    'minYield',
-    'maxYield',
-    'recipeCuisine',
+    ...ADVANCED_FILTER_QUERY_PARAMS,
 ] as const;
 
 const DEFAULT_TITLE = 'No exact matches';

@@ -33,6 +33,21 @@ vi.mock('react-i18next', () => ({
                 cancel: 'Cancel',
                 cuisine_italian: 'Italian',
                 cuisine_spanish: 'Spanish',
+                difficulty: 'Difficulty',
+                difficulty_easy: 'Easy',
+                difficulty_medium: 'Medium',
+                difficulty_hard: 'Hard',
+                dietary_tags: 'Tags',
+                dietary_vegan: 'Vegan',
+                dietary_one_pot: 'One-Pot',
+                dietary_spicy: 'Spicy',
+                exclude_allergens: 'Hide recipes with…',
+                allergen_gluten: 'Gluten',
+                allergen_milk: 'Dairy',
+                macros_per_serving: 'Macros per serving (g)',
+                min_protein: 'Min protein',
+                max_carbs: 'Max carbs',
+                max_fat: 'Max fat',
             };
             return translations[key] || key;
         },
@@ -57,6 +72,7 @@ vi.mock('next/navigation', () => ({
 describe('<AdvancedFilters />', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        mockPathname.mockReturnValue('/');
         // Clear all search params
         Array.from(mockSearchParams.keys()).forEach((key) => {
             mockSearchParams.delete(key);
@@ -90,6 +106,16 @@ describe('<AdvancedFilters />', () => {
             expect(notificationCircle).toBeDefined();
         });
 
+        it('shows active state when difficulty, tags, allergens, or macros are active', () => {
+            mockSearchParams.set('excludeAllergens', 'gluten');
+
+            render(<AdvancedFilters />);
+
+            const button = screen.getByTestId('advanced-filters-button');
+            expect(button.className).toContain('bg-green-450');
+            expect(button.querySelector('.bg-rose-500')).not.toBeNull();
+        });
+
         it('does not show notification circle when no advanced filters are active', () => {
             render(<AdvancedFilters />);
 
@@ -121,6 +147,16 @@ describe('<AdvancedFilters />', () => {
                 screen.getByTestId('advanced-filters-dropdown')
             ).toBeDefined();
             expect(screen.getByText('Filter options')).toBeDefined();
+            expect(screen.getByTestId('difficulty-pill-easy')).toBeDefined();
+            expect(screen.getByTestId('difficulty-pill-medium')).toBeDefined();
+            expect(screen.getByTestId('difficulty-pill-hard')).toBeDefined();
+            expect(screen.getByTestId('dietary-tag-pill-vegan')).toBeDefined();
+            expect(
+                screen.getByTestId('exclude-allergen-pill-gluten')
+            ).toBeDefined();
+            expect(screen.getByTestId('min-protein-input')).toBeDefined();
+            expect(screen.getByTestId('max-carbs-input')).toBeDefined();
+            expect(screen.getByTestId('max-fat-input')).toBeDefined();
             expect(screen.getByTestId('min-calories-input')).toBeDefined();
             expect(screen.getByTestId('max-calories-input')).toBeDefined();
             expect(screen.getByTestId('min-yield-input')).toBeDefined();
@@ -161,6 +197,91 @@ describe('<AdvancedFilters />', () => {
     });
 
     describe('Filter input functionality', () => {
+        it('allows selecting and toggling difficulty pills', () => {
+            render(<AdvancedFilters />);
+
+            fireEvent.click(screen.getByTestId('advanced-filters-button'));
+
+            const easyPill = screen.getByTestId('difficulty-pill-easy');
+            const hardPill = screen.getByTestId('difficulty-pill-hard');
+            expect(easyPill.className).not.toContain('bg-green-450');
+
+            fireEvent.click(easyPill);
+            expect(easyPill.className).toContain('bg-green-450');
+            expect(easyPill.getAttribute('aria-pressed')).toBe('true');
+
+            fireEvent.click(hardPill);
+            expect(hardPill.className).toContain('bg-green-450');
+            expect(easyPill.className).not.toContain('bg-green-450');
+
+            fireEvent.click(hardPill);
+            expect(hardPill.className).not.toContain('bg-green-450');
+        });
+
+        it('allows multi-selecting dietary tag pills', () => {
+            render(<AdvancedFilters />);
+
+            fireEvent.click(screen.getByTestId('advanced-filters-button'));
+
+            const veganPill = screen.getByTestId('dietary-tag-pill-vegan');
+            const onePotPill = screen.getByTestId('dietary-tag-pill-one-pot');
+
+            fireEvent.click(veganPill);
+            fireEvent.click(onePotPill);
+
+            expect(veganPill.className).toContain('bg-green-450');
+            expect(onePotPill.className).toContain('bg-green-450');
+
+            fireEvent.click(veganPill);
+            expect(veganPill.className).not.toContain('bg-green-450');
+            expect(onePotPill.className).toContain('bg-green-450');
+        });
+
+        it('allows multi-selecting excluded EU-14 allergen pills', () => {
+            render(<AdvancedFilters />);
+
+            fireEvent.click(screen.getByTestId('advanced-filters-button'));
+
+            const glutenPill = screen.getByTestId(
+                'exclude-allergen-pill-gluten'
+            );
+            const milkPill = screen.getByTestId('exclude-allergen-pill-milk');
+
+            fireEvent.click(glutenPill);
+            fireEvent.click(milkPill);
+
+            expect(glutenPill.getAttribute('aria-pressed')).toBe('true');
+            expect(milkPill.getAttribute('aria-pressed')).toBe('true');
+
+            fireEvent.click(glutenPill);
+            expect(glutenPill.getAttribute('aria-pressed')).toBe('false');
+            expect(milkPill.getAttribute('aria-pressed')).toBe('true');
+        });
+
+        it('allows entering macro inputs', () => {
+            render(<AdvancedFilters />);
+
+            fireEvent.click(screen.getByTestId('advanced-filters-button'));
+
+            const minProtein = screen.getByTestId(
+                'min-protein-input'
+            ) as HTMLInputElement;
+            const maxCarbs = screen.getByTestId(
+                'max-carbs-input'
+            ) as HTMLInputElement;
+            const maxFat = screen.getByTestId(
+                'max-fat-input'
+            ) as HTMLInputElement;
+
+            fireEvent.change(minProtein, { target: { value: '30' } });
+            fireEvent.change(maxCarbs, { target: { value: '45' } });
+            fireEvent.change(maxFat, { target: { value: '18' } });
+
+            expect(minProtein.value).toBe('30');
+            expect(maxCarbs.value).toBe('45');
+            expect(maxFat.value).toBe('18');
+        });
+
         it('allows entering calories range', () => {
             render(<AdvancedFilters />);
 
@@ -243,6 +364,12 @@ describe('<AdvancedFilters />', () => {
             mockSearchParams.set('recipeCuisine', 'Spanish');
             mockSearchParams.set('startDate', '2024-01-02');
             mockSearchParams.set('endDate', '2024-01-12');
+            mockSearchParams.set('difficulty', 'Medium');
+            mockSearchParams.set('dietaryTags', 'vegan,spicy');
+            mockSearchParams.set('excludeAllergens', 'gluten,milk');
+            mockSearchParams.set('minProtein', '25');
+            mockSearchParams.set('maxCarbohydrates', '40');
+            mockSearchParams.set('maxFat', '15');
 
             render(<AdvancedFilters />);
 
@@ -262,12 +389,36 @@ describe('<AdvancedFilters />', () => {
             const endDate = screen.getByTestId(
                 'end-date-input'
             ) as HTMLInputElement;
+            const mediumPill = screen.getByTestId('difficulty-pill-medium');
+            const veganPill = screen.getByTestId('dietary-tag-pill-vegan');
+            const spicyPill = screen.getByTestId('dietary-tag-pill-spicy');
+            const glutenPill = screen.getByTestId(
+                'exclude-allergen-pill-gluten'
+            );
+            const milkPill = screen.getByTestId('exclude-allergen-pill-milk');
+            const minProtein = screen.getByTestId(
+                'min-protein-input'
+            ) as HTMLInputElement;
+            const maxCarbs = screen.getByTestId(
+                'max-carbs-input'
+            ) as HTMLInputElement;
+            const maxFat = screen.getByTestId(
+                'max-fat-input'
+            ) as HTMLInputElement;
 
             expect(minCalories.value).toBe('300');
             expect(maxYield.value).toBe('4');
             expect(spanishPill.className).toContain('bg-green-450');
             expect(startDate.value).toBe('2024-01-02');
             expect(endDate.value).toBe('2024-01-12');
+            expect(mediumPill.className).toContain('bg-green-450');
+            expect(veganPill.className).toContain('bg-green-450');
+            expect(spicyPill.className).toContain('bg-green-450');
+            expect(glutenPill.getAttribute('aria-pressed')).toBe('true');
+            expect(milkPill.getAttribute('aria-pressed')).toBe('true');
+            expect(minProtein.value).toBe('25');
+            expect(maxCarbs.value).toBe('40');
+            expect(maxFat.value).toBe('15');
         });
     });
 
@@ -283,18 +434,47 @@ describe('<AdvancedFilters />', () => {
             const italianPill = screen.getByTestId('cuisine-pill-italian');
             const startDate = screen.getByTestId('start-date-input');
             const endDate = screen.getByTestId('end-date-input');
+            const easyPill = screen.getByTestId('difficulty-pill-easy');
+            const veganPill = screen.getByTestId('dietary-tag-pill-vegan');
+            const onePotPill = screen.getByTestId('dietary-tag-pill-one-pot');
+            const glutenPill = screen.getByTestId(
+                'exclude-allergen-pill-gluten'
+            );
+            const minProtein = screen.getByTestId('min-protein-input');
 
             fireEvent.change(minCalories, { target: { value: '150' } });
             fireEvent.change(maxYield, { target: { value: '5' } });
             fireEvent.click(italianPill);
             fireEvent.change(startDate, { target: { value: '2024-01-05' } });
             fireEvent.change(endDate, { target: { value: '2024-01-08' } });
+            fireEvent.click(easyPill);
+            fireEvent.click(veganPill);
+            fireEvent.click(onePotPill);
+            fireEvent.click(glutenPill);
+            fireEvent.change(minProtein, { target: { value: '30' } });
 
             const applyButton = screen.getByTestId('apply-filters-button');
             fireEvent.click(applyButton);
 
             expect(mockReplace).toHaveBeenCalledWith(
-                '/?minCalories=150&maxYield=5&recipeCuisine=Italian&startDate=2024-01-05&endDate=2024-01-08'
+                '/?minCalories=150&maxYield=5&recipeCuisine=Italian&startDate=2024-01-05&endDate=2024-01-08&difficulty=Easy&dietaryTags=vegan%2Cone-pot&excludeAllergens=gluten&minProtein=30'
+            );
+        });
+
+        it('applies new filters on favorites page', () => {
+            mockPathname.mockReturnValue('/favorites');
+
+            render(<AdvancedFilters />);
+
+            fireEvent.click(screen.getByTestId('advanced-filters-button'));
+            fireEvent.click(screen.getByTestId('difficulty-pill-hard'));
+            fireEvent.click(
+                screen.getByTestId('exclude-allergen-pill-peanuts')
+            );
+            fireEvent.click(screen.getByTestId('apply-filters-button'));
+
+            expect(mockReplace).toHaveBeenCalledWith(
+                '/favorites?difficulty=Hard&excludeAllergens=peanuts'
             );
         });
 
@@ -303,6 +483,10 @@ describe('<AdvancedFilters />', () => {
             mockSearchParams.set('recipeCuisine', 'Mexican');
             mockSearchParams.set('startDate', '2024-01-05');
             mockSearchParams.set('endDate', '2024-01-08');
+            mockSearchParams.set('difficulty', 'Easy');
+            mockSearchParams.set('dietaryTags', 'vegan');
+            mockSearchParams.set('excludeAllergens', 'gluten');
+            mockSearchParams.set('minProtein', '25');
 
             render(<AdvancedFilters />);
 

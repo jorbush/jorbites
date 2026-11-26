@@ -30,6 +30,8 @@ vi.mock('react-i18next', () => ({
                 title_z_a: 'Title Z-A',
                 most_liked: 'Most liked',
                 best_rated: 'Best rated',
+                highest_protein: 'Highest protein',
+                lowest_calories: 'Lowest calories',
             };
             return translations[key] || key;
         },
@@ -151,6 +153,8 @@ describe('<OrderByDropdown />', () => {
             expect(screen.getByText('Title Z-A')).toBeDefined();
             expect(screen.getByText('Most liked')).toBeDefined();
             expect(screen.getByText('Best rated')).toBeDefined();
+            expect(screen.getByText('Highest protein')).toBeDefined();
+            expect(screen.getByText('Lowest calories')).toBeDefined();
         });
 
         it('closes dropdown when clicking outside', () => {
@@ -315,6 +319,8 @@ describe('<OrderByDropdown />', () => {
                 { param: 'title_desc', expected: 'Title Z-A' },
                 { param: 'most_liked', expected: 'Most liked' },
                 { param: 'best_rated', expected: 'Best rated' },
+                { param: 'highest_protein', expected: 'Highest protein' },
+                { param: 'lowest_calories', expected: 'Lowest calories' },
             ];
 
             testCases.forEach(({ param, expected }) => {
