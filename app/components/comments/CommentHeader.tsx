@@ -32,7 +32,7 @@ const CommentHeader: React.FC<CommentHeaderProps> = ({
         <div className="mb-1 flex flex-wrap items-center gap-2">
             <button
                 type="button"
-                className="hover:text-green-450 dark:hover:text-green-450 cursor-pointer truncate border-0 bg-transparent p-0 text-left font-bold text-neutral-800 transition-colors duration-200 dark:text-neutral-100"
+                className="decoration-green-450 cursor-pointer truncate border-0 bg-transparent p-0 text-left font-bold text-neutral-800 decoration-2 underline-offset-4 transition-colors duration-200 hover:underline focus:outline-hidden dark:text-neutral-100"
                 onClick={onNavigateToProfile}
             >
                 {userName}
