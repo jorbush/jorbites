@@ -245,9 +245,17 @@ describe('<Dropdown />', () => {
         fireEvent.click(button);
 
         const option2Element = screen.getByText('Option 2');
-        expect(option2Element.parentElement?.className).toContain(
+        expect(option2Element.parentElement?.className).not.toContain(
             'text-green-450'
         );
+        expect(option2Element.className).toContain('underline');
+        expect(option2Element.className).toContain('decoration-green-450');
+        expect(option2Element.className).toContain('decoration-2');
+        expect(option2Element.className).toContain('underline-offset-4');
+
+        const option1Element = screen.getByText('Option 1');
+        expect(option1Element.className).not.toContain('underline');
+        expect(option1Element.className).not.toContain('decoration-green-450');
     });
 
     it('has aria-haspopup="listbox" attribute on button', () => {

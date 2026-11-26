@@ -138,7 +138,7 @@ function Dropdown<T extends string>({
                 : 'hover:bg-neutral-100 dark:hover:bg-neutral-700'
         } ${
             isSelected
-                ? 'bg-green-450/10 text-green-450 dark:bg-green-450/20 dark:text-green-450'
+                ? 'bg-green-450/10 font-semibold text-neutral-900 dark:bg-green-450/20 dark:text-neutral-100'
                 : 'text-neutral-700 dark:text-neutral-300'
         }`;
     };
@@ -201,20 +201,34 @@ function Dropdown<T extends string>({
                         aria-label={ariaLabel}
                         className="w-max"
                     >
-                        {options.map((option, index) => (
-                            <button
-                                key={option.value}
-                                type="button"
-                                role="option"
-                                aria-selected={option.value === value}
-                                onClick={() => handleOptionClick(option.value)}
-                                className={getOptionClassName(option, index)}
-                            >
-                                <span className="whitespace-nowrap">
-                                    {option.label}
-                                </span>
-                            </button>
-                        ))}
+                        {options.map((option, index) => {
+                            const isSelected = option.value === value;
+                            return (
+                                <button
+                                    key={option.value}
+                                    type="button"
+                                    role="option"
+                                    aria-selected={isSelected}
+                                    onClick={() =>
+                                        handleOptionClick(option.value)
+                                    }
+                                    className={getOptionClassName(
+                                        option,
+                                        index
+                                    )}
+                                >
+                                    <span
+                                        className={`whitespace-nowrap ${
+                                            isSelected && !optionClassName
+                                                ? 'decoration-green-450 underline decoration-2 underline-offset-4 transition-colors duration-200'
+                                                : ''
+                                        }`}
+                                    >
+                                        {option.label}
+                                    </span>
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
             )}

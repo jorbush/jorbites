@@ -26,7 +26,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
         <button
             type="button"
             onClick={onClick}
-            className={`block w-full cursor-pointer border-0 bg-transparent p-3 text-left font-semibold transition hover:bg-neutral-100 hover:text-black focus:outline-hidden ${extraClasses}`}
+            className={`group block w-full cursor-pointer border-0 bg-transparent p-3 text-left font-semibold transition hover:bg-neutral-100 hover:text-black focus:outline-hidden ${extraClasses}`}
             data-cy={dataCy}
         >
             <div className="flex w-full items-center justify-between">
@@ -44,7 +44,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
                             className="flex-shrink-0"
                         />
                     ) : null}
-                    <span className="flex items-center justify-between whitespace-nowrap">
+                    <span className="decoration-green-450 flex items-center justify-between whitespace-nowrap decoration-2 underline-offset-4 transition-colors duration-200 group-hover:underline hover:underline">
                         {label}
                     </span>
                 </div>
