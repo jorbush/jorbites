@@ -128,5 +128,72 @@ describe('Search API Error Handling', () => {
 
             expect(response.status).toBe(200);
         });
+
+        it('should filter recipes by difficulty, dietaryTags, and excludeAllergens without a text query', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: {
+                    name: 'test',
+                    email: 'test@a.com',
+                },
+            };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+
+            const mockRequest = {
+                url: 'http://localhost:3000/api/search?type=recipes&difficulty=Easy&dietaryTags=meal-prep,one-pot&excludeAllergens=gluten,milk',
+            } as Request;
+
+            const response = await SearchGET(mockRequest);
+
+            expect(response.status).toBe(200);
+            expect(prisma.user.findMany).not.toHaveBeenCalled();
+            expect(prisma.recipe.findMany).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    where: {
+                        difficulty: { equals: 'Easy', mode: 'insensitive' },
+                        dietaryTags: { hasEvery: ['meal-prep', 'one-pot'] },
+                        NOT: { allergens: { hasSome: ['gluten', 'milk'] } },
+                    },
+                    select: expect.objectContaining({
+                        calories: true,
+                        protein: true,
+                        carbohydrates: true,
+                        fat: true,
+                        fiber: true,
+                        allergens: true,
+                        dietaryTags: true,
+                        difficulty: true,
+                    }),
+                    take: 12,
+                })
+            );
+        });
+
+        it('should combine search query and quick filters for recipes', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: {
+                    name: 'test',
+                    email: 'test@a.com',
+                },
+            };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+
+            const mockRequest = {
+                url: 'http://localhost:3000/api/search?q=Soup&type=recipes&dietaryTags=budget-friendly',
+            } as Request;
+
+            const response = await SearchGET(mockRequest);
+
+            expect(response.status).toBe(200);
+            expect(prisma.recipe.findMany).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    where: {
+                        title: { contains: 'Soup', mode: 'insensitive' },
+                        dietaryTags: { hasEvery: ['budget-friendly'] },
+                    },
+                })
+            );
+        });
     });
 });

@@ -1763,5 +1763,12 @@
     "max_carbs": "Carbs màx.",
     "max_fat": "Greixos màx.",
     "highest_protein": "Més proteïna",
-    "lowest_calories": "Menys calories"
+    "lowest_calories": "Menys calories",
+    "daily_average_macros": "Mitjana diària",
+    "plan_allergens": "Al·lèrgens del pla",
+    "macro_short_protein": "P",
+    "macro_short_carbohydrates": "C",
+    "macro_short_fat": "G",
+    "macro_short_fiber": "Fib",
+    "quick_filters": "Filtres ràpids"
 }

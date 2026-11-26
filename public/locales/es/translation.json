@@ -1764,5 +1764,12 @@
     "max_carbs": "Carbs máx.",
     "max_fat": "Grasas máx.",
     "highest_protein": "Más proteína",
-    "lowest_calories": "Menos calorías"
+    "lowest_calories": "Menos calorías",
+    "daily_average_macros": "Promedio diario",
+    "plan_allergens": "Alérgenos del plan",
+    "macro_short_protein": "P",
+    "macro_short_carbohydrates": "C",
+    "macro_short_fat": "G",
+    "macro_short_fiber": "Fib",
+    "quick_filters": "Filtros rápidos"
 }

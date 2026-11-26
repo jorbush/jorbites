@@ -154,9 +154,17 @@ export function usePlanningState({
                 title: recipe.title,
                 imageSrc: recipe.imageSrc,
                 ingredients: recipe.ingredients || [],
+                categories: recipe.categories || [],
                 description: recipe.description || '',
                 user: recipe.user || {},
-                calories: recipe.calories || null,
+                calories: recipe.calories ?? null,
+                protein: recipe.protein ?? null,
+                carbohydrates: recipe.carbohydrates ?? null,
+                fat: recipe.fat ?? null,
+                fiber: recipe.fiber ?? null,
+                difficulty: recipe.difficulty ?? null,
+                dietaryTags: recipe.dietaryTags || [],
+                allergens: recipe.allergens || [],
             },
         };
 
