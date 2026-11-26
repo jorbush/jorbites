@@ -183,9 +183,13 @@ describe('<OrderByDropdown />', () => {
                 option.className.includes('whitespace-nowrap')
             );
 
-            expect(dropdownOption?.parentElement?.className).toContain(
+            expect(dropdownOption?.parentElement?.className).not.toContain(
                 'text-green-450'
             );
+            expect(dropdownOption?.className).toContain('underline');
+            expect(dropdownOption?.className).toContain('decoration-green-450');
+            expect(dropdownOption?.className).toContain('decoration-2');
+            expect(dropdownOption?.className).toContain('underline-offset-4');
         });
 
         it('applies correct liquid glass CSS classes to the Dropdown container when opened', () => {

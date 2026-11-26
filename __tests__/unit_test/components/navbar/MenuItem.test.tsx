@@ -33,6 +33,18 @@ describe('<MenuItem />', () => {
         expect(menuItem.className).contain('justify-between');
     });
 
+    it('applies green underline hover styling on label', () => {
+        render(<MenuItem {...defaultProps} />);
+        const button = screen.getByRole('button');
+        const menuItem = screen.getByText('Test Item');
+        expect(button.className).toContain('group');
+        expect(menuItem.className).toContain('group-hover:underline');
+        expect(menuItem.className).toContain('hover:underline');
+        expect(menuItem.className).toContain('decoration-green-450');
+        expect(menuItem.className).toContain('decoration-2');
+        expect(menuItem.className).toContain('underline-offset-4');
+    });
+
     it('applies custom label', () => {
         const customLabel = 'Custom Menu Item';
         render(
