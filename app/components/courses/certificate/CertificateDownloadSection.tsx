@@ -107,7 +107,7 @@ const CertificateDownloadSection: React.FC<CertificateDownloadSectionProps> = ({
             },
             logo: {
                 width: 100,
-                height: 23,
+                height: 26,
                 marginBottom: 8,
             },
             header: {

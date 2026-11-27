@@ -49,50 +49,38 @@ describe('<Logo />', () => {
         });
     });
 
-    it('renders both light and dark mode logos', () => {
+    it('renders the avocado icon and Jorbites brand text', () => {
         render(<Logo />);
-        const logos = screen.getAllByAltText('Logo') as HTMLImageElement[];
-        expect(logos).toHaveLength(2);
+        const logoImg = screen.getByAltText(
+            'Jorbites Logo'
+        ) as HTMLImageElement;
+        const brandText = screen.getByText('Jorbites');
 
-        const lightLogo = logos.find(
-            (img) =>
-                img.src.includes('logo-nobg.webp') ||
-                img.src.includes('logo_christmas_black.webp')
-        );
-        const darkLogo = logos.find(
-            (img) =>
-                img.src.includes('no_bg_white.webp') ||
-                img.src.includes('logo_christmas_white.webp')
-        );
-
-        expect(lightLogo).toBeDefined();
-        expect(lightLogo?.className).toContain('dark:hidden');
-
-        expect(darkLogo).toBeDefined();
-        expect(darkLogo?.className).toContain('dark:block');
+        expect(logoImg).toBeDefined();
+        expect(logoImg.src).toContain('/avocado.webp');
+        expect(brandText).toBeDefined();
+        expect(brandText.className).toContain('font-extrabold');
+        expect(brandText.className).toContain('dark:text-white');
     });
 
     it('navigates to home page when clicked', () => {
         render(<Logo />);
-        const logos = screen.getAllByAltText('Logo');
-        fireEvent.click(logos[0]);
+        const button = screen.getByRole('button', { name: 'Jorbites' });
+        fireEvent.click(button);
         expect(mockRouter.push).toHaveBeenCalledWith('/');
     });
 
     it('has correct CSS classes and attributes', () => {
         render(<Logo />);
-        const logos = screen.getAllByAltText('Logo') as HTMLImageElement[];
-        const lightLogo = logos.find(
-            (img) =>
-                img.src.includes('logo-nobg.webp') ||
-                img.src.includes('logo_christmas_black.webp')
-        );
+        const logoImg = screen.getByAltText(
+            'Jorbites Logo'
+        ) as HTMLImageElement;
 
-        expect(lightLogo).toHaveProperty('width', 128);
-        expect(lightLogo).toHaveProperty('height', 29);
-        const container =
-            lightLogo?.closest('button') || lightLogo?.closest('div');
-        expect(container?.className).toContain('cursor-pointer');
-        expect(container?.className).toContain('md:block');
+        expect(logoImg).toHaveProperty('width', 222);
+        expect(logoImg).toHaveProperty('height', 194);
+        const button = logoImg.closest('button');
+        expect(button?.getAttribute('data-cy')).toBe('logo');
+        expect(button?.className).toContain('cursor-pointer');
+        expect(button?.className).toContain('flex');
     });
 });
