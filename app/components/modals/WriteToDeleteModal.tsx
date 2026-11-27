@@ -3,7 +3,7 @@
 import Modal from '@/app/components/modals/Modal';
 import Heading from '@/app/components/navigation/Heading';
 import { useTranslation } from 'react-i18next';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, ReactNode, SetStateAction } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import Input from '@/app/components/inputs/Input';
 import { toast } from 'react-hot-toast';
@@ -17,6 +17,9 @@ interface WriteToDeleteModalProps {
     requiredText?: string;
     actionLabel?: string;
     insideModal?: boolean;
+    extraContent?: ReactNode;
+    canConfirm?: boolean;
+    onValidationFailed?: () => void;
 }
 
 const WriteToDeleteModal: React.FC<WriteToDeleteModalProps> = ({
@@ -28,6 +31,9 @@ const WriteToDeleteModal: React.FC<WriteToDeleteModalProps> = ({
     requiredText,
     actionLabel,
     insideModal,
+    extraContent,
+    canConfirm = true,
+    onValidationFailed,
 }) => {
     const { t } = useTranslation();
     const {
@@ -47,6 +53,11 @@ const WriteToDeleteModal: React.FC<WriteToDeleteModalProps> = ({
     const onSubmit: SubmitHandler<FieldValues> = () => {
         if (watch('text') !== deleteText) {
             toast.error(t('text_does_not_match') || 'The text does not match.');
+            return;
+        }
+
+        if (!canConfirm) {
+            onValidationFailed?.();
             return;
         }
 
@@ -74,6 +85,7 @@ const WriteToDeleteModal: React.FC<WriteToDeleteModalProps> = ({
                 required
                 dataCy="delete-confirmation-text"
             />
+            {extraContent}
         </div>
     );
 

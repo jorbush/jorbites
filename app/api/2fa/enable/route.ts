@@ -11,7 +11,7 @@ import { logger } from '@/app/lib/axiom/server';
 import { twoFactorRatelimit } from '@/app/lib/ratelimit';
 import {
     decryptTotpSecret,
-    verifyTotpCode,
+    verifyTotpCodeWithStep,
     generateBackupCodes,
 } from '@/app/utils/totp';
 
@@ -24,7 +24,10 @@ export async function POST(request: Request) {
             );
         }
 
-        if (process.env.ENV === 'production') {
+        if (
+            process.env.NODE_ENV === 'production' ||
+            process.env.ENV === 'production'
+        ) {
             const { success, reset } = await twoFactorRatelimit.limit(
                 currentUser.id
             );
@@ -62,9 +65,9 @@ export async function POST(request: Request) {
         }
 
         const secret = decryptTotpSecret(user.twoFactorSecret);
-        const isValid = verifyTotpCode(code, secret);
+        const totpResult = verifyTotpCodeWithStep(code, secret);
 
-        if (!isValid) {
+        if (!totpResult.valid || typeof totpResult.step !== 'number') {
             return badRequest('Invalid verification code');
         }
 
@@ -75,6 +78,7 @@ export async function POST(request: Request) {
             data: {
                 twoFactorEnabled: true,
                 twoFactorBackupCodes: hashedCodes,
+                twoFactorLastUsedStep: totpResult.step,
             },
         });
 

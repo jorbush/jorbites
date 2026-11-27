@@ -63,10 +63,12 @@ const TwoFactorAuth: React.FC<TwoFactorAuthProps> = ({ currentUser }) => {
                 }}
                 onStartRegenerate={() => {
                     setCurrentPassword('');
+                    setVerificationCode('');
                     setMode('regenerate-password');
                 }}
                 onStartDisable={() => {
                     setCurrentPassword('');
+                    setVerificationCode('');
                     setMode('disable-password');
                 }}
                 onCancel={resetState}
@@ -123,13 +125,13 @@ const TwoFactorAuth: React.FC<TwoFactorAuthProps> = ({ currentUser }) => {
                 />
             )}
 
-            {/* Regenerate Backup Codes Password Confirmation */}
+            {/* Regenerate Backup Codes Password + 2FA Step-Up Confirmation */}
             {mode === 'regenerate-password' && (
                 <TwoFactorPasswordForm
                     id={passwordInputId}
                     promptText={
                         t('regenerate_backup_codes_prompt') ||
-                        'Enter your current password to generate a new set of recovery codes. Your previous recovery codes will be invalidated.'
+                        'Enter your current password and a verification code to generate a new set of recovery codes. Your previous recovery codes will be invalidated.'
                     }
                     buttonLabel={
                         t('regenerate_backup_codes') || 'Regenerate Codes'
@@ -145,17 +147,22 @@ const TwoFactorAuth: React.FC<TwoFactorAuthProps> = ({ currentUser }) => {
                     passwordTestId="regenerate-2fa-password-input"
                     togglePasswordTestId="toggle-regenerate-2fa-password"
                     buttonTestId="confirm-regenerate-backup-codes-button"
+                    requireTwoFactorCode
+                    twoFactorCode={verificationCode}
+                    onTwoFactorCodeChange={setVerificationCode}
+                    twoFactorCodeId={verificationCodeId}
+                    twoFactorCodeTestId="regenerate-2fa-code-input"
                     onSubmit={handleRegenerateBackupCodes}
                 />
             )}
 
-            {/* Disable 2FA Password Confirmation */}
+            {/* Disable 2FA Password + 2FA Step-Up Confirmation */}
             {mode === 'disable-password' && (
                 <TwoFactorPasswordForm
                     id={passwordInputId}
                     promptText={
                         t('disable_2fa_prompt') ||
-                        'Confirm your current password to disable two-factor authentication on your account.'
+                        'Confirm your current password and enter a 6-digit authenticator or backup code to disable two-factor authentication.'
                     }
                     buttonLabel={t('disable_2fa') || 'Disable 2FA'}
                     buttonVariant="red"
@@ -169,6 +176,11 @@ const TwoFactorAuth: React.FC<TwoFactorAuthProps> = ({ currentUser }) => {
                     togglePasswordTestId="toggle-disable-2fa-password"
                     buttonTestId="confirm-disable-2fa-button"
                     buttonDataCy="confirm-disable-2fa-button"
+                    requireTwoFactorCode
+                    twoFactorCode={verificationCode}
+                    onTwoFactorCodeChange={setVerificationCode}
+                    twoFactorCodeId={verificationCodeId}
+                    twoFactorCodeTestId="disable-2fa-code-input"
                     onSubmit={handleDisable2FA}
                 />
             )}

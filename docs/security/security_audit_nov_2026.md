@@ -65,5 +65,5 @@ All **Critical** and **High** findings plus core **Medium** and **Low** hardenin
 ## Remaining Follow-Up Hardening (Planned)
 
 - **Session invalidation on password reset/change:** Completed — added `User.tokenVersion` verified in NextAuth's `jwt` callback, incremented atomically on `PATCH /api/password/[userId]` and `POST /api/password-reset/reset`, and updated `ChangePassword` to sign out and prompt re-login (#1858).
-- **TOTP replay prevention & step-up auth:** Store last-accepted TOTP step in Redis/DB to prevent reuse within the 90-second window, and require a valid TOTP/backup code to disable 2FA, regenerate backup codes, or delete an account (#1859).
+- **TOTP replay prevention & step-up auth:** Completed — added `User.twoFactorLastUsedStep` enforced atomically via `verifyAndConsumeTwoFactorCode` across login and sensitive account actions, and required a valid TOTP/backup code in `POST /api/2fa/disable`, `POST /api/2fa/backup-codes`, and `DELETE /api/user/[userId]` (with matching Settings UI updates) (#1859).
 - **Course certificate completion verification:** Completed — `POST /api/courses/verify-test` grades quiz answers server-side and issues a short-lived HMAC-SHA256 completion token bound to `(userId, courseId)`, verified by `POST /api/certificates` before minting new certificates.

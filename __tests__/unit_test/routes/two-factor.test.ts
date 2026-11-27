@@ -24,6 +24,7 @@ jest.mock('@/app/lib/prismadb', () => ({
         user: {
             findUnique: jest.fn(),
             update: jest.fn(),
+            updateMany: jest.fn(),
         },
     },
 }));
@@ -179,13 +180,17 @@ describe('2FA API Routes (/api/2fa/*)', () => {
                     twoFactorBackupCodes: expect.arrayContaining([
                         expect.any(String),
                     ]),
+                    twoFactorLastUsedStep: expect.any(Number),
                 },
             });
         });
     });
 
     describe('POST /api/2fa/disable', () => {
-        it('disables 2FA and clears secret and backup codes when password is valid', async () => {
+        it('disables 2FA and clears secret and backup codes when password and 2FA code are valid', async () => {
+            const secret = generateTotpSecret();
+            const validCode = generateTotpCode(secret);
+
             jest.mocked(getCurrentUser).mockResolvedValue({
                 id: 'user-1',
             } as any);
@@ -193,12 +198,21 @@ describe('2FA API Routes (/api/2fa/*)', () => {
                 id: 'user-1',
                 hashedPassword: 'hashed-password',
                 twoFactorEnabled: true,
+                twoFactorSecret: encryptTotpSecret(secret),
+                twoFactorBackupCodes: [],
+                twoFactorLastUsedStep: null,
             } as any);
             jest.mocked(bcrypt.compare).mockResolvedValue(true as never);
+            jest.mocked(prisma.user.updateMany).mockResolvedValue({
+                count: 1,
+            });
 
             const req = new Request('http://localhost/api/2fa/disable', {
                 method: 'POST',
-                body: JSON.stringify({ currentPassword: 'correctPassword' }),
+                body: JSON.stringify({
+                    currentPassword: 'correctPassword',
+                    twoFactorCode: validCode,
+                }),
             });
             const res = await DisablePOST(req);
             const data = await res.json();
@@ -211,13 +225,17 @@ describe('2FA API Routes (/api/2fa/*)', () => {
                     twoFactorEnabled: false,
                     twoFactorSecret: null,
                     twoFactorBackupCodes: [],
+                    twoFactorLastUsedStep: null,
                 },
             });
         });
     });
 
     describe('POST /api/2fa/backup-codes', () => {
-        it('regenerates 8 backup codes when password is valid and 2FA is enabled', async () => {
+        it('regenerates 8 backup codes when password and 2FA code are valid and 2FA is enabled', async () => {
+            const secret = generateTotpSecret();
+            const validCode = generateTotpCode(secret);
+
             jest.mocked(getCurrentUser).mockResolvedValue({
                 id: 'user-1',
             } as any);
@@ -225,12 +243,21 @@ describe('2FA API Routes (/api/2fa/*)', () => {
                 id: 'user-1',
                 hashedPassword: 'hashed-password',
                 twoFactorEnabled: true,
+                twoFactorSecret: encryptTotpSecret(secret),
+                twoFactorBackupCodes: [],
+                twoFactorLastUsedStep: null,
             } as any);
             jest.mocked(bcrypt.compare).mockResolvedValue(true as never);
+            jest.mocked(prisma.user.updateMany).mockResolvedValue({
+                count: 1,
+            });
 
             const req = new Request('http://localhost/api/2fa/backup-codes', {
                 method: 'POST',
-                body: JSON.stringify({ currentPassword: 'correctPassword' }),
+                body: JSON.stringify({
+                    currentPassword: 'correctPassword',
+                    twoFactorCode: validCode,
+                }),
             });
             const res = await BackupCodesPOST(req);
             const data = await res.json();

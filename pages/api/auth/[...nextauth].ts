@@ -5,11 +5,7 @@ import GithubProvider from 'next-auth/providers/github';
 import GoogleProvider from 'next-auth/providers/google';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import prisma from '@/app/lib/prismadb';
-import {
-    decryptTotpSecret,
-    verifyTotpCode,
-    verifyBackupCode,
-} from '@/app/utils/totp';
+import { verifyAndConsumeTwoFactorCode } from '@/app/utils/twoFactorVerification';
 
 export const authOptions: AuthOptions = {
     adapter: PrismaAdapter(prisma),
@@ -123,45 +119,13 @@ export const authOptions: AuthOptions = {
                         }
                     }
 
-                    let secret: string;
-                    try {
-                        secret = decryptTotpSecret(user.twoFactorSecret);
-                    } catch {
+                    const verification = await verifyAndConsumeTwoFactorCode({
+                        user,
+                        code: submittedCode,
+                    });
+
+                    if (!verification.valid) {
                         throw new Error('INVALID_2FA_CODE');
-                    }
-
-                    const isValidTotp = verifyTotpCode(submittedCode, secret);
-
-                    if (!isValidTotp) {
-                        const {
-                            valid: isValidBackup,
-                            matchedHash,
-                            remainingHashes,
-                        } = verifyBackupCode(
-                            submittedCode,
-                            user.twoFactorBackupCodes || []
-                        );
-
-                        if (!isValidBackup || !matchedHash) {
-                            throw new Error('INVALID_2FA_CODE');
-                        }
-
-                        // Atomic check-and-update with optimistic concurrency to prevent race conditions or reuse
-                        const updateResult = await prisma.user.updateMany({
-                            where: {
-                                id: user.id,
-                                twoFactorBackupCodes: {
-                                    equals: user.twoFactorBackupCodes || [],
-                                },
-                            },
-                            data: {
-                                twoFactorBackupCodes: remainingHashes,
-                            },
-                        });
-
-                        if (updateResult.count === 0) {
-                            throw new Error('INVALID_2FA_CODE');
-                        }
                     }
                 }
 

@@ -6,6 +6,7 @@ import {
     buildOtpAuthUrl,
     generateTotpCode,
     verifyTotpCode,
+    verifyTotpCodeWithStep,
     encryptTotpSecret,
     decryptTotpSecret,
     generateBackupCodes,
@@ -68,6 +69,22 @@ describe('TOTP & Backup Code Utilities', () => {
         );
         // Non-6-digit code
         expect(verifyTotpCode('12345', secret, 1, fixedTime)).toBe(false);
+
+        // Returns matched 30s step for replay tracking
+        const expectedStep = Math.floor(fixedTime / 1000 / 30);
+        expect(verifyTotpCodeWithStep(code, secret, 1, fixedTime)).toEqual({
+            valid: true,
+            step: expectedStep,
+        });
+        expect(
+            verifyTotpCodeWithStep(code, secret, 1, fixedTime + 30_000)
+        ).toEqual({
+            valid: true,
+            step: expectedStep,
+        });
+        expect(
+            verifyTotpCodeWithStep('000000', secret, 1, fixedTime).valid
+        ).toBe(code === '000000');
     });
 
     it('encrypts and decrypts TOTP secrets at rest with AES-256-GCM', () => {

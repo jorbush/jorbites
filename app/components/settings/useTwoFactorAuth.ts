@@ -106,12 +106,13 @@ export function useTwoFactorAuth({ currentUser }: UseTwoFactorAuthOptions) {
 
     const handleDisable2FA = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (isPending || !currentPassword) return;
+        if (isPending || !currentPassword || !verificationCode.trim()) return;
 
         setIsSubmitting(true);
         try {
             await axios.post('/api/2fa/disable', {
                 currentPassword,
+                twoFactorCode: verificationCode.trim(),
             });
             toast.success(
                 t('two_factor_disabled_success') ||
@@ -133,15 +134,17 @@ export function useTwoFactorAuth({ currentUser }: UseTwoFactorAuthOptions) {
 
     const handleRegenerateBackupCodes = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (isPending || !currentPassword) return;
+        if (isPending || !currentPassword || !verificationCode.trim()) return;
 
         setIsSubmitting(true);
         try {
             const response = await axios.post('/api/2fa/backup-codes', {
                 currentPassword,
+                twoFactorCode: verificationCode.trim(),
             });
             setBackupCodes(response.data.backupCodes || EMPTY_CODES);
             setCurrentPassword('');
+            setVerificationCode('');
             setMode('backup-codes-view');
             toast.success(
                 t('backup_codes_regenerated') ||
