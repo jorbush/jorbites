@@ -117,7 +117,7 @@ const Footer = () => {
                             height={194}
                             className="h-6 w-auto transition-transform group-hover:scale-110"
                         />
-                        <span className="text-base text-neutral-600 dark:text-neutral-400">
+                        <span className="text-base font-extrabold text-neutral-700 dark:text-neutral-300">
                             Jorbites
                         </span>
                     </Link>
