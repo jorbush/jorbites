@@ -1,8 +1,9 @@
 'use client';
 
-import { useReducer, useRef, useEffect, useCallback } from 'react';
+import { useReducer, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { advancedFiltersReducer } from '@/app/components/navbar/advancedFiltersReducer';
+import useAdvancedFiltersModal from '@/app/hooks/useAdvancedFiltersModal';
 import { parseListParam } from '@/app/utils/filter';
 
 export interface AdvancedFilterValues {
@@ -135,34 +136,13 @@ export const buildFilterUrl = (
     return queryString ? `${validPathname}?${queryString}` : validPathname;
 };
 
-export const useDropdownOutsideClick = (
-    ref: React.RefObject<HTMLDivElement | null>,
-    isOpen: boolean,
-    onClose: () => void
-) => {
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (ref.current && !ref.current.contains(event.target as Node)) {
-                onClose();
-            }
-        };
-
-        if (isOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [isOpen, ref, onClose]);
-};
-
 export const useAdvancedFilters = (
     searchParams: ReturnType<typeof useSearchParams>
 ) => {
     const { replace } = useRouter() || {};
     const pathname = usePathname();
-    const dropdownRef = useRef<HTMLDivElement>(null);
+    const isOpen = useAdvancedFiltersModal((state) => state.isOpen);
+    const onClose = useAdvancedFiltersModal((state) => state.onClose);
 
     const isFilterablePage = isFilterablePath(pathname);
     const currentFilters = extractFilterValues(searchParams);
@@ -171,7 +151,6 @@ export const useAdvancedFilters = (
     const excludeAllergensKey = currentFilters.excludeAllergens.join(',');
 
     const [state, dispatch] = useReducer(advancedFiltersReducer, {
-        isOpen: false,
         tempMinCalories: currentFilters.minCalories,
         tempMaxCalories: currentFilters.maxCalories,
         tempMinYield: currentFilters.minYield,
@@ -188,7 +167,6 @@ export const useAdvancedFilters = (
     });
 
     const {
-        isOpen,
         tempMinCalories,
         tempMaxCalories,
         tempMinYield,
@@ -241,12 +219,6 @@ export const useAdvancedFilters = (
         currentFilters.maxFat,
     ]);
 
-    const handleClose = useCallback(() => {
-        dispatch({ type: 'SET_OPEN', payload: false });
-    }, [dispatch]);
-
-    useDropdownOutsideClick(dropdownRef, isOpen, handleClose);
-
     const applyFiltersToUrl = useCallback(
         (filters: AdvancedFilterValues) => {
             if (!isFilterablePage || !replace) return;
@@ -272,7 +244,7 @@ export const useAdvancedFilters = (
             maxCarbohydrates: tempMaxCarbohydrates,
             maxFat: tempMaxFat,
         });
-        handleClose();
+        onClose();
     }, [
         applyFiltersToUrl,
         tempMinCalories,
@@ -288,13 +260,16 @@ export const useAdvancedFilters = (
         tempMinProtein,
         tempMaxCarbohydrates,
         tempMaxFat,
-        handleClose,
+        onClose,
     ]);
 
     const handleClear = useCallback(() => {
         dispatch({ type: 'CLEAR_FILTERS' });
-        applyFiltersToUrl(EMPTY_ADVANCED_FILTERS);
-    }, [dispatch, applyFiltersToUrl]);
+        if (hasActiveFilters) {
+            applyFiltersToUrl(EMPTY_ADVANCED_FILTERS);
+            onClose();
+        }
+    }, [dispatch, hasActiveFilters, applyFiltersToUrl, onClose]);
 
     const handleCuisinePillClick = useCallback(
         (cuisineName: string) => {
@@ -353,7 +328,6 @@ export const useAdvancedFilters = (
     });
 
     return {
-        dropdownRef,
         isOpen,
         hasActiveFilters,
         tempMinCalories,
@@ -371,6 +345,7 @@ export const useAdvancedFilters = (
         tempMaxFat,
         isAnyTempFilterSet,
         dispatch,
+        handleClose: onClose,
         handleApply,
         handleClear,
         handleCuisinePillClick,

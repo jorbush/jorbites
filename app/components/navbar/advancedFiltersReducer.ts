@@ -1,5 +1,4 @@
 export interface AdvancedFiltersState {
-    isOpen: boolean;
     tempMinCalories: string;
     tempMaxCalories: string;
     tempMinYield: string;
@@ -32,7 +31,6 @@ export interface SyncFiltersPayload {
 }
 
 export type AdvancedFiltersAction =
-    | { type: 'SET_OPEN'; payload: boolean }
     | { type: 'SET_MIN_CALORIES'; payload: string }
     | { type: 'SET_MAX_CALORIES'; payload: string }
     | { type: 'SET_MIN_YIELD'; payload: string }
@@ -62,8 +60,6 @@ export function advancedFiltersReducer(
     action: AdvancedFiltersAction
 ): AdvancedFiltersState {
     switch (action.type) {
-        case 'SET_OPEN':
-            return { ...state, isOpen: action.payload };
         case 'SET_MIN_CALORIES':
             return { ...state, tempMinCalories: action.payload };
         case 'SET_MAX_CALORIES':
@@ -135,7 +131,6 @@ export function advancedFiltersReducer(
                 tempMinProtein: '',
                 tempMaxCarbohydrates: '',
                 tempMaxFat: '',
-                isOpen: false,
             };
         default:
             return state;

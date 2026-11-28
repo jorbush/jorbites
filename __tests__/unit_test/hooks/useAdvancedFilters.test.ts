@@ -8,9 +8,9 @@ import {
     getNextCuisine,
     getNextDifficulty,
     buildFilterUrl,
-    useDropdownOutsideClick,
     EMPTY_ADVANCED_FILTERS,
 } from '@/app/hooks/useAdvancedFilters';
+import useAdvancedFiltersModal from '@/app/hooks/useAdvancedFiltersModal';
 import {
     advancedFiltersReducer,
     AdvancedFiltersState,
@@ -33,7 +33,6 @@ vi.mock('next/navigation', () => ({
 
 describe('advancedFiltersReducer', () => {
     const initialState: AdvancedFiltersState = {
-        isOpen: true,
         tempMinCalories: '',
         tempMaxCalories: '',
         tempMinYield: '',
@@ -123,10 +122,7 @@ describe('advancedFiltersReducer', () => {
         const cleared = advancedFiltersReducer(state, {
             type: 'CLEAR_FILTERS',
         });
-        expect(cleared).toEqual({
-            ...initialState,
-            isOpen: false,
-        });
+        expect(cleared).toEqual(initialState);
     });
 });
 
@@ -280,52 +276,19 @@ describe('useAdvancedFilters helper functions', () => {
     });
 });
 
-describe('useDropdownOutsideClick', () => {
-    it('calls onClose when clicking outside element while open', () => {
-        const onClose = vi.fn();
-        const container = document.createElement('div');
-        const outsideElement = document.createElement('div');
-        document.body.appendChild(container);
-        document.body.appendChild(outsideElement);
-
-        const ref = { current: container };
-
-        const { unmount } = renderHook(() =>
-            useDropdownOutsideClick(ref, true, onClose)
-        );
-
-        const event = new MouseEvent('mousedown', { bubbles: true });
-        outsideElement.dispatchEvent(event);
-
-        expect(onClose).toHaveBeenCalledTimes(1);
-
-        // Clicking inside container should not trigger onClose
-        container.dispatchEvent(event);
-        expect(onClose).toHaveBeenCalledTimes(1);
-
-        unmount();
-        document.body.removeChild(container);
-        document.body.removeChild(outsideElement);
+describe('useAdvancedFiltersModal', () => {
+    beforeEach(() => {
+        useAdvancedFiltersModal.getState().onClose();
     });
 
-    it('does not register listener when isOpen is false', () => {
-        const onClose = vi.fn();
-        const container = document.createElement('div');
-        const outsideElement = document.createElement('div');
-        document.body.appendChild(container);
-        document.body.appendChild(outsideElement);
+    it('opens and closes the modal store', () => {
+        expect(useAdvancedFiltersModal.getState().isOpen).toBe(false);
 
-        const ref = { current: container };
+        useAdvancedFiltersModal.getState().onOpen();
+        expect(useAdvancedFiltersModal.getState().isOpen).toBe(true);
 
-        renderHook(() => useDropdownOutsideClick(ref, false, onClose));
-
-        const event = new MouseEvent('mousedown', { bubbles: true });
-        outsideElement.dispatchEvent(event);
-
-        expect(onClose).not.toHaveBeenCalled();
-
-        document.body.removeChild(container);
-        document.body.removeChild(outsideElement);
+        useAdvancedFiltersModal.getState().onClose();
+        expect(useAdvancedFiltersModal.getState().isOpen).toBe(false);
     });
 });
 
@@ -333,6 +296,7 @@ describe('useAdvancedFilters', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         mockCurrentPathname = '/';
+        useAdvancedFiltersModal.getState().onClose();
         // Clear search params
         Array.from(mockSearchParams.keys()).forEach((key) => {
             mockSearchParams.delete(key);
@@ -411,10 +375,13 @@ describe('useAdvancedFilters', () => {
         expect(result.current.tempExcludeAllergens).toEqual([]);
     });
 
-    it('should apply filters to URL search params', () => {
+    it('should apply filters to URL search params and close modal', () => {
+        useAdvancedFiltersModal.getState().onOpen();
         const { result } = renderHook(() =>
             useAdvancedFilters(mockSearchParams)
         );
+
+        expect(result.current.isOpen).toBe(true);
 
         act(() => {
             result.current.dispatch({
@@ -466,7 +433,7 @@ describe('useAdvancedFilters', () => {
         expect(result.current.isOpen).toBe(false);
     });
 
-    it('should clear all filters', () => {
+    it('should clear active URL filters and close modal', () => {
         mockSearchParams.set('minCalories', '200');
         mockSearchParams.set('recipeCuisine', 'Mexican');
         mockSearchParams.set('startDate', '2024-01-01');
@@ -474,6 +441,7 @@ describe('useAdvancedFilters', () => {
         mockSearchParams.set('dietaryTags', 'vegan');
         mockSearchParams.set('excludeAllergens', 'gluten');
         mockSearchParams.set('minProtein', '20');
+        useAdvancedFiltersModal.getState().onOpen();
 
         const { result } = renderHook(() =>
             useAdvancedFilters(mockSearchParams)
@@ -484,6 +452,30 @@ describe('useAdvancedFilters', () => {
         });
 
         expect(mockReplace).toHaveBeenCalledWith('/');
+        expect(result.current.isOpen).toBe(false);
+    });
+
+    it('should reset unsaved temporary filters without closing when no URL filters are active', () => {
+        useAdvancedFiltersModal.getState().onOpen();
+
+        const { result } = renderHook(() =>
+            useAdvancedFilters(mockSearchParams)
+        );
+
+        act(() => {
+            result.current.handleDifficultyPillClick('Easy');
+            result.current.handleDietaryTagToggle('vegan');
+        });
+
+        expect(result.current.isAnyTempFilterSet).toBe(true);
+
+        act(() => {
+            result.current.handleClear();
+        });
+
+        expect(result.current.isAnyTempFilterSet).toBe(false);
+        expect(mockReplace).not.toHaveBeenCalled();
+        expect(result.current.isOpen).toBe(true);
     });
 
     it('does not navigate on apply when on non-filterable page', () => {
