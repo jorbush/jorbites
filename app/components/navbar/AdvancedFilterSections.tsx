@@ -21,7 +21,7 @@ const ALLERGEN_ICON_MAP = new Map<string, IconType>(
 );
 
 const INPUT_CLASS =
-    'focus:border-green-450 focus:ring-green-450/30 dark:focus:border-green-450 w-full rounded-md border border-neutral-300 px-3 py-1.5 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100';
+    'focus:border-green-450 focus:ring-green-450/30 dark:focus:border-green-450 min-w-0 w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-base sm:text-sm focus:ring-2 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100';
 
 const ACTIVE_PILL_CLASS =
     'border-green-450/50 bg-green-450 font-semibold text-neutral-900 shadow-2xs';
@@ -38,11 +38,11 @@ interface DifficultyFilterSectionProps {
 export const DifficultyFilterSection: React.FC<
     DifficultyFilterSectionProps
 > = ({ difficulty, onPillClick, t }) => (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-2">
         <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
             {t('difficulty', { defaultValue: 'Difficulty' }) || 'Difficulty'}
         </span>
-        <div className="grid grid-cols-3 gap-1.5">
+        <div className="grid grid-cols-3 gap-2">
             {RECIPE_DIFFICULTIES.map((level) => {
                 const label =
                     t(`difficulty_${level.toLowerCase()}`, {
@@ -57,7 +57,7 @@ export const DifficultyFilterSection: React.FC<
                         type="button"
                         aria-pressed={isSelected}
                         onClick={() => onPillClick(level)}
-                        className={`cursor-pointer rounded-full border px-2.5 py-1 text-xs font-medium transition ${
+                        className={`cursor-pointer rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                             isSelected ? ACTIVE_PILL_CLASS : INACTIVE_PILL_CLASS
                         }`}
                         data-testid={`difficulty-pill-${level.toLowerCase()}`}
@@ -79,11 +79,11 @@ interface DietaryTagsFilterSectionProps {
 export const DietaryTagsFilterSection: React.FC<
     DietaryTagsFilterSectionProps
 > = ({ selectedTags, onToggleTag, t }) => (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-2">
         <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
             {t('dietary_tags', { defaultValue: 'Tags' }) || 'Tags'}
         </span>
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-2">
             {DIETARY_TAGS.map((tag) => {
                 const label =
                     t(`dietary_${tag.replace(/-/g, '_')}`, {
@@ -97,7 +97,7 @@ export const DietaryTagsFilterSection: React.FC<
                         type="button"
                         aria-pressed={isSelected}
                         onClick={() => onToggleTag(tag)}
-                        className={`cursor-pointer rounded-full border px-2.5 py-1 text-xs font-medium transition ${
+                        className={`cursor-pointer rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                             isSelected ? ACTIVE_PILL_CLASS : INACTIVE_PILL_CLASS
                         }`}
                         data-testid={`dietary-tag-pill-${tag}`}
@@ -119,13 +119,13 @@ interface ExcludeAllergensFilterSectionProps {
 export const ExcludeAllergensFilterSection: React.FC<
     ExcludeAllergensFilterSectionProps
 > = ({ excludedAllergens, onToggleAllergen, t }) => (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-2">
         <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
             {t('exclude_allergens', {
                 defaultValue: 'Hide recipes with…',
             }) || 'Hide recipes with…'}
         </span>
-        <div className="flex max-h-[140px] flex-wrap gap-1.5 overflow-y-auto pr-1">
+        <div className="flex flex-wrap gap-2">
             {RECIPE_ALLERGENS.map((allergen) => {
                 const Icon = ALLERGEN_ICON_MAP.get(allergen);
                 const label =
@@ -140,7 +140,7 @@ export const ExcludeAllergensFilterSection: React.FC<
                         type="button"
                         aria-pressed={isExcluded}
                         onClick={() => onToggleAllergen(allergen)}
-                        className={`flex cursor-pointer items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium transition ${
+                        className={`flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                             isExcluded
                                 ? 'border-rose-300 bg-rose-50 font-semibold text-rose-700 dark:border-rose-800/70 dark:bg-rose-950/50 dark:text-rose-200'
                                 : INACTIVE_PILL_CLASS
@@ -181,14 +181,14 @@ export const MacrosFilterSection: React.FC<MacrosFilterSectionProps> = ({
     onChangeMaxFat,
     t,
 }) => (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-2">
         <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
             {t('macros_per_serving', {
                 defaultValue: 'Macros per serving (g)',
             }) || 'Macros per serving (g)'}
         </span>
         <div className="grid grid-cols-3 gap-2">
-            <label className="flex flex-col gap-1">
+            <label className="flex min-w-0 flex-col gap-1">
                 <span className="truncate text-xs text-neutral-500 dark:text-neutral-400">
                     {t('min_protein', { defaultValue: 'Min protein' }) ||
                         'Min protein'}
@@ -207,7 +207,7 @@ export const MacrosFilterSection: React.FC<MacrosFilterSectionProps> = ({
                     data-testid="min-protein-input"
                 />
             </label>
-            <label className="flex flex-col gap-1">
+            <label className="flex min-w-0 flex-col gap-1">
                 <span className="truncate text-xs text-neutral-500 dark:text-neutral-400">
                     {t('max_carbs', { defaultValue: 'Max carbs' }) ||
                         'Max carbs'}
@@ -226,7 +226,7 @@ export const MacrosFilterSection: React.FC<MacrosFilterSectionProps> = ({
                     data-testid="max-carbs-input"
                 />
             </label>
-            <label className="flex flex-col gap-1">
+            <label className="flex min-w-0 flex-col gap-1">
                 <span className="truncate text-xs text-neutral-500 dark:text-neutral-400">
                     {t('max_fat', { defaultValue: 'Max fat' }) || 'Max fat'}
                 </span>
@@ -262,11 +262,11 @@ export const CalorieFilterSection: React.FC<CalorieFilterSectionProps> = ({
     onChangeMax,
     t,
 }) => (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-2">
         <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
             {t('calories') || 'Calories'} (kcal)
         </span>
-        <div className="flex items-center gap-2">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2">
             <input
                 type="number"
                 min="0"
@@ -307,11 +307,11 @@ export const YieldFilterSection: React.FC<YieldFilterSectionProps> = ({
     onChangeMax,
     t,
 }) => (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-2">
         <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
             {t('yield') || 'Servings'}
         </span>
-        <div className="flex items-center gap-2">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2">
             <input
                 type="number"
                 min="1"
@@ -348,11 +348,11 @@ export const CuisineFilterSection: React.FC<CuisineFilterSectionProps> = ({
     onPillClick,
     t,
 }) => (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-2">
         <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
             {t('recipe_cuisine') || 'Cuisine'}
         </span>
-        <div className="flex max-h-[140px] flex-wrap gap-1.5 overflow-y-auto pr-1">
+        <div className="flex flex-wrap gap-2">
             {RECIPE_CUISINES.map((popCuisine) => {
                 const translationKey = `cuisine_${popCuisine.toLowerCase().replace(/\s+/g, '_')}`;
                 const label = t(translationKey, {
@@ -367,7 +367,7 @@ export const CuisineFilterSection: React.FC<CuisineFilterSectionProps> = ({
                         type="button"
                         aria-pressed={isSelected}
                         onClick={() => onPillClick(popCuisine)}
-                        className={`flex cursor-pointer items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition ${
+                        className={`flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                             isSelected ? ACTIVE_PILL_CLASS : INACTIVE_PILL_CLASS
                         }`}
                         data-testid={`cuisine-pill-${popCuisine.toLowerCase()}`}
@@ -401,11 +401,11 @@ export const DateFilterSection: React.FC<DateFilterSectionProps> = ({
 }) => {
     const today = new Date().toISOString().split('T')[0];
     return (
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2">
             <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
                 {t('date') || 'Date'}
             </span>
-            <div className="flex items-center gap-2">
+            <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2">
                 <input
                     id="advanced-filter-start-date"
                     aria-label={String(t('from_date') || 'From date')}

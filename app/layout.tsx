@@ -47,6 +47,9 @@ const DraftInviteModal = dynamicImport(
 const CooksnapModal = dynamicImport(
     () => import('@/app/components/modals/CooksnapModal')
 );
+const AdvancedFiltersModal = dynamicImport(
+    () => import('@/app/components/modals/AdvancedFiltersModal')
+);
 
 const SpeedInsights = dynamicImport<{}>(() =>
     import('@vercel/speed-insights/next').then((mod) => ({
@@ -155,6 +158,7 @@ export default async function RootLayout({
                     <DraftsModal currentUser={currentUser} />
                     <DraftInviteModal currentUser={currentUser} />
                     <CooksnapModal />
+                    <AdvancedFiltersModal />
                     <ToasterProvider />
                 </ClientOnly>
                 {process.env.NODE_ENV === 'production' && <SpeedInsights />}
