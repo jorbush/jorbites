@@ -146,6 +146,71 @@ describe('Plannings API Routes', () => {
             expect(data.name).toBe('Keto Diet');
             expect(prisma.planning.create).toHaveBeenCalled();
         });
+
+        it('should persist optional daily nutrition targets on POST', async () => {
+            mockGetCurrentUser.mockResolvedValue({ id: 'user-1' });
+            (prisma.planning.create as jest.Mock).mockResolvedValue({
+                id: 'plan-2',
+                name: 'Lean Cut',
+                description: null,
+                isPrivate: true,
+                targetCalories: 2000,
+                targetProtein: 150,
+                targetCarbohydrates: 180,
+                targetFat: 65,
+                userId: 'user-1',
+                createdAt: new Date('2026-05-25T18:00:00.000Z'),
+                updatedAt: new Date('2026-05-25T18:00:00.000Z'),
+                user: {
+                    createdAt: new Date('2026-05-01T00:00:00.000Z'),
+                    updatedAt: new Date('2026-05-01T00:00:00.000Z'),
+                    emailVerified: null,
+                },
+            });
+
+            const request = new Request('http://localhost/api/plannings', {
+                method: 'POST',
+                body: JSON.stringify({
+                    name: 'Lean Cut',
+                    targetCalories: 2000,
+                    targetProtein: 150,
+                    targetCarbohydrates: 180,
+                    targetFat: 65,
+                }),
+            });
+            const response = await POST(request);
+
+            expect(response.status).toBe(200);
+            const data = await response.json();
+            expect(data.targetCalories).toBe(2000);
+            expect(data.targetProtein).toBe(150);
+            expect(prisma.planning.create).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    data: expect.objectContaining({
+                        targetCalories: 2000,
+                        targetProtein: 150,
+                        targetCarbohydrates: 180,
+                        targetFat: 65,
+                    }),
+                })
+            );
+        });
+
+        it('should return 400 when daily nutrition targets are invalid on POST', async () => {
+            mockGetCurrentUser.mockResolvedValue({ id: 'user-1' });
+
+            const request = new Request('http://localhost/api/plannings', {
+                method: 'POST',
+                body: JSON.stringify({
+                    name: 'Bad Targets',
+                    targetCalories: -500,
+                }),
+            });
+            const response = await POST(request);
+
+            expect(response.status).toBe(400);
+            expect(prisma.planning.create).not.toHaveBeenCalled();
+        });
     });
 
     describe('GET /api/plannings/[planningId]', () => {
@@ -337,6 +402,80 @@ describe('Plannings API Routes', () => {
             expect(data.error).toContain(
                 'Maximum of 4 recipes allowed per meal'
             );
+        });
+
+        it('should update and clear daily nutrition targets on PATCH', async () => {
+            mockGetCurrentUser.mockResolvedValue({ id: 'user-1' });
+            (prisma.planning.findUnique as jest.Mock)
+                .mockResolvedValueOnce({
+                    id: 'plan-1',
+                    name: 'Plan 1',
+                    description: 'Desc',
+                    isPrivate: true,
+                    targetCalories: 2200,
+                    targetProtein: 140,
+                    userId: 'user-1',
+                    meals: [],
+                })
+                .mockResolvedValueOnce({
+                    id: 'plan-1',
+                    name: 'Plan 1',
+                    description: 'Desc',
+                    isPrivate: true,
+                    targetCalories: 1900,
+                    targetProtein: null,
+                    userId: 'user-1',
+                    createdAt: new Date('2026-05-25T18:00:00.000Z'),
+                    updatedAt: new Date('2026-05-25T18:00:00.000Z'),
+                    user: {
+                        createdAt: new Date('2026-05-01T00:00:00.000Z'),
+                        updatedAt: new Date('2026-05-01T00:00:00.000Z'),
+                        emailVerified: null,
+                    },
+                    meals: [],
+                });
+
+            const request = new Request(
+                'http://localhost/api/plannings/plan-1',
+                {
+                    method: 'PATCH',
+                    body: JSON.stringify({
+                        targetCalories: 1900,
+                        targetProtein: null,
+                    }),
+                }
+            );
+            const response = await PATCH(request, {
+                params: Promise.resolve({ planningId: 'plan-1' }),
+            });
+
+            expect(response.status).toBe(200);
+            expect(prisma.planning.update).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    data: expect.objectContaining({
+                        targetCalories: 1900,
+                        targetProtein: null,
+                    }),
+                })
+            );
+        });
+
+        it('should return 400 if daily nutrition targets are invalid on PATCH', async () => {
+            mockGetCurrentUser.mockResolvedValue({ id: 'user-1' });
+
+            const request = new Request(
+                'http://localhost/api/plannings/plan-1',
+                {
+                    method: 'PATCH',
+                    body: JSON.stringify({ targetProtein: 0 }),
+                }
+            );
+            const response = await PATCH(request, {
+                params: Promise.resolve({ planningId: 'plan-1' }),
+            });
+
+            expect(response.status).toBe(400);
+            expect(prisma.planning.update).not.toHaveBeenCalled();
         });
     });
 

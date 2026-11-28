@@ -1,5 +1,5 @@
 import { IconType } from 'react-icons';
-import { MEAL_TYPES } from '@/app/utils/constants';
+import { MAX_RECIPES_PER_MEAL, MEAL_TYPES } from '@/app/utils/constants';
 import {
     AllergenId,
     EU_ALLERGEN_DEFINITIONS,
@@ -298,4 +298,355 @@ export function aggregateWeeklyNutrition(
         totals,
         allergens: aggregatePlanAllergens(meals),
     };
+}
+
+export interface DailyNutritionTargets {
+    targetCalories?: number | null;
+    targetProtein?: number | null;
+    targetCarbohydrates?: number | null;
+    targetFat?: number | null;
+}
+
+export type DailyTargetField = keyof DailyNutritionTargets;
+
+export type TargetMacroKey = 'calories' | 'protein' | 'carbohydrates' | 'fat';
+
+export type MacroProgressStatus = 'under' | 'met' | 'over';
+
+export interface MacroProgressItem {
+    key: TargetMacroKey;
+    current: number;
+    target: number;
+    percentage: number;
+    clampedPercent: number;
+    remaining: number;
+    overBy: number;
+    status: MacroProgressStatus;
+}
+
+export interface MacroBudgetFilter {
+    maxCalories?: number | null;
+    minProtein?: number | null;
+    maxCarbohydrates?: number | null;
+    maxFat?: number | null;
+}
+
+export interface RemainingMacroBudget {
+    remainingCalories: number | null;
+    remainingProtein: number | null;
+    remainingCarbohydrates: number | null;
+    remainingFat: number | null;
+    initialFilters: MacroBudgetFilter;
+    optionalFilters: MacroBudgetFilter;
+    hasRemaining: boolean;
+}
+
+export const DAILY_TARGET_LIMITS: Record<DailyTargetField, number> = {
+    targetCalories: 20000,
+    targetProtein: 2000,
+    targetCarbohydrates: 2000,
+    targetFat: 2000,
+};
+
+const TARGET_FIELD_SPECS: ReadonlyArray<{
+    field: DailyTargetField;
+    macroKey: TargetMacroKey;
+}> = [
+    { field: 'targetCalories', macroKey: 'calories' },
+    { field: 'targetProtein', macroKey: 'protein' },
+    { field: 'targetCarbohydrates', macroKey: 'carbohydrates' },
+    { field: 'targetFat', macroKey: 'fat' },
+];
+
+const SUGGESTED_EMPTY_SLOT_ORDER = [
+    'breakfast',
+    'lunch',
+    'dinner',
+    'snack',
+] as const;
+
+const SUGGESTED_FALLBACK_SLOT_ORDER = [
+    'dinner',
+    'snack',
+    'lunch',
+    'breakfast',
+] as const;
+
+const isValidPositiveTarget = (value: unknown, max: number): value is number =>
+    typeof value === 'number' &&
+    Number.isInteger(value) &&
+    value >= 1 &&
+    value <= max;
+
+export type ParseDailyTargetsResult =
+    | {
+          valid: true;
+          provided: Partial<Record<DailyTargetField, number | null>>;
+      }
+    | {
+          valid: false;
+          error: string;
+      };
+
+/**
+ * Validates and normalizes optional daily nutrition target fields from an API payload.
+ * Omitted (`undefined`) fields are excluded from `provided`; `null` or empty strings clear the target.
+ */
+export function parseDailyNutritionTargets(
+    payload: Record<string, unknown>
+): ParseDailyTargetsResult {
+    const provided: Partial<Record<DailyTargetField, number | null>> = {};
+
+    for (const { field } of TARGET_FIELD_SPECS) {
+        if (!(field in payload) || payload[field] === undefined) {
+            continue;
+        }
+
+        const raw = payload[field];
+        const max = DAILY_TARGET_LIMITS[field];
+
+        if (raw === null) {
+            provided[field] = null;
+            continue;
+        }
+
+        if (typeof raw === 'string') {
+            const trimmed = raw.trim();
+            if (trimmed === '') {
+                provided[field] = null;
+                continue;
+            }
+            if (!/^\d+$/.test(trimmed)) {
+                return {
+                    valid: false,
+                    error: `Invalid ${field}: must be an integer between 1 and ${max}`,
+                };
+            }
+            const parsed = Number.parseInt(trimmed, 10);
+            if (!isValidPositiveTarget(parsed, max)) {
+                return {
+                    valid: false,
+                    error: `Invalid ${field}: must be an integer between 1 and ${max}`,
+                };
+            }
+            provided[field] = parsed;
+            continue;
+        }
+
+        if (isValidPositiveTarget(raw, max)) {
+            provided[field] = raw;
+            continue;
+        }
+
+        return {
+            valid: false,
+            error: `Invalid ${field}: must be an integer between 1 and ${max}`,
+        };
+    }
+
+    return { valid: true, provided };
+}
+
+/**
+ * Returns true if at least one daily nutrition target is configured as a valid positive integer.
+ */
+export function hasAnyDailyTarget(
+    targets?: DailyNutritionTargets | null
+): boolean {
+    if (!targets) return false;
+    return TARGET_FIELD_SPECS.some(({ field }) =>
+        isValidPositiveTarget(targets[field], DAILY_TARGET_LIMITS[field])
+    );
+}
+
+/**
+ * Computes per-macro progress items for a single day against configured daily nutrition targets.
+ */
+export function computeDayGoalProgress(
+    dayMacros: MacroTotals,
+    targets?: DailyNutritionTargets | null
+): MacroProgressItem[] {
+    if (!targets) return [];
+
+    const items: MacroProgressItem[] = [];
+
+    for (const { field, macroKey } of TARGET_FIELD_SPECS) {
+        const target = targets[field];
+        if (!isValidPositiveTarget(target, DAILY_TARGET_LIMITS[field])) {
+            continue;
+        }
+
+        const rawCurrent = dayMacros[macroKey];
+        const current =
+            typeof rawCurrent === 'number' &&
+            Number.isFinite(rawCurrent) &&
+            rawCurrent >= 0
+                ? rawCurrent
+                : 0;
+
+        const percentage = Math.round((current / target) * 100);
+        const clampedPercent = Math.min(100, Math.max(0, percentage));
+        const remaining = Math.max(0, target - current);
+        const overBy = Math.max(0, current - target);
+        const status: MacroProgressStatus =
+            current > target
+                ? 'over'
+                : current >= target * 0.9
+                  ? 'met'
+                  : 'under';
+
+        items.push({
+            key: macroKey,
+            current,
+            target,
+            percentage,
+            clampedPercent,
+            remaining,
+            overBy,
+            status,
+        });
+    }
+
+    return items;
+}
+
+/**
+ * Computes remaining daily macro budget and pre-filled recipe search filters for a day.
+ * Pre-applies remaining calories (`maxCalories`) and protein (`minProtein`) by default,
+ * exposing remaining carbs/fat as optional one-click toggles (or pre-applying them if no
+ * calorie/protein budget is configured).
+ */
+export function computeRemainingMacroBudget(
+    dayMacros: MacroTotals,
+    targets?: DailyNutritionTargets | null
+): RemainingMacroBudget {
+    const empty: RemainingMacroBudget = {
+        remainingCalories: null,
+        remainingProtein: null,
+        remainingCarbohydrates: null,
+        remainingFat: null,
+        initialFilters: {},
+        optionalFilters: {},
+        hasRemaining: false,
+    };
+
+    if (!targets) {
+        return empty;
+    }
+
+    const calcRemaining = (
+        field: DailyTargetField,
+        macroKey: TargetMacroKey
+    ): number | null => {
+        const target = targets[field];
+        if (!isValidPositiveTarget(target, DAILY_TARGET_LIMITS[field])) {
+            return null;
+        }
+        const current =
+            typeof dayMacros[macroKey] === 'number' &&
+            Number.isFinite(dayMacros[macroKey]) &&
+            dayMacros[macroKey]! >= 0
+                ? dayMacros[macroKey]!
+                : 0;
+        return Math.max(0, target - current);
+    };
+
+    const remainingCalories = calcRemaining('targetCalories', 'calories');
+    const remainingProtein = calcRemaining('targetProtein', 'protein');
+    const remainingCarbohydrates = calcRemaining(
+        'targetCarbohydrates',
+        'carbohydrates'
+    );
+    const remainingFat = calcRemaining('targetFat', 'fat');
+
+    const caloriesExhausted = remainingCalories === 0;
+    const initialFilters: MacroBudgetFilter = {};
+    const optionalFilters: MacroBudgetFilter = {};
+
+    if (!caloriesExhausted) {
+        if (remainingCalories !== null && remainingCalories > 0) {
+            initialFilters.maxCalories = remainingCalories;
+        }
+        if (remainingProtein !== null && remainingProtein > 0) {
+            initialFilters.minProtein = remainingProtein;
+        }
+
+        const hasPrimary =
+            Boolean(initialFilters.maxCalories) ||
+            Boolean(initialFilters.minProtein);
+
+        if (remainingCarbohydrates !== null && remainingCarbohydrates > 0) {
+            if (hasPrimary) {
+                optionalFilters.maxCarbohydrates = remainingCarbohydrates;
+            } else {
+                initialFilters.maxCarbohydrates = remainingCarbohydrates;
+            }
+        }
+
+        if (remainingFat !== null && remainingFat > 0) {
+            if (hasPrimary) {
+                optionalFilters.maxFat = remainingFat;
+            } else {
+                initialFilters.maxFat = remainingFat;
+            }
+        }
+    }
+
+    const hasRemaining = Boolean(
+        initialFilters.maxCalories ||
+        initialFilters.minProtein ||
+        initialFilters.maxCarbohydrates ||
+        initialFilters.maxFat
+    );
+
+    return {
+        remainingCalories,
+        remainingProtein,
+        remainingCarbohydrates,
+        remainingFat,
+        initialFilters,
+        optionalFilters,
+        hasRemaining,
+    };
+}
+
+/**
+ * Picks the best default meal slot for "Fill remaining macros" on a given day,
+ * prioritizing the first empty main meal slot (`breakfast` -> `lunch` -> `dinner` -> `snack`)
+ * before falling back to any slot that still has capacity.
+ */
+export function getSuggestedMealSlotForDay(
+    day: string,
+    groupedMeals: Record<string, PlanningMealLike[]>
+): { suggestedSlot: string | null; availableSlots: string[] } {
+    const normalizedDay = day.toLowerCase();
+
+    const getSlotLength = (mealType: string): number => {
+        const primary = groupedMeals?.[`${day}-${mealType}`];
+        const fallback = groupedMeals?.[`${normalizedDay}-${mealType}`];
+        const list = primary ?? fallback ?? [];
+        return Array.isArray(list) ? list.length : 0;
+    };
+
+    const availableSlots = MEAL_TYPES.filter(
+        (mealType) => getSlotLength(mealType) < MAX_RECIPES_PER_MEAL
+    );
+
+    if (availableSlots.length === 0) {
+        return { suggestedSlot: null, availableSlots: [] };
+    }
+
+    const firstEmpty = SUGGESTED_EMPTY_SLOT_ORDER.find(
+        (mealType) => getSlotLength(mealType) === 0
+    );
+    if (firstEmpty) {
+        return { suggestedSlot: firstEmpty, availableSlots };
+    }
+
+    const fallbackSlot =
+        SUGGESTED_FALLBACK_SLOT_ORDER.find((mealType) =>
+            availableSlots.includes(mealType)
+        ) ?? availableSlots[0];
+
+    return { suggestedSlot: fallbackSlot, availableSlots };
 }

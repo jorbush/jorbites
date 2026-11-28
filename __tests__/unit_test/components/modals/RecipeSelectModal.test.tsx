@@ -254,4 +254,90 @@ describe('RecipeSelectModal', () => {
             );
         });
     });
+
+    it('auto-fetches recipes pre-filtered to remaining macro budget and supports toggling budget chips and meal slots', async () => {
+        const mockMealChange = vi.fn();
+        const mockRecipes = [
+            {
+                id: 'recipe-high-protein',
+                title: 'Grilled Salmon Bowl',
+                imageSrc: '/salmon.jpg',
+                calories: 480,
+                protein: 42,
+                carbohydrates: 30,
+                fat: 18,
+                user: { name: 'Chef Jordi' },
+            },
+        ];
+
+        vi.mocked(axios.get).mockResolvedValue({
+            data: { recipes: mockRecipes },
+        });
+
+        render(
+            <RecipeSelectModal
+                isOpen={true}
+                onClose={vi.fn()}
+                onSelect={vi.fn()}
+                suggestionContext={{
+                    day: 'monday',
+                    mealType: 'dinner',
+                    availableMealTypes: [
+                        'breakfast',
+                        'lunch',
+                        'snack',
+                        'dinner',
+                    ],
+                    onMealTypeChange: mockMealChange,
+                    initialBudget: {
+                        maxCalories: 500,
+                        minProtein: 35,
+                    },
+                    optionalBudget: {
+                        maxCarbohydrates: 60,
+                        maxFat: 20,
+                    },
+                }}
+            />
+        );
+
+        expect(screen.getByTestId('macro-suggestion-banner')).toBeDefined();
+
+        // Auto-fetches on open with pre-filled remaining budget
+        await waitFor(() => {
+            expect(axios.get).toHaveBeenCalledWith(
+                '/api/search?type=recipes&maxCalories=500&minProtein=35&orderBy=highest_protein'
+            );
+        });
+
+        await waitFor(() => {
+            expect(screen.getByText('Grilled Salmon Bowl')).toBeDefined();
+            expect(screen.getByText('480 kcal')).toBeDefined();
+            expect(
+                screen.getByTestId('recipe-result-protein').textContent
+            ).toContain('42g');
+        });
+
+        // Switch target meal slot
+        fireEvent.click(screen.getByTestId('suggestion-slot-lunch'));
+        expect(mockMealChange).toHaveBeenCalledWith('lunch');
+
+        // Enable optional carb cap
+        fireEvent.click(
+            screen.getByTestId('budget-chip-optional-maxCarbohydrates')
+        );
+        await waitFor(() => {
+            expect(axios.get).toHaveBeenCalledWith(
+                '/api/search?type=recipes&maxCalories=500&minProtein=35&maxCarbohydrates=60&orderBy=highest_protein'
+            );
+        });
+
+        // Remove minProtein constraint
+        fireEvent.click(screen.getByTestId('budget-chip-minProtein'));
+        await waitFor(() => {
+            expect(axios.get).toHaveBeenCalledWith(
+                '/api/search?type=recipes&maxCalories=500&maxCarbohydrates=60&orderBy=lowest_calories'
+            );
+        });
+    });
 });

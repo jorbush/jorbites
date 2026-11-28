@@ -6,10 +6,24 @@ import Avatar from '@/app/components/utils/Avatar';
 import { formatDate } from '@/app/utils/date-utils';
 import { GiPadlock, GiPadlockOpen } from 'react-icons/gi';
 import VerificationBadge from '@/app/components/VerificationBadge';
-import { PlanningMealLike } from '@/app/utils/planningNutrition';
+import {
+    DailyNutritionTargets,
+    PlanningMealLike,
+} from '@/app/utils/planningNutrition';
 import { PlanningNutritionSummary } from '@/app/components/plannings/PlanningNutritionSummary';
 
 const EMPTY_MEALS: PlanningMealLike[] = [];
+
+const resolveDailyTargets = (
+    planning: SafePlanning,
+    dailyTargets?: DailyNutritionTargets | null
+): DailyNutritionTargets =>
+    dailyTargets ?? {
+        targetCalories: planning.targetCalories ?? null,
+        targetProtein: planning.targetProtein ?? null,
+        targetCarbohydrates: planning.targetCarbohydrates ?? null,
+        targetFat: planning.targetFat ?? null,
+    };
 
 export interface PlanningHeaderProps {
     editedName: string;
@@ -24,6 +38,7 @@ export interface PlanningHeaderProps {
     t: any;
     mealsCount?: number;
     meals?: PlanningMealLike[];
+    dailyTargets?: DailyNutritionTargets | null;
     showLock?: boolean;
 }
 
@@ -40,9 +55,11 @@ export const PlanningHeader: React.FC<PlanningHeaderProps> = ({
     t,
     mealsCount,
     meals,
+    dailyTargets,
     showLock = true,
 }) => {
     const effectiveMeals = meals ?? planning.meals ?? EMPTY_MEALS;
+    const effectiveTargets = resolveDailyTargets(planning, dailyTargets);
     const privacyLabel = String((isPrivate ? t('private') : t('public')) || '');
 
     return (
@@ -140,9 +157,10 @@ export const PlanningHeader: React.FC<PlanningHeaderProps> = ({
                 </div>
             </div>
 
-            {/* Weekly Macro Averages & Plan-wide EU-14 Allergens */}
+            {/* Daily Targets, Weekly Macro Averages & Plan-wide EU-14 Allergens */}
             <PlanningNutritionSummary
                 meals={effectiveMeals}
+                dailyTargets={effectiveTargets}
                 t={t}
             />
         </div>

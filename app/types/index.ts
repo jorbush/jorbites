@@ -261,16 +261,40 @@ export type SafePlanningMealPreview = Omit<
     recipe?: SafeRecipePreview;
 };
 
-export type SafePlanning = Omit<Planning, 'createdAt' | 'updatedAt'> & {
+export type SafePlanning = Omit<
+    Planning,
+    | 'createdAt'
+    | 'updatedAt'
+    | 'targetCalories'
+    | 'targetProtein'
+    | 'targetCarbohydrates'
+    | 'targetFat'
+> & {
     createdAt: string;
     updatedAt: string;
+    targetCalories?: number | null;
+    targetProtein?: number | null;
+    targetCarbohydrates?: number | null;
+    targetFat?: number | null;
     user?: SafeUser;
     meals?: SafePlanningMeal[];
 };
 
-export type SafePlanningPreview = Omit<Planning, 'createdAt' | 'updatedAt'> & {
+export type SafePlanningPreview = Omit<
+    Planning,
+    | 'createdAt'
+    | 'updatedAt'
+    | 'targetCalories'
+    | 'targetProtein'
+    | 'targetCarbohydrates'
+    | 'targetFat'
+> & {
     createdAt: string;
     updatedAt: string;
+    targetCalories?: number | null;
+    targetProtein?: number | null;
+    targetCarbohydrates?: number | null;
+    targetFat?: number | null;
     user?: SafeUserPreview;
     meals?: SafePlanningMealPreview[];
 };

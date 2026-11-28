@@ -1,9 +1,12 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { FiActivity, FiAlertCircle } from 'react-icons/fi';
+import { FiActivity, FiAlertCircle, FiTarget } from 'react-icons/fi';
 import {
     aggregateWeeklyNutrition,
+    DailyNutritionTargets,
+    DailyTargetField,
+    hasAnyDailyTarget,
     hasAnyMacro,
     MacroTotals,
     PlanAllergen,
@@ -58,8 +61,118 @@ const MACRO_SPECS: readonly MacroDisplaySpec[] = [
     },
 ];
 
+interface TargetDisplaySpec {
+    field: DailyTargetField;
+    testId: string;
+    unit: string;
+    labelKey: string;
+    fallbackLabel: string;
+    isPrimary?: boolean;
+}
+
+const TARGET_SPECS: readonly TargetDisplaySpec[] = [
+    {
+        field: 'targetCalories',
+        testId: 'plan-target-calories',
+        unit: ' kcal',
+        labelKey: 'calories',
+        fallbackLabel: 'Calories',
+        isPrimary: true,
+    },
+    {
+        field: 'targetProtein',
+        testId: 'plan-target-protein',
+        unit: 'g',
+        labelKey: 'protein',
+        fallbackLabel: 'Protein',
+    },
+    {
+        field: 'targetCarbohydrates',
+        testId: 'plan-target-carbohydrates',
+        unit: 'g',
+        labelKey: 'carbohydrates',
+        fallbackLabel: 'Carbs',
+    },
+    {
+        field: 'targetFat',
+        testId: 'plan-target-fat',
+        unit: 'g',
+        labelKey: 'fat',
+        fallbackLabel: 'Fat',
+    },
+];
+
 const translateOrFallback = (t: any, key: string, fallback: string): string =>
     String(t(key, { defaultValue: fallback }) || fallback);
+
+interface DailyGoalsSummaryProps {
+    dailyTargets: DailyNutritionTargets;
+    t: any;
+}
+
+const DailyGoalsSummary: React.FC<DailyGoalsSummaryProps> = ({
+    dailyTargets,
+    t,
+}) => {
+    const visibleSpecs = TARGET_SPECS.filter(
+        (spec) =>
+            typeof dailyTargets[spec.field] === 'number' &&
+            dailyTargets[spec.field]! > 0
+    );
+
+    return (
+        <div
+            data-testid="plan-daily-targets-summary"
+            className="flex flex-col gap-2"
+        >
+            <div className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-neutral-600 uppercase dark:text-neutral-400">
+                <FiTarget
+                    size={14}
+                    className="text-green-450 shrink-0"
+                    aria-hidden="true"
+                />
+                <span>
+                    {translateOrFallback(
+                        t,
+                        'daily_nutrition_goals',
+                        'Daily nutrition goals'
+                    )}
+                </span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+                {visibleSpecs.map((spec) => (
+                    <div
+                        key={spec.field}
+                        data-testid={spec.testId}
+                        className={
+                            spec.isPrimary
+                                ? 'border-green-450/40 bg-green-450/15 dark:border-green-450/30 dark:bg-green-450/10 inline-flex items-baseline gap-1.5 rounded-xl border px-3 py-1.5 text-xs'
+                                : 'inline-flex items-baseline gap-1.5 rounded-xl border border-neutral-200/80 bg-neutral-50/70 px-3 py-1.5 text-xs dark:border-neutral-800/80 dark:bg-neutral-800/50'
+                        }
+                    >
+                        <span
+                            className={
+                                spec.isPrimary
+                                    ? 'dark:text-green-450 font-bold text-neutral-900'
+                                    : 'font-bold text-neutral-900 dark:text-white'
+                            }
+                        >
+                            {dailyTargets[spec.field]}
+                            {spec.unit}
+                        </span>
+                        <span className="font-medium text-neutral-500 dark:text-neutral-400">
+                            {translateOrFallback(
+                                t,
+                                spec.labelKey,
+                                spec.fallbackLabel
+                            )}
+                        </span>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
 
 interface WeeklyMacroAveragesProps {
     dailyAverages: MacroTotals;
@@ -196,23 +309,25 @@ const PlanAllergensSummary: React.FC<PlanAllergensSummaryProps> = ({
 
 interface PlanningNutritionSummaryProps {
     meals: PlanningMealLike[];
+    dailyTargets?: DailyNutritionTargets | null;
     t: any;
 }
 
 export const PlanningNutritionSummary: React.FC<
     PlanningNutritionSummaryProps
-> = ({ meals, t }) => {
+> = ({ meals, dailyTargets, t }) => {
     const weeklySummary = useMemo(
         () => aggregateWeeklyNutrition(meals),
         [meals]
     );
 
+    const hasTargets = hasAnyDailyTarget(dailyTargets);
     const hasDailyAverages =
         weeklySummary.populatedDays > 0 &&
         hasAnyMacro(weeklySummary.dailyAverages);
     const hasAllergens = weeklySummary.allergens.length > 0;
 
-    if (!hasDailyAverages && !hasAllergens) {
+    if (!hasTargets && !hasDailyAverages && !hasAllergens) {
         return null;
     }
 
@@ -221,6 +336,12 @@ export const PlanningNutritionSummary: React.FC<
             data-testid="planning-nutrition-summary"
             className="mt-4 flex flex-col gap-4 border-t border-neutral-100 pt-4 dark:border-neutral-800"
         >
+            {hasTargets && dailyTargets && (
+                <DailyGoalsSummary
+                    dailyTargets={dailyTargets}
+                    t={t}
+                />
+            )}
             {hasDailyAverages && (
                 <WeeklyMacroAverages
                     dailyAverages={weeklySummary.dailyAverages}

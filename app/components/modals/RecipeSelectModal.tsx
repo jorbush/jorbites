@@ -7,24 +7,28 @@ import Modal from '@/app/components/modals/Modal';
 import { useRecipeSelectSearch } from '@/app/components/modals/useRecipeSelectSearch';
 import { RecipeSelectFilters } from '@/app/components/modals/RecipeSelectFilters';
 import { RecipeSelectResults } from '@/app/components/modals/RecipeSelectResults';
+import {
+    MacroSuggestionContext,
+    RecipeSelectBudgetBar,
+} from '@/app/components/modals/RecipeSelectBudgetBar';
 
 interface RecipeSelectModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSelect: (recipe: any) => void;
+    suggestionContext?: MacroSuggestionContext | null;
 }
 
-const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
-    isOpen,
-    onClose,
-    onSelect,
-}) => {
+const RecipeSelectModalContent: React.FC<
+    Omit<RecipeSelectModalProps, 'isOpen'>
+> = ({ onClose, onSelect, suggestionContext }) => {
     const { t } = useTranslation();
     const {
         query,
         difficulty,
         selectedTags,
         excludedAllergens,
+        macroBudget,
         results,
         isLoading,
         hasActiveFilters,
@@ -32,9 +36,10 @@ const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
         handleToggleDifficulty,
         handleToggleTag,
         handleToggleAllergen,
+        handleSetMacroBudgetField,
         handleClearFilters,
         resetSearch,
-    } = useRecipeSelectSearch();
+    } = useRecipeSelectSearch(suggestionContext?.initialBudget);
 
     const handleClose = () => {
         resetSearch();
@@ -48,8 +53,25 @@ const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
 
     const canShowNoResults = query.trim().length >= 2 || hasActiveFilters;
 
+    const modalTitle = suggestionContext
+        ? String(
+              t('fill_remaining_macros', {
+                  defaultValue: 'Fill remaining macros',
+              }) || 'Fill remaining macros'
+          )
+        : String(t('select_recipe') || 'Select Recipe');
+
     const bodyContent = (
         <div className="flex flex-col gap-4 text-black dark:text-neutral-100">
+            {suggestionContext && (
+                <RecipeSelectBudgetBar
+                    suggestionContext={suggestionContext}
+                    macroBudget={macroBudget}
+                    onSetMacroBudgetField={handleSetMacroBudgetField}
+                    t={t}
+                />
+            )}
+
             {/* Search Bar */}
             <div className="relative">
                 <FiSearch
@@ -97,12 +119,31 @@ const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
 
     return (
         <Modal
-            isOpen={isOpen}
+            isOpen={true}
             onClose={handleClose}
             onSubmit={handleClose}
-            title={String(t('select_recipe') || 'Select Recipe')}
+            title={modalTitle}
             actionLabel={String(t('cancel') || 'Cancel')}
             body={bodyContent}
+        />
+    );
+};
+
+const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
+    isOpen,
+    onClose,
+    onSelect,
+    suggestionContext,
+}) => {
+    if (!isOpen) {
+        return null;
+    }
+
+    return (
+        <RecipeSelectModalContent
+            onClose={onClose}
+            onSelect={onSelect}
+            suggestionContext={suggestionContext}
         />
     );
 };

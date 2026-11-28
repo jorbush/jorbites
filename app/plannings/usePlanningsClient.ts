@@ -108,14 +108,32 @@ export function usePlanningsClient({
             name: string;
             description: string;
             isPrivate: boolean;
+            targetCalories?: number | null;
+            targetProtein?: number | null;
+            targetCarbohydrates?: number | null;
+            targetFat?: number | null;
         }) => {
             setIsCreating(true);
             try {
-                const response = await axios.post('/api/plannings', {
+                const payload: Record<string, unknown> = {
                     name: data.name,
                     description: data.description,
                     isPrivate: data.isPrivate,
-                });
+                };
+                if (data.targetCalories !== undefined) {
+                    payload.targetCalories = data.targetCalories;
+                }
+                if (data.targetProtein !== undefined) {
+                    payload.targetProtein = data.targetProtein;
+                }
+                if (data.targetCarbohydrates !== undefined) {
+                    payload.targetCarbohydrates = data.targetCarbohydrates;
+                }
+                if (data.targetFat !== undefined) {
+                    payload.targetFat = data.targetFat;
+                }
+
+                const response = await axios.post('/api/plannings', payload);
                 toast.success(t('meal_plan_created'));
                 setIsCreateOpen(false);
                 push?.(`/plannings/${response.data.id}`);

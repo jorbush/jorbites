@@ -202,4 +202,42 @@ describe('PlanningHeader', () => {
         expect(milkBadge.getAttribute('title')).toContain('Egg Omelette');
         expect(screen.getByTestId('plan-allergen-disclaimer')).toBeDefined();
     });
+
+    it('renders configured daily nutrition goals in the summary even before meals are added', () => {
+        render(
+            <PlanningHeader
+                editedName="Weekly Keto"
+                editedDesc="Low carb plan"
+                planning={{ ...mockPlanning, meals: [] }}
+                dailyTargets={{
+                    targetCalories: 2000,
+                    targetProtein: 140,
+                    targetCarbohydrates: 180,
+                    targetFat: 65,
+                }}
+                language="en"
+                isOwner={true}
+                isPrivate={false}
+                isSaving={false}
+                togglePrivacy={togglePrivacy}
+                push={push}
+                t={t}
+            />
+        );
+
+        expect(screen.getByTestId('planning-nutrition-summary')).toBeDefined();
+        expect(screen.getByTestId('plan-daily-targets-summary')).toBeDefined();
+        expect(
+            screen.getByTestId('plan-target-calories').textContent
+        ).toContain('2000 kcal');
+        expect(screen.getByTestId('plan-target-protein').textContent).toContain(
+            '140g'
+        );
+        expect(
+            screen.getByTestId('plan-target-carbohydrates').textContent
+        ).toContain('180g');
+        expect(screen.getByTestId('plan-target-fat').textContent).toContain(
+            '65g'
+        );
+    });
 });

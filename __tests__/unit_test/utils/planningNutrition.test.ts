@@ -4,8 +4,13 @@ import {
     aggregateMealsMacros,
     aggregatePlanAllergens,
     aggregateWeeklyNutrition,
+    computeDayGoalProgress,
+    computeRemainingMacroBudget,
     getDayMeals,
+    getSuggestedMealSlotForDay,
+    hasAnyDailyTarget,
     hasAnyMacro,
+    parseDailyNutritionTargets,
 } from '@/app/utils/planningNutrition';
 
 describe('planningNutrition helpers', () => {
@@ -385,6 +390,252 @@ describe('planningNutrition helpers', () => {
                 'gluten',
                 'fish',
             ]);
+        });
+    });
+
+    describe('parseDailyNutritionTargets', () => {
+        it('accepts valid positive integer targets and numeric strings', () => {
+            const result = parseDailyNutritionTargets({
+                targetCalories: 2200,
+                targetProtein: '150',
+                targetCarbohydrates: '200',
+                targetFat: 70,
+            });
+
+            expect(result).toEqual({
+                valid: true,
+                provided: {
+                    targetCalories: 2200,
+                    targetProtein: 150,
+                    targetCarbohydrates: 200,
+                    targetFat: 70,
+                },
+            });
+        });
+
+        it('omits undefined fields and normalizes null or empty strings to null', () => {
+            const result = parseDailyNutritionTargets({
+                targetCalories: null,
+                targetProtein: '   ',
+                targetCarbohydrates: undefined,
+            });
+
+            expect(result).toEqual({
+                valid: true,
+                provided: {
+                    targetCalories: null,
+                    targetProtein: null,
+                },
+            });
+        });
+
+        it('rejects zero, negative, non-integer, or out-of-range targets', () => {
+            expect(
+                parseDailyNutritionTargets({ targetCalories: 0 }).valid
+            ).toBe(false);
+            expect(
+                parseDailyNutritionTargets({ targetProtein: -10 }).valid
+            ).toBe(false);
+            expect(parseDailyNutritionTargets({ targetFat: 12.5 }).valid).toBe(
+                false
+            );
+            expect(
+                parseDailyNutritionTargets({ targetCarbohydrates: 'abc' }).valid
+            ).toBe(false);
+            expect(
+                parseDailyNutritionTargets({ targetCalories: 99999 }).valid
+            ).toBe(false);
+        });
+    });
+
+    describe('hasAnyDailyTarget', () => {
+        it('returns false when targets are absent or null', () => {
+            expect(hasAnyDailyTarget(null)).toBe(false);
+            expect(hasAnyDailyTarget({})).toBe(false);
+            expect(
+                hasAnyDailyTarget({
+                    targetCalories: null,
+                    targetProtein: null,
+                })
+            ).toBe(false);
+        });
+
+        it('returns true when at least one valid target is set', () => {
+            expect(hasAnyDailyTarget({ targetCalories: 2000 })).toBe(true);
+            expect(hasAnyDailyTarget({ targetProtein: 140 })).toBe(true);
+        });
+    });
+
+    describe('computeDayGoalProgress', () => {
+        it('computes under, met, and over progress items with clamped bar percentages', () => {
+            const items = computeDayGoalProgress(
+                {
+                    calories: 1500,
+                    protein: 135,
+                    carbohydrates: 240,
+                    fat: null,
+                    fiber: null,
+                },
+                {
+                    targetCalories: 2000,
+                    targetProtein: 140,
+                    targetCarbohydrates: 200,
+                    targetFat: 65,
+                }
+            );
+
+            expect(items).toEqual([
+                {
+                    key: 'calories',
+                    current: 1500,
+                    target: 2000,
+                    percentage: 75,
+                    clampedPercent: 75,
+                    remaining: 500,
+                    overBy: 0,
+                    status: 'under',
+                },
+                {
+                    key: 'protein',
+                    current: 135,
+                    target: 140,
+                    percentage: 96,
+                    clampedPercent: 96,
+                    remaining: 5,
+                    overBy: 0,
+                    status: 'met',
+                },
+                {
+                    key: 'carbohydrates',
+                    current: 240,
+                    target: 200,
+                    percentage: 120,
+                    clampedPercent: 100,
+                    remaining: 0,
+                    overBy: 40,
+                    status: 'over',
+                },
+                {
+                    key: 'fat',
+                    current: 0,
+                    target: 65,
+                    percentage: 0,
+                    clampedPercent: 0,
+                    remaining: 65,
+                    overBy: 0,
+                    status: 'under',
+                },
+            ]);
+        });
+    });
+
+    describe('computeRemainingMacroBudget', () => {
+        it('pre-applies remaining calories and protein and exposes carbs/fat as optional caps', () => {
+            const budget = computeRemainingMacroBudget(
+                {
+                    calories: 1500,
+                    protein: 105,
+                    carbohydrates: 140,
+                    fat: 45,
+                    fiber: null,
+                },
+                {
+                    targetCalories: 2000,
+                    targetProtein: 140,
+                    targetCarbohydrates: 200,
+                    targetFat: 65,
+                }
+            );
+
+            expect(budget.hasRemaining).toBe(true);
+            expect(budget.initialFilters).toEqual({
+                maxCalories: 500,
+                minProtein: 35,
+            });
+            expect(budget.optionalFilters).toEqual({
+                maxCarbohydrates: 60,
+                maxFat: 20,
+            });
+        });
+
+        it('falls back to carb/fat initial filters when only carb/fat targets are set', () => {
+            const budget = computeRemainingMacroBudget(
+                {
+                    calories: 600,
+                    protein: 30,
+                    carbohydrates: 40,
+                    fat: 20,
+                    fiber: null,
+                },
+                {
+                    targetCarbohydrates: 100,
+                    targetFat: 50,
+                }
+            );
+
+            expect(budget.hasRemaining).toBe(true);
+            expect(budget.initialFilters).toEqual({
+                maxCarbohydrates: 60,
+                maxFat: 30,
+            });
+            expect(budget.optionalFilters).toEqual({});
+        });
+
+        it('marks hasRemaining false when daily calories target is already reached or exceeded', () => {
+            const budget = computeRemainingMacroBudget(
+                {
+                    calories: 2100,
+                    protein: 110,
+                    carbohydrates: 180,
+                    fat: 60,
+                    fiber: null,
+                },
+                {
+                    targetCalories: 2000,
+                    targetProtein: 140,
+                }
+            );
+
+            expect(budget.remainingCalories).toBe(0);
+            expect(budget.hasRemaining).toBe(false);
+            expect(budget.initialFilters).toEqual({});
+        });
+    });
+
+    describe('getSuggestedMealSlotForDay', () => {
+        it('prioritizes first empty main meal slot (dinner after breakfast & lunch)', () => {
+            const result = getSuggestedMealSlotForDay('monday', {
+                'monday-breakfast': [{ recipe: { title: 'Oats' } }],
+                'monday-lunch': [{ recipe: { title: 'Salad' } }],
+                'monday-snack': [],
+                'monday-dinner': [],
+            });
+
+            expect(result.suggestedSlot).toBe('dinner');
+            expect(result.availableSlots).toEqual([
+                'breakfast',
+                'lunch',
+                'snack',
+                'dinner',
+            ]);
+        });
+
+        it('returns null when every meal slot for the day is at capacity', () => {
+            const fullSlot = [
+                { recipe: { title: 'A' } },
+                { recipe: { title: 'B' } },
+                { recipe: { title: 'C' } },
+                { recipe: { title: 'D' } },
+            ];
+            const result = getSuggestedMealSlotForDay('monday', {
+                'monday-breakfast': fullSlot,
+                'monday-lunch': fullSlot,
+                'monday-snack': fullSlot,
+                'monday-dinner': fullSlot,
+            });
+
+            expect(result.suggestedSlot).toBeNull();
+            expect(result.availableSlots).toEqual([]);
         });
     });
 });

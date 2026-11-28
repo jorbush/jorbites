@@ -182,4 +182,114 @@ describe('usePlanningState hook', () => {
         expect(axios.delete).toHaveBeenCalledWith('/api/plannings/plan-123');
         expect(mockRefresh).toHaveBeenCalled();
     });
+
+    it('updates dailyTargets via handleUpdatePlanning', async () => {
+        vi.mocked(axios.patch).mockResolvedValueOnce({ data: {} });
+
+        const { result } = renderHook(() =>
+            usePlanningState({
+                planning: mockPlanning,
+                currentUser: mockCurrentUser,
+            })
+        );
+
+        await act(async () => {
+            await result.current.handleUpdatePlanning({
+                name: 'Weekly Keto',
+                description: 'Low carb plan',
+                isPrivate: false,
+                targetCalories: 2000,
+                targetProtein: 140,
+                targetCarbohydrates: 100,
+                targetFat: 80,
+            });
+        });
+
+        expect(axios.patch).toHaveBeenCalledWith('/api/plannings/plan-123', {
+            name: 'Weekly Keto',
+            description: 'Low carb plan',
+            isPrivate: false,
+            targetCalories: 2000,
+            targetProtein: 140,
+            targetCarbohydrates: 100,
+            targetFat: 80,
+            meals: [
+                {
+                    day: 'monday',
+                    mealType: 'breakfast',
+                    recipeId: 'rec-1',
+                },
+            ],
+        });
+        expect(result.current.dailyTargets).toEqual({
+            targetCalories: 2000,
+            targetProtein: 140,
+            targetCarbohydrates: 100,
+            targetFat: 80,
+        });
+    });
+
+    it('opens RecipeSelectModal with remaining macro suggestionContext and allows switching slots', () => {
+        const { result } = renderHook(() =>
+            usePlanningState({
+                planning: mockPlanning,
+                currentUser: mockCurrentUser,
+            })
+        );
+
+        act(() => {
+            result.current.handleFillRemainingMacros('monday', 'dinner', {
+                remainingCalories: 500,
+                remainingProtein: 35,
+                remainingCarbohydrates: 60,
+                remainingFat: 20,
+                initialFilters: { maxCalories: 500, minProtein: 35 },
+                optionalFilters: { maxCarbohydrates: 60, maxFat: 20 },
+                hasRemaining: true,
+            });
+        });
+
+        expect(result.current.isRecipeSelectOpen).toBe(true);
+        expect(result.current.activeSlot).toEqual({
+            day: 'monday',
+            mealType: 'dinner',
+        });
+        expect(result.current.suggestionContext?.initialBudget).toEqual({
+            maxCalories: 500,
+            minProtein: 35,
+        });
+
+        act(() => {
+            result.current.suggestionContext?.onMealTypeChange?.('lunch');
+        });
+
+        expect(result.current.activeSlot).toEqual({
+            day: 'monday',
+            mealType: 'lunch',
+        });
+    });
+
+    it('prompts login when unauthenticated user clicks Fill Remaining Macros', () => {
+        const { result } = renderHook(() =>
+            usePlanningState({
+                planning: mockPlanning,
+                currentUser: null,
+            })
+        );
+
+        act(() => {
+            result.current.handleFillRemainingMacros('monday', 'dinner', {
+                remainingCalories: 500,
+                remainingProtein: 35,
+                remainingCarbohydrates: null,
+                remainingFat: null,
+                initialFilters: { maxCalories: 500, minProtein: 35 },
+                optionalFilters: {},
+                hasRemaining: true,
+            });
+        });
+
+        expect(mockLoginModal.onOpen).toHaveBeenCalled();
+        expect(result.current.isRecipeSelectOpen).toBe(false);
+    });
 });
